@@ -15,10 +15,10 @@ API calls go through the Rust core. Pictures and videos load straight from the s
 | Crate | Role |
 |---|---|
 | `starbooru-core`, `starbooru-client` | From starbooru-server, pinned to a tag |
-| `uniffi` 0.32 | Generates the Kotlin bindings from `#[uniffi::export]` items |
+| `uniffi` 0.33 | Generates the Kotlin bindings from `#[uniffi::export]` items |
 | `tokio` | The runtime behind `starbooru-client` |
 
-It exports a small, app-shaped API: a `Session` object with async methods (`sign_in`, `posts`, `post`, `upload`, …), plain records for the data, and one error enum. UniFFI turns async functions into Kotlin `suspend` functions and the error enum into a sealed exception class. Panics never cross the bridge: the lints keep them out, and UniFFI turns any that slip through into an exception.
+It exports a small, app-shaped API: an `Api` object for one server, signed in or as a guest, with async methods (`info`, `sign_in`, `posts`, `post`, …), plain records for the data (media paths made absolute, times in milliseconds), and one error enum, `CoreError`. UniFFI turns async functions into Kotlin `suspend` functions and the error enum into a sealed exception class. Panics never cross the bridge: the lints keep them out, and UniFFI turns any that slip through into an exception.
 
 The core keeps no Android types. Paths, the token store and anything else from the device come in as arguments.
 

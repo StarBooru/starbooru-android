@@ -2,7 +2,7 @@
 
 starbooru-android is the StarBooru app for Android. The interface is Kotlin and Jetpack Compose (Material 3). Underneath, a Rust core talks to [starbooru-server](https://github.com/StarBooru/starbooru-server) through the same crates as the other apps, and reaches Kotlin through [UniFFI](https://mozilla.github.io/uniffi-rs/).
 
-There is no code yet, only these docs. Read this file first, then `docs/`.
+Read this file first, then `docs/`.
 
 ## 1. Orientation
 

@@ -1,0 +1,4 @@
+[bindings.kotlin]
+package_name = "eu.filipnone.starbooru.core"
+cdylib_name = "starbooru_android_core"
+android = true

@@ -4,17 +4,19 @@
 
 - Rust 1.88 or newer, with `rustup target add aarch64-linux-android x86_64-linux-android`.
 - cargo-ndk 4: `cargo install cargo-ndk --locked`.
-- JDK 21, the Android SDK and NDK, with `ANDROID_HOME` and `ANDROID_NDK_HOME` set.
+- JDK 21, the Android SDK (platform 37.2, build tools 37) and NDK 30.0.16248370, with `ANDROID_HOME` and `ANDROID_NDK_HOME` set.
 - A local starbooru-server (its `docs/development.md` › Run the server).
 
 ## Build
 
-The Gradle build runs cargo-ndk for each ABI, then UniFFI's bindgen for the Kotlin side, before it compiles the app:
+The Gradle build runs cargo-ndk for each ABI (`cargoNdkDebug`), and UniFFI's bindgen on a host build of the core (`uniffiBindings`, in `target/bindgen`), before it compiles the app. Both land in `app/build/generated/`:
 
 ```sh
-./gradlew assembleDebug          # arm64-v8a and x86_64
-./gradlew assembleRelease        # unsigned; see Releasing
+./gradlew assembleDebug                                  # arm64-v8a and x86_64
+./gradlew assembleRelease -Pstarbooru.abis=arm64-v8a     # unsigned, one ABI; see Releasing
 ```
+
+The version lives in `app/build.gradle.kts` (`appVersion`); `versionCode` follows from it and stays above the reference's 1.
 
 ## Run on a phone
 

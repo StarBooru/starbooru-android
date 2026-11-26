@@ -1,0 +1,15 @@
+/target
+/log
+/.kilo/
+.gradle/
+build/
+/local.properties
+/.idea/
+*.iml
+.DS_Store
+/captures
+/app/release
+*.apk
+*.aab
+*.jks
+*.keystore
