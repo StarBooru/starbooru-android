@@ -81,6 +81,7 @@ fun SettingsScreen(
     onChange: ((Settings) -> Settings) -> Unit,
     onSignOut: () -> Unit,
     onSignIn: () -> Unit,
+    onTrash: () -> Unit,
 ) {
     val frame = LocalFrame.current
     Column(
@@ -126,6 +127,32 @@ fun SettingsScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+            Card(stringResource(R.string.settings_gestures)) {
+                SwipeChoice(stringResource(R.string.settings_swipe_left), settings.swipeLeft) { a -> onChange { it.copy(swipeLeft = a) } }
+                SwipeChoice(stringResource(R.string.settings_swipe_right), settings.swipeRight) { a ->
+                    onChange { it.copy(swipeRight = a) }
+                }
+            }
+            if (account is AccountState.SignedIn) {
+                Card(stringResource(R.string.settings_library)) {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(16.dp))
+                            .clickable(onClick = onTrash)
+                            .padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(painterResource(R.drawable.ic_delete), null, tint = MaterialTheme.colorScheme.primary)
+                        Column(Modifier.weight(1f).padding(horizontal = 16.dp)) {
+                            Text(stringResource(R.string.trash_title), style = MaterialTheme.typography.bodyLarge)
+                            Hint(stringResource(R.string.settings_trash_note))
+                        }
+                        Icon(painterResource(R.drawable.ic_chevron_right), null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+            }
+            CacheCard(settings, onChange)
             Card(stringResource(R.string.settings_account)) {
                 when (account) {
                     is AccountState.SignedIn -> {
@@ -146,13 +173,6 @@ fun SettingsScreen(
                     else -> {}
                 }
             }
-            Card(stringResource(R.string.settings_gestures)) {
-                SwipeChoice(stringResource(R.string.settings_swipe_left), settings.swipeLeft) { a -> onChange { it.copy(swipeLeft = a) } }
-                SwipeChoice(stringResource(R.string.settings_swipe_right), settings.swipeRight) { a ->
-                    onChange { it.copy(swipeRight = a) }
-                }
-            }
-            CacheCard(settings, onChange)
             Card(stringResource(R.string.settings_about)) {
                 Text(stringResource(R.string.settings_version, BuildConfig.VERSION_NAME))
                 Hint("core ${coreVersion()}")

@@ -33,6 +33,10 @@ data object SettingsRoute : Route
 @Serializable
 data object ForumRoute : Route
 
+/** The recycle bin, opened from Settings. */
+@Serializable
+data object TrashRoute : Route
+
 /**
  * The navigation's items, five at most. A private server has [ALL], or a
  * guest [GUEST] and a way to sign in after them; a public one [PUBLIC], the

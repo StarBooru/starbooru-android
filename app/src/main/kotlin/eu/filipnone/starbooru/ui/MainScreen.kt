@@ -37,6 +37,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import eu.filipnone.starbooru.AppGraph
 import eu.filipnone.starbooru.core.Mode
+import eu.filipnone.starbooru.core.trashQuery
 import eu.filipnone.starbooru.data.AccountState
 import eu.filipnone.starbooru.data.Settings
 import eu.filipnone.starbooru.ui.common.LocalNotices
@@ -57,12 +58,15 @@ import eu.filipnone.starbooru.ui.nav.PostRoute
 import eu.filipnone.starbooru.ui.nav.SettingsRoute
 import eu.filipnone.starbooru.ui.nav.Tab
 import eu.filipnone.starbooru.ui.nav.TagsRoute
+import eu.filipnone.starbooru.ui.nav.TrashRoute
 import eu.filipnone.starbooru.ui.nav.UploadRoute
 import eu.filipnone.starbooru.ui.nav.entries
 import eu.filipnone.starbooru.ui.nav.rememberNavigationState
 import eu.filipnone.starbooru.ui.settings.SettingsScreen
 import eu.filipnone.starbooru.ui.signin.SignInScreen
 import eu.filipnone.starbooru.ui.signin.SignInViewModel
+import eu.filipnone.starbooru.ui.trash.TrashScreen
+import eu.filipnone.starbooru.ui.trash.TrashViewModel
 import eu.filipnone.starbooru.ui.viewer.ViewerScreen
 import eu.filipnone.starbooru.ui.viewer.ViewerViewModel
 import kotlinx.coroutines.launch
@@ -196,6 +200,16 @@ private fun Shell(
                                 onChange = update,
                                 onSignOut = { scope.launch { graph.account.signOut() } },
                                 onSignIn = { scope.launch { graph.account.toSignIn() } },
+                                onTrash = { nav.open(TrashRoute) },
+                            )
+                        }
+                        entry<TrashRoute> {
+                            val vm = viewModel { TrashViewModel(graph.account) }
+                            TrashScreen(
+                                vm = vm,
+                                server = server,
+                                admin = (account as? AccountState.SignedIn)?.user?.admin == true,
+                                onOpen = { post -> nav.open(PostRoute(post.id, trashQuery())) },
                             )
                         }
                     }
