@@ -28,16 +28,16 @@ An item below is done when it works at all three widths, with either hand, in li
 
 ## 2. Daily use
 
-- [ ] Search in the top bar with tag autocomplete, typo correction and the cheat sheet
-- [ ] A tile's menu on a long press, swipes on tiles chosen per direction, a drag across tiles to select several, mass edit
+- [x] Search in the top bar with tag autocomplete, typo correction and the cheat sheet
+- [x] A tile's menu on a long press, swipes on tiles chosen per direction, a drag across tiles to select several, mass edit
 - [ ] Tag editor with chips and a new tag's category, the Tags page and each tag's page
-- [ ] Explore: recently viewed, People, On this day and random picks; Trending, Popular tags and Popular characters on a public server; the top bar's search narrows it
-- [ ] Saved searches that reopen where they were left, votes as likes or stars, related posts in one row to run a thumb along
+- [x] Explore: recently viewed, People, On this day and random picks; Trending, Popular tags and Popular characters on a public server; the top bar's search narrows it
+- [x] Saved searches that reopen where they were left, votes as likes or stars, related posts in one row to run a thumb along
 - [ ] Upload from the photo picker, a folder, the share sheet, links and the clipboard, in chunks under WorkManager with a progress notification, finishing after the app closes (the reference couldn't)
-- [ ] Download a post or a selection to the phone's gallery, never over a file of the same name, with a notice that opens it
-- [ ] Recycle bin
-- [ ] Media cache on disk keyed by SHA-256, with its limit, size and Clear in Settings. Offline, what's cached still opens and each page says it can't reach the server
-- [ ] Rate limits: `starbooru-client` waits out a short `429`; a longer one says when to try again
+- [x] Download a post or a selection to the phone's gallery, never over a file of the same name, with a notice that opens it
+- [x] Recycle bin
+- [x] Media cache on disk keyed by SHA-256, with its limit, size and Clear in Settings. Offline, what's cached still opens and each page says it can't reach the server
+- [x] Rate limits: `starbooru-client` waits out a short `429`; a longer one says when to try again
 
 ## 3. Everything else the web app has
 
