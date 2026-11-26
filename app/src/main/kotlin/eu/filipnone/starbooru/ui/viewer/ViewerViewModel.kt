@@ -25,6 +25,8 @@ data class ViewerState(
     /** Whether there is a post on each side, once the server has said. */
     val neighbors: Neighbors? = null,
     val error: Throwable? = null,
+    /** Posts like this one, for the row under it. */
+    val related: List<Post> = emptyList(),
 )
 
 /**
@@ -41,6 +43,7 @@ class ViewerViewModel(
 ) : ViewModel() {
     private val posts = LinkedHashMap<Long, Post>(16, 0.75f, true)
     private val sides = HashMap<Long, Neighbors>()
+    private val related = HashMap<Long, List<Post>>()
     private val _state = MutableStateFlow(ViewerState(saved[ID] ?: startId))
     val state: StateFlow<ViewerState> = _state.asStateFlow()
     private var loading: Job? = null
@@ -71,9 +74,20 @@ class ViewerViewModel(
         // just left is the new one's other side.
         val prev = known?.prev?.let { posts[it] } ?: if (side == Side.Next && known == null) s.post else null
         val next = known?.next?.let { posts[it] } ?: if (side == Side.Prev && known == null) s.post else null
-        _state.value = ViewerState(id, posts[id], prev = prev, next = next, neighbors = known)
+        _state.value = ViewerState(id, posts[id], prev = prev, next = next, neighbors = known, related = related[id].orEmpty())
         load(id)
         return true
+    }
+
+    /**
+     * The post on show went to the recycle bin: on to the next one, or the
+     * one before. False when there's neither, and the viewer closes.
+     */
+    fun gone(): Boolean {
+        val s = _state.value
+        s.post?.let { posts[it.id] = it.copy(deleted = true) }
+        sides.clear()
+        return go(Side.Next) || go(Side.Prev)
     }
 
     /** Takes in a post changed elsewhere (a vote, an edit). */
@@ -100,6 +114,19 @@ class ViewerViewModel(
                         return@launch
                     }
                 _state.update { if (it.id == id) it.copy(post = post, error = null) else it }
+                launch {
+                    val found =
+                        related[id] ?: try {
+                            account.call { it.related(id, RELATED.toUInt()) }
+                        } catch (_: CoreException) {
+                            // The row stays empty; nothing else depends on it.
+                            null
+                        }
+                    if (found != null) {
+                        related[id] = found
+                        _state.update { if (it.id == id) it.copy(related = found) else it }
+                    }
+                }
                 val near =
                     try {
                         sides[id] ?: account.call { it.neighbors(id, query, seed) }.also { sides[id] = it }
@@ -131,5 +158,6 @@ class ViewerViewModel(
     private companion object {
         const val ID = "id"
         const val KEEP = 24
+        const val RELATED = 12
     }
 }

@@ -122,13 +122,17 @@ def main():
             merged.setdefault(key, value)
         catalogues[lang] = merged
     problems = []
+    # A message goes in the first group that asks for it: Android refuses a
+    # name defined twice.
+    taken = set()
     for group, patterns in groups.items():
         keys = []
         for p in patterns:
             found = [k for k in catalogues["en"] if re.fullmatch(p, k)]
             if not found:
                 problems.append(f"{group}: no message matches {p}")
-            keys.extend(k for k in found if k not in keys)
+            keys.extend(k for k in found if k not in keys and k not in taken)
+        taken.update(keys)
         for lang, folder in LANGS.items():
             out = ['<?xml version="1.0" encoding="utf-8"?>',
                    "<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->",

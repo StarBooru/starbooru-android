@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="press_deleted">Spostato nel cestino</string>
+    <string name="press_undo">Annulla</string>
+    <string name="press_open">Apri</string>
+    <string name="press_open_tab">Apri in una nuova scheda</string>
+    <string name="press_unlike">Togli il mi piace</string>
+    <string name="press_liked">Ti piace</string>
+    <string name="press_unliked">Mi piace tolto</string>
+    <string name="press_star">Dai 5 stelle</string>
+    <string name="press_unstar">Togli le tue stelle</string>
+    <string name="press_starred">5 stelle date</string>
+    <string name="swipe_off">Niente</string>
+    <string name="swipe_delete">Sposta nel cestino</string>
+    <string name="swipe_like">Mi piace</string>
+    <string name="swipe_select">Seleziona</string>
+    <!-- reason -->
+    <string name="delete_failed">Impossibile spostarlo nel cestino: %1$s</string>
+    <string name="share_button">Condividi</string>
+    <string name="reverse_button">Trova la fonte</string>
+    <string name="post_download">Scarica</string>
+    <string name="post_delete_title">Sposta nel cestino</string>
+    <string name="post_delete">Elimina</string>
+    <string name="download_failed">Il download non è finito. Controlla la connessione e riprova.</string>
+    <string name="download_expired">Il link a questo file è scaduto. Ricarica la pagina e riprova.</string>
+</resources>

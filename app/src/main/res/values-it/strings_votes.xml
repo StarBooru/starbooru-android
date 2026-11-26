@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <!-- count -->
+    <plurals name="stars_of">
+        <item quantity="one">1 stella su 5</item>
+        <item quantity="other">%1$d stelle su 5</item>
+    </plurals>
+    <!-- stars -->
+    <string name="stars_yours">Il tuo voto: %1$s</string>
+    <string name="stars_none_yours">Non hai ancora votato</string>
+    <!-- count, average -->
+    <plurals name="stars_summary">
+        <item quantity="one">Media %2$s su 5, da 1 voto</item>
+        <item quantity="other">Media %2$s su 5, da %1$d voti</item>
+    </plurals>
+    <!-- count -->
+    <plurals name="stars_votes">
+        <item quantity="one">1 voto</item>
+        <item quantity="other">%1$d voti</item>
+    </plurals>
+    <string name="stars_no_votes">Ancora nessun voto</string>
+    <string name="post_upvote">Voto positivo</string>
+    <string name="post_downvote">Voto negativo</string>
+    <string name="post_votes">Voti</string>
+    <string name="post_score">Punteggio</string>
+    <!-- reason -->
+    <string name="vote_failed">Impossibile salvare il voto: %1$s</string>
+    <string name="guest_vote_why">Accedi per votare. Tornerai su questo post.</string>
+</resources>

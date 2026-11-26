@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="bulk_label">Modifica i post selezionati</string>
+    <!-- count -->
+    <plurals name="bulk_selected">
+        <item quantity="one">1 selezionato</item>
+        <item quantity="other">%1$d selezionati</item>
+    </plurals>
+    <string name="bulk_select_all">Seleziona tutto</string>
+    <string name="bulk_select_none">Deseleziona tutto</string>
+    <string name="bulk_edit_title">Modifica tag e classificazione</string>
+    <!-- count -->
+    <plurals name="bulk_sheet_title">
+        <item quantity="one">Modifica 1 post</item>
+        <item quantity="other">Modifica %1$d post</item>
+    </plurals>
+    <string name="bulk_add_tags">Aggiungi questi tag</string>
+    <string name="bulk_remove_tags">Togli questi tag</string>
+    <string name="bulk_keep_rating">Mantieni la classificazione</string>
+    <string name="bulk_apply">Applica</string>
+    <!-- tag -->
+    <string name="bulk_tag_both">“%1$s” è in entrambe le liste. Lascialo in una sola.</string>
+    <string name="bulk_nothing">Aggiungi o togli un tag, oppure scegli una classificazione.</string>
+    <!-- reason -->
+    <string name="bulk_delete_failed">Impossibile spostarli nel cestino: %1$s</string>
+    <!-- count, reason -->
+    <plurals name="bulk_restore_failed">
+        <item quantity="one">Impossibile recuperare 1 post: %2$s</item>
+        <item quantity="other">Impossibile recuperare %1$d post: %2$s</item>
+    </plurals>
+    <!-- count -->
+    <plurals name="bulk_updated">
+        <item quantity="one">Aggiornato 1 post</item>
+        <item quantity="other">Aggiornati %1$d post</item>
+    </plurals>
+    <!-- count -->
+    <plurals name="bulk_moved">
+        <item quantity="one">Spostato 1 post nel cestino</item>
+        <item quantity="other">Spostati %1$d post nel cestino</item>
+    </plurals>
+    <!-- count -->
+    <plurals name="bulk_skipped">
+        <item quantity="one">saltato 1 post</item>
+        <item quantity="other">saltati %1$d post</item>
+    </plurals>
+    <!-- count -->
+    <plurals name="bulk_skipped_undeletable">
+        <item quantity="one">saltato 1 post che non puoi eliminare</item>
+        <item quantity="other">saltati %1$d post che non puoi eliminare</item>
+    </plurals>
+    <!-- done -->
+    <string name="bulk_done">%1$s.</string>
+    <!-- done, skipped -->
+    <string name="bulk_done_skipped">%1$s; %2$s.</string>
+    <string name="bulk_tags_placeholder">Tag: cat -dog</string>
+    <string name="bulk_tags_title">Tag da aggiungere; metti - davanti a un tag per rimuoverlo</string>
+    <string name="bulk_tags_label">Tag da aggiungere, o da rimuovere con un meno davanti</string>
+    <!-- count -->
+    <plurals name="bulk_delete_confirm_label">
+        <item quantity="one">Eliminare 1 post?</item>
+        <item quantity="other">Eliminare %1$d post?</item>
+    </plurals>
+    <!-- count -->
+    <string name="bulk_delete_confirm">Eliminare %1$s?</string>
+</resources>

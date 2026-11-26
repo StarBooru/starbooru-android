@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="press_deleted">Moved to the recycle bin</string>
+    <string name="press_undo">Undo</string>
+    <string name="press_open">Open</string>
+    <string name="press_open_tab">Open in a new tab</string>
+    <string name="press_unlike">Remove like</string>
+    <string name="press_liked">Liked</string>
+    <string name="press_unliked">Like removed</string>
+    <string name="press_star">Give 5 stars</string>
+    <string name="press_unstar">Remove your stars</string>
+    <string name="press_starred">Gave 5 stars</string>
+    <string name="swipe_off">Nothing</string>
+    <string name="swipe_delete">Move to recycle bin</string>
+    <string name="swipe_like">Like</string>
+    <string name="swipe_select">Select</string>
+    <!-- reason -->
+    <string name="delete_failed">Couldn\'t move it to the recycle bin: %1$s</string>
+    <string name="share_button">Share</string>
+    <string name="reverse_button">Find source</string>
+    <string name="post_download">Download</string>
+    <string name="post_delete_title">Move to recycle bin</string>
+    <string name="post_delete">Delete</string>
+    <string name="download_failed">The download didn\'t finish. Check your connection and try again.</string>
+    <string name="download_expired">The link to this file has expired. Reload the page and try again.</string>
+</resources>

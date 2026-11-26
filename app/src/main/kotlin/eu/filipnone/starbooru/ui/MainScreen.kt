@@ -11,7 +11,10 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -22,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -35,12 +39,15 @@ import eu.filipnone.starbooru.AppGraph
 import eu.filipnone.starbooru.core.Mode
 import eu.filipnone.starbooru.data.AccountState
 import eu.filipnone.starbooru.data.Settings
+import eu.filipnone.starbooru.ui.common.LocalNotices
 import eu.filipnone.starbooru.ui.common.LocalReducedMotion
 import eu.filipnone.starbooru.ui.common.LocalSharedTransition
 import eu.filipnone.starbooru.ui.common.LocalViewerFocus
+import eu.filipnone.starbooru.ui.common.Notices
 import eu.filipnone.starbooru.ui.common.Soon
 import eu.filipnone.starbooru.ui.frame.Frame
 import eu.filipnone.starbooru.ui.frame.LocalBars
+import eu.filipnone.starbooru.ui.frame.LocalFrame
 import eu.filipnone.starbooru.ui.gallery.GalleryScreen
 import eu.filipnone.starbooru.ui.gallery.GalleryViewModel
 import eu.filipnone.starbooru.ui.nav.ExploreRoute
@@ -107,6 +114,8 @@ private fun Shell(
     val tabs = Tab.shown(public, guest)
     val focus = remember { mutableStateOf<Long?>(null) }
     val bars = remember { mutableStateOf(true) }
+    val snack = remember { SnackbarHostState() }
+    val notices = remember { Notices(snack, scope) }
     val current = nav.current
     var search by rememberSaveable { mutableStateOf("") }
     LaunchedEffect(current) {
@@ -133,6 +142,7 @@ private fun Shell(
             LocalSharedTransition provides this,
             LocalViewerFocus provides focus,
             LocalBars provides bars,
+            LocalNotices provides notices,
         ) {
             Frame(
                 tabs = tabs,
@@ -166,7 +176,9 @@ private fun Shell(
                                 }
                             ViewerScreen(
                                 vm = vm,
+                                account = graph.account,
                                 server = server,
+                                onOpen = { post -> nav.open(PostRoute(post.id)) },
                                 onBack = { nav.back() },
                                 onSearch = searchFor,
                             )
@@ -194,6 +206,12 @@ private fun Shell(
                     predictivePopTransitionSpec = { fadeIn(tween(220)) togetherWith (fadeOut(tween(220)) + scaleOut(targetScale = 0.9f)) },
                     onBack = { nav.back() },
                 )
+                Box(
+                    Modifier.fillMaxSize().padding(bottom = LocalFrame.current.padding.calculateBottomPadding()),
+                    contentAlignment = Alignment.BottomCenter,
+                ) {
+                    SnackbarHost(snack)
+                }
             }
         }
     }

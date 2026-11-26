@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="bulk_label">Edit selected posts</string>
+    <!-- count -->
+    <plurals name="bulk_selected">
+        <item quantity="one">1 selected</item>
+        <item quantity="other">%1$d selected</item>
+    </plurals>
+    <string name="bulk_select_all">Select all</string>
+    <string name="bulk_select_none">Select none</string>
+    <string name="bulk_edit_title">Edit tags and rating</string>
+    <!-- count -->
+    <plurals name="bulk_sheet_title">
+        <item quantity="one">Edit 1 post</item>
+        <item quantity="other">Edit %1$d posts</item>
+    </plurals>
+    <string name="bulk_add_tags">Add these tags</string>
+    <string name="bulk_remove_tags">Remove these tags</string>
+    <string name="bulk_keep_rating">Keep rating</string>
+    <string name="bulk_apply">Apply</string>
+    <!-- tag -->
+    <string name="bulk_tag_both">“%1$s” is in both lists. Keep it in one.</string>
+    <string name="bulk_nothing">Add or remove a tag, or pick a rating.</string>
+    <!-- reason -->
+    <string name="bulk_delete_failed">Couldn\'t move them to the recycle bin: %1$s</string>
+    <!-- count, reason -->
+    <plurals name="bulk_restore_failed">
+        <item quantity="one">Couldn\'t bring 1 post back: %2$s</item>
+        <item quantity="other">Couldn\'t bring %1$d posts back: %2$s</item>
+    </plurals>
+    <!-- count -->
+    <plurals name="bulk_updated">
+        <item quantity="one">Updated 1 post</item>
+        <item quantity="other">Updated %1$d posts</item>
+    </plurals>
+    <!-- count -->
+    <plurals name="bulk_moved">
+        <item quantity="one">Moved 1 post to the recycle bin</item>
+        <item quantity="other">Moved %1$d posts to the recycle bin</item>
+    </plurals>
+    <!-- count -->
+    <plurals name="bulk_skipped">
+        <item quantity="one">skipped 1 post</item>
+        <item quantity="other">skipped %1$d posts</item>
+    </plurals>
+    <!-- count -->
+    <plurals name="bulk_skipped_undeletable">
+        <item quantity="one">skipped 1 post you can\'t delete</item>
+        <item quantity="other">skipped %1$d posts you can\'t delete</item>
+    </plurals>
+    <!-- done -->
+    <string name="bulk_done">%1$s.</string>
+    <!-- done, skipped -->
+    <string name="bulk_done_skipped">%1$s; %2$s.</string>
+    <string name="bulk_tags_placeholder">Tags: cat -dog</string>
+    <string name="bulk_tags_title">Tags to add; put - before a tag to remove it</string>
+    <string name="bulk_tags_label">Tags to add, or to remove with a leading minus</string>
+    <!-- count -->
+    <plurals name="bulk_delete_confirm_label">
+        <item quantity="one">Delete 1 post?</item>
+        <item quantity="other">Delete %1$d posts?</item>
+    </plurals>
+    <!-- count -->
+    <string name="bulk_delete_confirm">Delete %1$s?</string>
+</resources>

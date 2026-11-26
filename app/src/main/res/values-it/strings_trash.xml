@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="trash_title">Cestino</string>
+    <string name="trash_lead">I post eliminati restano qui finché non li ripristini o li elimini definitivamente. L\'eliminazione definitiva rimuove anche il file dal server.</string>
+    <!-- days -->
+    <plurals name="trash_purge_after">
+        <item quantity="one">Il server elimina definitivamente i post qui un giorno dopo che sono stati spostati nel cestino.</item>
+        <item quantity="other">Il server elimina definitivamente i post qui %1$d giorni dopo che sono stati spostati nel cestino.</item>
+    </plurals>
+    <string name="trash_purge_never">I post restano qui finché qualcuno non li elimina definitivamente.</string>
+    <string name="trash_none">Il cestino è vuoto</string>
+    <!-- id -->
+    <string name="trash_restore_post">Ripristina il post %1$s</string>
+    <string name="trash_restore_all">Ripristina tutto</string>
+    <string name="trash_restore_all_confirm">Ripristinare tutto?</string>
+    <!-- count -->
+    <plurals name="trash_restored">
+        <item quantity="one">1 post ripristinato.</item>
+        <item quantity="other">%1$d post ripristinati.</item>
+    </plurals>
+    <!-- id, reason -->
+    <string name="trash_restore_failed">Impossibile ripristinare il post %1$s: %2$s</string>
+    <string name="trash_purge">Elimina definitivamente</string>
+    <!-- id -->
+    <string name="trash_purge_post">Elimina definitivamente il post %1$s</string>
+    <!-- id, reason -->
+    <string name="trash_purge_failed">Impossibile eliminare definitivamente il post %1$s: %2$s</string>
+    <!-- count -->
+    <plurals name="trash_purged">
+        <item quantity="one">1 post eliminato definitivamente.</item>
+        <item quantity="other">%1$d post eliminati definitivamente.</item>
+    </plurals>
+    <string name="trash_empty">Svuota il cestino</string>
+    <string name="trash_empty_confirm">Eliminare tutto definitivamente?</string>
+    <string name="trash_restore">Ripristina</string>
+    <string name="settings_library">Raccolta</string>
+    <string name="settings_trash_note">Ripristina o elimina definitivamente i post</string>
+</resources>

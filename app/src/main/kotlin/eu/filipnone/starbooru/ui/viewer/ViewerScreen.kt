@@ -95,11 +95,13 @@ import dev.chrisbanes.haze.rememberHazeState
 import eu.filipnone.starbooru.R
 import eu.filipnone.starbooru.core.MediaKind
 import eu.filipnone.starbooru.core.Post
+import eu.filipnone.starbooru.data.Account
 import eu.filipnone.starbooru.data.Hand
 import eu.filipnone.starbooru.ui.common.LocalReducedMotion
 import eu.filipnone.starbooru.ui.common.LocalViewerFocus
 import eu.filipnone.starbooru.ui.common.Media
 import eu.filipnone.starbooru.ui.common.describe
+import eu.filipnone.starbooru.ui.common.rememberPostActions
 import eu.filipnone.starbooru.ui.common.sharedPost
 import eu.filipnone.starbooru.ui.common.tintColor
 import eu.filipnone.starbooru.ui.frame.LocalBars
@@ -146,11 +148,14 @@ private val PANEL = 360.dp
 @Composable
 fun ViewerScreen(
     vm: ViewerViewModel,
+    account: Account,
     server: String,
     onBack: () -> Unit,
     onSearch: (String) -> Unit,
+    onOpen: (Post) -> Unit,
 ) {
     val flow by vm.state.collectAsStateWithLifecycle()
+    val actions = rememberPostActions(account) { vm.replace(it) }
     // What the stage shows, set at once when a swipe turns, so the next
     // picture takes the middle in the same frame the slide ends.
     var shown by remember { mutableStateOf(flow) }
@@ -204,17 +209,50 @@ fun ViewerScreen(
                     }
                 }
             }
+        // The bar under the picture, the recycle bin's notice, and the row
+        // of posts like it.
+        val bar =
+            @Composable { modifier: Modifier ->
+                if (post != null) {
+                    Column(modifier.graphicsLayer { alpha = 1f - pull }, verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        if (post.deleted) InTrash(onRestore = { actions.restore(post) })
+                        PostBar(
+                            post = post,
+                            actions = actions,
+                            onDeleted = { if (!vm.gone()) onBack() },
+                            onRestored = { vm.replace(it) },
+                        )
+                    }
+                }
+            }
+        val related =
+            @Composable { modifier: Modifier ->
+                RelatedRow(shown.related, onOpen, modifier.graphicsLayer { alpha = 1f - pull })
+            }
         if (fullscreen) {
             stage(Modifier.fillMaxSize())
         } else if (wide) {
             val panelFirst = frame.hand == Hand.Left
+            val panel =
+                @Composable {
+                    Column(
+                        Modifier.width(PANEL).fillMaxHeight().verticalScroll(scroll),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        details(Modifier.fillMaxWidth())
+                        related(Modifier.fillMaxWidth().padding(bottom = 16.dp))
+                    }
+                }
             Row(
                 Modifier.fillMaxSize().padding(pad).padding(horizontal = 12.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(20.dp),
             ) {
-                if (panelFirst) details(Modifier.width(PANEL).fillMaxHeight().verticalScroll(scroll))
-                stage(Modifier.weight(1f).fillMaxHeight())
-                if (!panelFirst) details(Modifier.width(PANEL).fillMaxHeight().verticalScroll(scroll))
+                if (panelFirst) panel()
+                Column(Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    stage(Modifier.weight(1f).fillMaxWidth())
+                    bar(Modifier.fillMaxWidth())
+                }
+                if (!panelFirst) panel()
             }
         } else {
             val stageHeight = (maxHeight * 0.58f).coerceIn(240.dp, 760.dp)
@@ -227,6 +265,8 @@ fun ViewerScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 stage(Modifier.fillMaxWidth().height(stageHeight))
+                bar(Modifier.fillMaxWidth())
+                related(Modifier.fillMaxWidth())
                 details(Modifier.fillMaxWidth().widthIn(max = 720.dp).padding(bottom = 16.dp))
             }
         }

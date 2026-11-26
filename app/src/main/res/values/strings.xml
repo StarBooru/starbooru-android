@@ -11,4 +11,9 @@
     <string name="settings_about">About</string>
     <!-- version -->
     <string name="settings_version">StarBooru for Android %1$s</string>
+    <string name="download_saved_one">Saved to the gallery</string>
+    <plurals name="download_saved_many">
+        <item quantity="one">Saved 1 post to the gallery</item>
+        <item quantity="other">Saved %1$d posts to the gallery</item>
+    </plurals>
 </resources>

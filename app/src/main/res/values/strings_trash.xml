@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="trash_title">Recycle bin</string>
+    <string name="trash_lead">Deleted posts wait here until you restore them or delete them for good. Deleting for good also removes the file from the server.</string>
+    <!-- days -->
+    <plurals name="trash_purge_after">
+        <item quantity="one">The server deletes posts here for good a day after they were moved here.</item>
+        <item quantity="other">The server deletes posts here for good %1$d days after they were moved here.</item>
+    </plurals>
+    <string name="trash_purge_never">Posts stay here until someone deletes them for good.</string>
+    <string name="trash_none">The recycle bin is empty</string>
+    <!-- id -->
+    <string name="trash_restore_post">Restore post %1$s</string>
+    <string name="trash_restore_all">Restore all</string>
+    <string name="trash_restore_all_confirm">Restore everything?</string>
+    <!-- count -->
+    <plurals name="trash_restored">
+        <item quantity="one">Restored 1 post.</item>
+        <item quantity="other">Restored %1$d posts.</item>
+    </plurals>
+    <!-- id, reason -->
+    <string name="trash_restore_failed">Couldn\'t restore post %1$s: %2$s</string>
+    <string name="trash_purge">Delete for good</string>
+    <!-- id -->
+    <string name="trash_purge_post">Delete post %1$s for good</string>
+    <!-- id, reason -->
+    <string name="trash_purge_failed">Couldn\'t delete post %1$s for good: %2$s</string>
+    <!-- count -->
+    <plurals name="trash_purged">
+        <item quantity="one">Deleted 1 post for good.</item>
+        <item quantity="other">Deleted %1$d posts for good.</item>
+    </plurals>
+    <string name="trash_empty">Empty recycle bin</string>
+    <string name="trash_empty_confirm">Delete everything for good?</string>
+    <string name="trash_restore">Restore</string>
+    <string name="settings_library">Library</string>
+    <string name="settings_trash_note">Restore or permanently delete posts</string>
+</resources>

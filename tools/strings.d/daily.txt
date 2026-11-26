@@ -1,0 +1,15 @@
+# Votes, the post bar, the tile menu, selection, bulk edits and the recycle bin.
+
+[votes]
+stars-of stars-yours stars-none-yours stars-summary stars-votes stars-no-votes
+post-upvote post-downvote post-votes post-score vote-failed guest-vote-why
+
+[actions]
+press-.* swipe-off swipe-delete swipe-like swipe-select delete-failed share-button
+reverse-button post-download post-delete-title post-delete download-failed download-expired
+
+[selection]
+bulk-.*
+
+[trash]
+trash-.* settings-library settings-trash-note

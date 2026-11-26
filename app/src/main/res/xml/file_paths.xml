@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- What the app hands to other apps: files to share, and on Android 9 and
+     older the ones it saved to the gallery. -->
+<paths>
+    <cache-path name="shared" path="shared/" />
+    <external-path name="pictures" path="Pictures/StarBooru/" />
+    <external-path name="movies" path="Movies/StarBooru/" />
+</paths>
