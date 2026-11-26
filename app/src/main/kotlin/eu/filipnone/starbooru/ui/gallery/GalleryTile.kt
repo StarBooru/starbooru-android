@@ -120,7 +120,10 @@ fun Tile(
                 alpha = e.coerceIn(0f, 1f)
                 scaleX = (0.85f + 0.15f * e) * sink
                 scaleY = (0.85f + 0.15f * e) * sink
-            }.semantics {
+            }
+            // A swiped picture slides within its own tile, not over the next.
+            .clip(shape)
+            .semantics {
                 contentDescription = description
                 if (selecting) selected = picked
                 onClick(if (selecting) selectLabel else openLabel) {
