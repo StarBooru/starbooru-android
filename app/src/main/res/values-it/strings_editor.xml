@@ -26,5 +26,4 @@
     <!-- from, to -->
     <string name="post_replace_tag">Sostituisci %1$s con %2$s</string>
     <string name="ai_new_tag">nuovo</string>
-    <string name="save">Salva</string>
 </resources>

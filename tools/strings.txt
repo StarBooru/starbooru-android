@@ -15,7 +15,7 @@ oidc-finishing oidc-denied oidc-failed oidc-expired
 nav-gallery nav-explore nav-tags nav-upload nav-settings nav-forum
 
 [common]
-app-name page-back notice-close retry load-more notfound-title
+app-name page-back notice-close retry load-more notfound-title add cancel save
 
 [shell]
 search-placeholder search-label search-clear search-corrected account-button account-title
@@ -35,6 +35,12 @@ settings-appearance settings-theme theme-system theme-light theme-dark settings-
 settings-oled-hint settings-accent settings-accent-custom accent-.* settings-hand hand-.*
 settings-language settings-language-system lang-english lang-italian
 settings-gestures settings-swipe-left settings-swipe-right
+settings-group-.* settings-search-none settings-help-legal settings-help-note settings-privacy-note
+settings-terms-note settings-tiles settings-tiles-spaced settings-tiles-flush settings-viewer
+settings-originals settings-originals-note settings-saver settings-saver-now settings-saver-auto
+settings-saver-does settings-effects settings-effects-now settings-effects-auto settings-effects-does
+settings-role settings-hold-hint guest-account-note guest-account-why
+effects-.* saver-.* about-.*
 
 [player]
 player-play player-pause player-replay player-position player-mute player-unmute player-loop

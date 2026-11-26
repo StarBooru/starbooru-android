@@ -7,4 +7,7 @@
     <string name="retry">Riprova</string>
     <string name="load_more">Carica altri</string>
     <string name="notfound_title">Qui non c\'è niente</string>
+    <string name="add">Aggiungi</string>
+    <string name="cancel">Annulla</string>
+    <string name="save">Salva</string>
 </resources>
