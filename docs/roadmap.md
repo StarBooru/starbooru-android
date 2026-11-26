@@ -1,6 +1,6 @@
 # Roadmap
 
-_Status as of 2026-11-26: docs only. Scope comes from starbooru-server's `docs/checklist.md` › android app. starbooru-web already has everything the server offers an app (its `docs/roadmap.md` and `docs/architecture.md`), so this app follows it screen by screen and adds what a phone or a tablet does better. Items marked (server) need starbooru-server first._
+_Status as of 2026-11-26: Foundation done (v0.1.0). Scope comes from starbooru-server's `docs/checklist.md` › android app. starbooru-web already has everything the server offers an app (its `docs/roadmap.md` and `docs/architecture.md`), so this app follows it screen by screen and adds what a phone or a tablet does better. Items marked (server) need starbooru-server first._
 
 ## Phones and tablets
 
@@ -18,13 +18,13 @@ An item below is done when it works at all three widths, with either hand, in li
 
 ## 1. Foundation
 
-- [ ] Gradle project, the Rust core with UniFFI, lints, CI that builds and tests the debug APK
-- [ ] The frame: edge to edge, the bar or the rail by width, predictive back, and the Hand setting that later screens place their controls by
-- [ ] State that survives a rotation, a fold, split screen, a resize and the system closing the app in the background: the page, its scroll, a half-typed search or tag
-- [ ] Theme: the wallpaper's colours on Android 12 and later, the seed hue otherwise; light, dark and system, changed without a restart (the reference restarted); the reference's filled, rounded icons
-- [ ] Sign-in with a password and through the identity provider, the token in the Keystore; private and public servers from `/info`, and guests where a public server takes them
-- [ ] Gallery: the staggered grid read left to right, infinite scroll, sorts, the web's tile shapes, each tile in its picture's colour until the thumbnail arrives
-- [ ] Viewer: image, GIF and video in the web's player design; pinch and double-tap zoom; swipes that follow the finger to the previous and next post; pull down to close; the post grows out of its tile and shrinks back into it
+- [x] Gradle project, the Rust core with UniFFI, lints, CI that builds and tests the debug APK
+- [x] The frame: edge to edge, the bar or the rail by width, predictive back, and the Hand setting that later screens place their controls by
+- [x] State that survives a rotation, a fold, split screen, a resize and the system closing the app in the background: the page, its scroll, a half-typed search or tag
+- [x] Theme: the wallpaper's colours on Android 12 and later, the seed hue otherwise; light, dark and system, changed without a restart (the reference restarted); the reference's filled, rounded icons
+- [x] Sign-in with a password and through the identity provider, the token in the Keystore; private and public servers from `/info`, and guests where a public server takes them
+- [x] Gallery: the staggered grid read left to right, infinite scroll, sorts, the web's tile shapes, each tile in its picture's colour until the thumbnail arrives
+- [x] Viewer: image, GIF and video in the web's player design; pinch and double-tap zoom; swipes that follow the finger to the previous and next post; pull down to close; the post grows out of its tile and shrinks back into it
 
 ## 2. Daily use
 
