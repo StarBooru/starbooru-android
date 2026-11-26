@@ -7,12 +7,15 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
+import eu.filipnone.starbooru.core.searchKey
 import eu.filipnone.starbooru.data.Account
 import eu.filipnone.starbooru.data.CoreApis
 import eu.filipnone.starbooru.data.History
 import eu.filipnone.starbooru.data.KeystoreSecretStore
 import eu.filipnone.starbooru.data.MediaCache
+import eu.filipnone.starbooru.data.SavedSearches
 import eu.filipnone.starbooru.data.SettingsStore
+import eu.filipnone.starbooru.data.Spots
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,12 +30,14 @@ import kotlinx.coroutines.launch
 private val Context.settingsData: DataStore<Preferences> by preferencesDataStore("settings")
 private val Context.accountData: DataStore<Preferences> by preferencesDataStore("account")
 private val Context.historyData: DataStore<Preferences> by preferencesDataStore("history")
+private val Context.spotsData: DataStore<Preferences> by preferencesDataStore("spots")
 
 /** What lives as long as the app: the stores and the session. */
 class AppGraph(context: Context) {
     val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     val settings = SettingsStore(context.settingsData)
     val history = History(context.historyData)
+    val spots = Spots(context.spotsData, ::searchKey)
     val apis = CoreApis
     val account =
         Account(
@@ -40,6 +45,7 @@ class AppGraph(context: Context) {
             secrets = KeystoreSecretStore(File(context.noBackupFilesDir, "session.bin")),
             apis = apis,
         )
+    val savedSearches = SavedSearches(account, scope)
 
     init {
         scope.launch { account.load() }

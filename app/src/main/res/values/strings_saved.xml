@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="saved_searches">Saved searches</string>
+    <string name="saved_booru_searches">Saved booru searches</string>
+    <string name="saved_all">All saved searches</string>
+    <string name="saved_all_short">All</string>
+    <string name="saved_filter">Filter saved searches</string>
+    <string name="saved_none_match">No saved search matches.</string>
+    <string name="saved_sort">Sort saved searches</string>
+    <string name="saved_sort_recent">Used last</string>
+    <string name="saved_sort_newest">Newest</string>
+    <string name="saved_sort_name">Name</string>
+    <string name="saved_sort_mine">My order</string>
+    <string name="saved_remove">Remove</string>
+    <!-- name -->
+    <string name="saved_removed">Removed “%1$s”</string>
+    <!-- name -->
+    <string name="saved_added">Saved as “%1$s”</string>
+    <!-- name -->
+    <string name="saved_more">More for “%1$s”</string>
+    <string name="saved_rename">Rename</string>
+    <string name="saved_name">Name of the saved search</string>
+    <!-- name -->
+    <string name="saved_renamed">Renamed to “%1$s”</string>
+    <!-- reason -->
+    <string name="saved_rename_failed">Couldn\'t rename the search: %1$s</string>
+    <string name="saved_move_earlier">Move earlier</string>
+    <string name="saved_move_later">Move later</string>
+    <string name="saved_drag">Drag to move</string>
+    <!-- name -->
+    <string name="saved_moved">Moved “%1$s”</string>
+    <string name="saved_error_no_name">Give the search a name.</string>
+    <!-- max -->
+    <string name="saved_error_name_long">The name is too long. Keep it to %1$s characters.</string>
+    <string name="saved_error_control">The name has a character it can\'t have.</string>
+    <string name="saved_error_empty">There\'s no search to save.</string>
+    <!-- max -->
+    <string name="saved_error_long">The search is too long to save. Keep it to %1$s characters.</string>
+    <string name="search_save">Save this search</string>
+    <!-- reason -->
+    <string name="search_save_failed">Couldn\'t save the search: %1$s</string>
+    <string name="search_save_short">Save search</string>
+    <string name="search_saved">Saved</string>
+</resources>

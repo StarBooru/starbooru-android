@@ -15,6 +15,9 @@ pub mod gallery;
 pub mod layout;
 pub mod model;
 pub mod oidc;
+pub mod saved;
+pub mod search;
+pub mod tags;
 pub mod viewer;
 
 pub use api::Api;

@@ -87,6 +87,7 @@ import eu.filipnone.starbooru.core.CoreException
 import eu.filipnone.starbooru.core.GalleryView
 import eu.filipnone.starbooru.core.MediaKind
 import eu.filipnone.starbooru.core.Post
+import eu.filipnone.starbooru.core.SavedSearch
 import eu.filipnone.starbooru.core.TileSize
 import eu.filipnone.starbooru.core.currentSort
 import eu.filipnone.starbooru.core.galleryColumnLimits
@@ -98,6 +99,7 @@ import eu.filipnone.starbooru.core.sorted
 import eu.filipnone.starbooru.core.sorts
 import eu.filipnone.starbooru.core.toMiddle
 import eu.filipnone.starbooru.data.Account
+import eu.filipnone.starbooru.data.SavedSearches
 import eu.filipnone.starbooru.data.Settings
 import eu.filipnone.starbooru.ui.common.LocalNotices
 import eu.filipnone.starbooru.ui.common.LocalReducedMotion
@@ -127,6 +129,7 @@ private const val GAP_DP = 8.0
 fun GalleryScreen(
     vm: GalleryViewModel,
     account: Account,
+    savedSearches: SavedSearches,
     server: String,
     settings: Settings,
     onSettings: ((Settings) -> Settings) -> Unit,
@@ -183,6 +186,30 @@ fun GalleryScreen(
     val focus = LocalViewerFocus.current
     val reduced = LocalReducedMotion.current
     val side = if (frame.width == WidthClass.Compact) 8.dp else 12.dp
+    val savedList by savedSearches.list.collectAsStateWithLifecycle()
+    // The bookmark saves the search, or forgets it once saved.
+    val savedSearch = remember(savedList, vm.query) { savedSearches.find(vm.query) }
+    val bookmark: (() -> Unit)? =
+        if (vm.query.isBlank() || actions.guest) {
+            null
+        } else {
+            {
+                scope.launch {
+                    try {
+                        val was = savedSearch
+                        if (was != null) {
+                            savedSearches.delete(was)
+                            notices?.say(res.getString(R.string.saved_removed, was.name))
+                        } else {
+                            val made = savedSearches.save(vm.query)
+                            notices?.say(res.getString(R.string.saved_added, made.name))
+                        }
+                    } catch (e: CoreException) {
+                        notices?.say(res.getString(R.string.search_save_failed, describe(e, res, server)))
+                    }
+                }
+            }
+        }
 
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val viewportPx = constraints.maxHeight.toFloat()
@@ -312,18 +339,20 @@ fun GalleryScreen(
                 .collect { near -> if (near) vm.loadMore() }
         }
 
+        var placedShape by rememberSaveable { mutableStateOf<String?>(null) }
         // The post at the top of the screen, under the bar, to come back to
         // after a resize or the system closing the app. None while the page
         // is at its top, which is where it comes back to then.
         LaunchedEffect(layout) {
             snapshotFlow { scroll.value }.collect { y ->
+                // Not before the page has gone back to where it was.
+                if (placedShape == null) return@collect
                 val line = (y + topPadPx - gridTop) / pxPerDp
                 val i = if (line <= 0f) -1 else layout.tiles.indexOfFirst { it.y + it.height > line }
                 vm.anchor = state.posts.getOrNull(i)?.id
             }
         }
         val shape = Triple(columns, widthDp, settings.galleryView)
-        var placedShape by rememberSaveable { mutableStateOf<String?>(null) }
         LaunchedEffect(shape, state.loaded) {
             val key = shape.toString()
             if (!state.loaded || state.posts.isEmpty()) return@LaunchedEffect
@@ -366,6 +395,8 @@ fun GalleryScreen(
                 widthDp = widthDp,
                 selecting = selecting,
                 onSelect = vm::select,
+                savedSearch = savedSearch,
+                onBookmark = bookmark,
                 onSort = { onSearch(sorted(vm.query, it)) },
                 onSettings = onSettings,
             )
@@ -572,6 +603,8 @@ private fun Header(
     widthDp: Double,
     selecting: Boolean,
     onSelect: (Boolean) -> Unit,
+    savedSearch: SavedSearch?,
+    onBookmark: (() -> Unit)?,
     onSort: (String) -> Unit,
     onSettings: ((Settings) -> Settings) -> Unit,
 ) {
@@ -588,6 +621,15 @@ private fun Header(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f).padding(start = 4.dp),
         )
+        if (onBookmark != null) {
+            androidx.compose.material3.IconButton(onClick = onBookmark) {
+                Icon(
+                    painterResource(if (savedSearch != null) R.drawable.ic_bookmark else R.drawable.ic_bookmark_add),
+                    stringResource(if (savedSearch != null) R.string.saved_remove else R.string.search_save),
+                    tint = if (savedSearch != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
         SortMenu(query, onSort)
         ViewMenu(settings, widthDp, onSettings)
         androidx.compose.material3.IconButton(onClick = { onSelect(!selecting) }) {

@@ -184,10 +184,16 @@ private fun Shell(
                 val provider =
                     entryProvider<NavKey> {
                         entry<GalleryRoute> { route ->
-                            val vm = viewModel { GalleryViewModel(graph.account, route.query, createSavedStateHandle()) }
+                            val vm =
+                                viewModel {
+                                    GalleryViewModel(graph.account, route.query, createSavedStateHandle(), graph.spots, owner) {
+                                        graph.savedSearches.keys()
+                                    }
+                                }
                             GalleryScreen(
                                 vm = vm,
                                 account = graph.account,
+                                savedSearches = graph.savedSearches,
                                 server = server,
                                 settings = settings,
                                 onSettings = update,

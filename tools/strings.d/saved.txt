@@ -1,0 +1,4 @@
+# Saved searches.
+
+[saved]
+saved-.* search-save search-save-failed search-save-short search-saved

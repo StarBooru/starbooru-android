@@ -10,7 +10,10 @@ import eu.filipnone.starbooru.core.isRandom
 import eu.filipnone.starbooru.core.mixSeed
 import eu.filipnone.starbooru.core.pageSize
 import eu.filipnone.starbooru.data.Account
+import eu.filipnone.starbooru.data.Spot
+import eu.filipnone.starbooru.data.Spots
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,24 +37,50 @@ data class GalleryState(
  * back loads as many posts again, in bigger pages, and the screen scrolls
  * back to that post.
  */
-class GalleryViewModel(private val account: Account, val query: String, private val saved: SavedStateHandle) : ViewModel() {
+class GalleryViewModel(
+    private val account: Account,
+    val query: String,
+    private val saved: SavedStateHandle,
+    /** Where searches were left, to come back to; none in tests. */
+    private val spots: Spots? = null,
+    private val owner: String = "",
+    /** The saved searches' keys, whose spots stay. */
+    private val savedKeys: () -> Set<String> = { emptySet() },
+) : ViewModel() {
     private val _state = MutableStateFlow(GalleryState())
     val state: StateFlow<GalleryState> = _state.asStateFlow()
 
     /** Keeps `order:random` in the same order from page to page, and in the viewer. */
-    val seed: Long? =
+    var seed: Long? =
         if (isRandom(query)) {
             saved[SEED] ?: mixSeed(System.nanoTime(), 0u).also { saved[SEED] = it }
         } else {
             null
         }
+        private set
 
     /** The post at the top of the screen, to scroll back to. */
     var anchor: Long?
         get() = saved[ANCHOR]
         set(value) {
+            if (saved.get<Long>(ANCHOR) == value) return
             saved[ANCHOR] = value
+            remember()
         }
+
+    private var remembering: Job? = null
+
+    /** Keeps where this search is, a moment after the scrolling stops. */
+    private fun remember() {
+        val spots = spots ?: return
+        remembering?.cancel()
+        remembering =
+            viewModelScope.launch {
+                delay(REMEMBER_AFTER_MS)
+                val spot = Spot(spots.key(query), anchor, _state.value.posts.size, seed)
+                spots.put(owner, spot, savedKeys())
+            }
+    }
 
     private var page = 0u
 
@@ -103,8 +132,25 @@ class GalleryViewModel(private val account: Account, val query: String, private 
     private var job: Job? = null
 
     init {
-        val restore = saved[LOADED] ?: 0
-        if (restore > pageSize().toInt()) restore(restore) else loadMore()
+        val kept: Int? = saved[LOADED]
+        when {
+            // Back after the system closed the app: as it was.
+            kept != null -> if (kept > pageSize().toInt()) restore(kept) else loadMore()
+
+            // A search opened again: where it was left.
+            spots != null ->
+                viewModelScope.launch {
+                    val spot = spots.find(owner, query)
+                    if (spot != null) {
+                        saved[ANCHOR] = spot.post
+                        if (seed != null && spot.seed != null) seed = spot.seed.also { saved[SEED] = it }
+                    }
+                    val count = spot?.count ?: 0
+                    if (count > pageSize().toInt()) restore(count) else loadMore()
+                }
+
+            else -> loadMore()
+        }
     }
 
     fun loadMore() {
@@ -181,6 +227,7 @@ class GalleryViewModel(private val account: Account, val query: String, private 
         const val LOADED = "loaded"
         const val SELECTING = "selecting"
         const val SELECTED = "selected"
+        const val REMEMBER_AFTER_MS = 600L
         const val RESTORE_PAGE = 180
         const val RESTORE_MAX = 3000
     }

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="saved_searches">Ricerche salvate</string>
+    <string name="saved_booru_searches">Ricerche salvate sui booru</string>
+    <string name="saved_all">Tutte le ricerche salvate</string>
+    <string name="saved_all_short">Tutte</string>
+    <string name="saved_filter">Filtra le ricerche salvate</string>
+    <string name="saved_none_match">Nessuna ricerca salvata corrisponde.</string>
+    <string name="saved_sort">Ordina le ricerche salvate</string>
+    <string name="saved_sort_recent">Usate di recente</string>
+    <string name="saved_sort_newest">Più recenti</string>
+    <string name="saved_sort_name">Nome</string>
+    <string name="saved_sort_mine">Il mio ordine</string>
+    <string name="saved_remove">Rimuovi</string>
+    <!-- name -->
+    <string name="saved_removed">“%1$s” rimossa</string>
+    <!-- name -->
+    <string name="saved_added">Salvata come “%1$s”</string>
+    <!-- name -->
+    <string name="saved_more">Altro per “%1$s”</string>
+    <string name="saved_rename">Rinomina</string>
+    <string name="saved_name">Nome della ricerca salvata</string>
+    <!-- name -->
+    <string name="saved_renamed">Rinominata in “%1$s”</string>
+    <!-- reason -->
+    <string name="saved_rename_failed">Impossibile rinominare la ricerca: %1$s</string>
+    <string name="saved_move_earlier">Sposta prima</string>
+    <string name="saved_move_later">Sposta dopo</string>
+    <string name="saved_drag">Trascina per spostare</string>
+    <!-- name -->
+    <string name="saved_moved">“%1$s” spostata</string>
+    <string name="saved_error_no_name">Dai un nome alla ricerca.</string>
+    <!-- max -->
+    <string name="saved_error_name_long">Il nome è troppo lungo. Resta entro %1$s caratteri.</string>
+    <string name="saved_error_control">Il nome contiene un carattere non ammesso.</string>
+    <string name="saved_error_empty">Non c\'è nessuna ricerca da salvare.</string>
+    <!-- max -->
+    <string name="saved_error_long">La ricerca è troppo lunga per essere salvata. Resta entro %1$s caratteri.</string>
+    <string name="search_save">Salva questa ricerca</string>
+    <!-- reason -->
+    <string name="search_save_failed">Impossibile salvare la ricerca: %1$s</string>
+    <string name="search_save_short">Salva ricerca</string>
+    <string name="search_saved">Salvata</string>
+</resources>
