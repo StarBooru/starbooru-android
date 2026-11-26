@@ -120,7 +120,21 @@ object Reverse {
 
     /** Names only a local network or a VPN knows. */
     private val LOCAL =
-        listOf("localhost", "local", "lan", "home", "internal", "intranet", "private", "corp", "home.arpa", "ts.net", "test", "invalid", "example")
+        listOf(
+            "localhost",
+            "local",
+            "lan",
+            "home",
+            "internal",
+            "intranet",
+            "private",
+            "corp",
+            "home.arpa",
+            "ts.net",
+            "test",
+            "invalid",
+            "example",
+        )
 
     private fun publicName(name: String): Boolean {
         if (name.isEmpty() || '.' !in name) return false
