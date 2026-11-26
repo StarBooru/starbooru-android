@@ -5,13 +5,52 @@
 use chrono::{DateTime, Utc};
 use starbooru_client::Client;
 
+mod account;
+mod ai;
 mod browse;
+mod duplicates;
+mod editor;
 mod edits;
+mod figures;
+mod forum;
+mod people;
+mod profile;
+mod sharing;
 mod tags;
 mod transfer;
 
+pub use account::{
+    ApiKey, CreatedApiKey, NewApiKey, ProviderIdentity, SessionInfo, SignInMethods,
+    max_api_key_days,
+};
+pub use ai::{AiStatus, TagSuggestion, TagSuggestions};
 pub use browse::{Explore, Home, HomePost, Person, SavedSearch, TagTrend, Usage};
+pub use duplicates::{
+    DuplicateGroup, Duplicates, MAX_DUPLICATE_GROUPS, ResolveDuplicates,
+    default_duplicate_distance, max_duplicate_distance,
+};
+pub use editor::{
+    Crop, EditKind, EditProblem, MediaEdit, Trim, edit_kind, edit_problem, max_straighten,
+    min_trim_ms, straighten_scale, turn_edit,
+};
 pub use edits::{BulkEdit, BulkResult, PostUpdate, PurgeResult, TRASH_QUERY, trash_query};
+pub(crate) use figures::figure_list;
+pub use figures::{
+    FaceBox, Figure, FigureKind, FigureSlot, FoundPeople, SlotTags, face_box_fits, face_scale,
+};
+pub use forum::{
+    CategoryUpdate, ForumCategory, ForumPost, ForumThread, MAX_FORUM_LIMIT, NewCategory, NewThread,
+    PostMention, ThreadPage, ThreadUpdate, ThreadView, post_mentions,
+};
+pub use people::{
+    Franchise, FranchisePage, MAX_FRANCHISE_LIMIT, MAX_PEOPLE_LIMIT, PeopleOrder, PeoplePage,
+    PeopleQuery,
+};
+pub use profile::{AvatarCrop, PostTagVote, Profile, ProfileUpdate, UserCard};
+pub use sharing::{
+    LinkPreview, NewShare, Share, ShareLink, ShareUpdate, SharedPost, SharedView, SharingSettings,
+    max_share_days, share_link,
+};
 pub use tags::{MAX_TAG_LIMIT, Tag, TagDetail, TagOrder, TagPage, TagUpdate};
 pub use transfer::{DuplicatePost, duplicate_of};
 
@@ -77,6 +116,16 @@ impl From<starbooru_core::MediaKind> for MediaKind {
             starbooru_core::MediaKind::Image => MediaKind::Image,
             starbooru_core::MediaKind::Animation => MediaKind::Animation,
             starbooru_core::MediaKind::Video => MediaKind::Video,
+        }
+    }
+}
+
+impl From<MediaKind> for starbooru_core::MediaKind {
+    fn from(k: MediaKind) -> Self {
+        match k {
+            MediaKind::Image => starbooru_core::MediaKind::Image,
+            MediaKind::Animation => starbooru_core::MediaKind::Animation,
+            MediaKind::Video => starbooru_core::MediaKind::Video,
         }
     }
 }
@@ -273,6 +322,20 @@ pub struct Post {
     /// The entries of the reader's blacklist the post matches. Only in a
     /// single post.
     pub blacklisted: Vec<String>,
+    /// The people in the picture. Only in a single post and the answers
+    /// that change one.
+    #[uniffi(default)]
+    pub figures: Vec<Figure>,
+    /// Who uploaded it, on a public server.
+    #[uniffi(default)]
+    pub uploader: Option<UserCard>,
+    /// On a public server, the votes on its tags, by name, for the tags that
+    /// have any; another tag's score is 0 with no vote of the reader's.
+    #[uniffi(default)]
+    pub tag_votes: Vec<PostTagVote>,
+    /// On a public server, the tags voted off it, which edits leave off.
+    #[uniffi(default)]
+    pub voted_off: Vec<String>,
 }
 
 impl Post {
@@ -304,6 +367,18 @@ impl Post {
             ocr_text: p.ocr_text,
             tag_details: p.tag_details.into_iter().map(Into::into).collect(),
             blacklisted: p.blacklisted,
+            figures: figure_list(p.figures, client),
+            uploader: p.uploader.map(|u| UserCard::from_core(u, client)),
+            tag_votes: p
+                .tag_votes
+                .into_iter()
+                .map(|(tag, vote)| PostTagVote {
+                    tag,
+                    score: vote.score,
+                    mine: vote.mine,
+                })
+                .collect(),
+            voted_off: p.voted_off,
         }
     }
 }
@@ -400,6 +475,58 @@ mod tests {
         assert_eq!(post.kind, MediaKind::Video);
         assert_eq!(post.rating, Rating::Safe);
         assert_eq!(post.created_at_ms, 1_795_478_400_000);
+    }
+
+    #[test]
+    fn a_post_on_a_public_server_brings_its_people_uploader_and_tag_votes() {
+        let client = Client::new("https://booru.example").unwrap();
+        let mut json = post_json();
+        json["figures"] = serde_json::json!([{"kind": "girl", "franchise": null,
+            "face": {"x": 1, "y": 2, "w": 3, "h": 4}, "face_url": "/media/face/ab.jpg?sig=3"}]);
+        json["uploader"] = serde_json::json!({"name": "ann", "display_name": "Ann",
+            "avatar_url": "/media/avatar/9f.jpg?sig=4", "avatar_small_url": null});
+        json["tag_votes"] = serde_json::json!({"sky": {"score": 2, "mine": 1},
+            "cat": {"score": -1, "mine": 0}});
+        json["voted_off"] = serde_json::json!(["dog"]);
+        let core: starbooru_core::Post = serde_json::from_value(json).unwrap();
+        let post = Post::from_core(core, &client);
+        assert_eq!(
+            post.figures[0].face_url.as_deref(),
+            Some("https://booru.example/media/face/ab.jpg?sig=3")
+        );
+        assert_eq!(
+            post.uploader.and_then(|u| u.avatar_url).as_deref(),
+            Some("https://booru.example/media/avatar/9f.jpg?sig=4")
+        );
+        // By name, as the server keeps them.
+        assert_eq!(
+            post.tag_votes,
+            [
+                PostTagVote {
+                    tag: "cat".into(),
+                    score: -1,
+                    mine: 0
+                },
+                PostTagVote {
+                    tag: "sky".into(),
+                    score: 2,
+                    mine: 1
+                },
+            ]
+        );
+        assert_eq!(post.voted_off, ["dog"]);
+        // A private server's post has none of them.
+        let core: starbooru_core::Post = serde_json::from_value(post_json()).unwrap();
+        let post = Post::from_core(core, &client);
+        assert!(post.figures.is_empty() && post.tag_votes.is_empty() && post.voted_off.is_empty());
+        assert_eq!(post.uploader, None);
+    }
+
+    #[test]
+    fn media_kinds_map_both_ways() {
+        for kind in [MediaKind::Image, MediaKind::Animation, MediaKind::Video] {
+            assert_eq!(MediaKind::from(starbooru_core::MediaKind::from(kind)), kind);
+        }
     }
 
     #[test]

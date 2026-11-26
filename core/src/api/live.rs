@@ -18,7 +18,7 @@ use super::*;
 use crate::error::CoreError;
 use crate::model::{BulkEdit, PostUpdate, Rating, TRASH_QUERY, TagOrder, TagUpdate, duplicate_of};
 
-fn server() -> String {
+pub(super) fn server() -> String {
     std::env::var("STARBOORU_LIVE_SERVER").unwrap_or_else(|_| "http://127.0.0.1:8080".into())
 }
 
@@ -54,7 +54,7 @@ fn crc32(bytes: &[u8]) -> u32 {
 
 /// A PNG of `width` × `height` whose pixels depend on `seed`, so each run
 /// uploads a file the server hasn't seen. Stored, not compressed.
-fn png(width: u32, height: u32, seed: u64) -> Vec<u8> {
+pub(super) fn png(width: u32, height: u32, seed: u64) -> Vec<u8> {
     let mut raw = Vec::new();
     for y in 0..height {
         raw.push(0);
@@ -101,7 +101,7 @@ fn png(width: u32, height: u32, seed: u64) -> Vec<u8> {
     out
 }
 
-fn scratch(name: &str) -> PathBuf {
+pub(super) fn scratch(name: &str) -> PathBuf {
     std::env::temp_dir().join(format!("starbooru-live-{}-{name}", std::process::id()))
 }
 

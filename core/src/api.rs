@@ -1,7 +1,8 @@
 //! `Api`: one server, signed in or as a guest. Kotlin makes a new one when
 //! the server or the session changes; each async method is a `suspend`
 //! function there. The methods are split by screen: tags, editing posts,
-//! browsing, and files in and out.
+//! browsing, files in and out, the account's security, sharing, people,
+//! duplicates, profiles and the forum.
 
 use std::sync::Arc;
 
@@ -12,10 +13,18 @@ use crate::error::Result;
 use crate::model::{Neighbors, Post, PostPage, ServerInfo, SignedIn, Usage, User};
 use crate::oidc::ProviderSignIn;
 
+mod account;
 mod browse;
+mod duplicates;
 mod edits;
+mod forum;
 #[cfg(test)]
 mod live;
+#[cfg(test)]
+mod live_screens;
+mod people;
+mod profile;
+mod sharing;
 mod tags;
 mod transfer;
 
