@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Writes the app's text from starbooru-web's Fluent catalogues.
 
-tools/strings.txt lists, by group, the Fluent messages the app shows. Each
-group becomes app/src/main/res/values/strings_<group>.xml and its Italian
-twin in values-it. A message's variables become positional arguments in the
+tools/strings.txt and tools/strings.d/*.txt list, by group, the Fluent
+messages the app shows. Each group becomes
+app/src/main/res/values/strings_<group>.xml and its Italian twin in
+values-it. A message's variables become positional arguments in the
 order they first appear (listed in a comment above it); one that picks a
 plural form becomes a <plurals> with that number as %N$d.
 
@@ -98,7 +99,9 @@ def android_name(key):
 
 
 def main():
-    spec = (ROOT / "tools/strings.txt").read_text(encoding="utf-8")
+    # tools/strings.txt, then one file per area in tools/strings.d.
+    parts = [ROOT / "tools/strings.txt", *sorted((ROOT / "tools/strings.d").glob("*.txt"))]
+    spec = "\n".join(p.read_text(encoding="utf-8") for p in parts if p.exists())
     groups, group = {}, None
     for line in spec.splitlines():
         line = line.split("#", 1)[0].strip()
