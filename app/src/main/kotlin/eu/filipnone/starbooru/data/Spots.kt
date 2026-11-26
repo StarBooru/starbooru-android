@@ -58,6 +58,14 @@ class Spots(
         }
     }
 
+    /** Forgets every place of [owner], on signing out. */
+    suspend fun clear(owner: String) {
+        try {
+            store.edit { it.remove(slot(owner)) }
+        } catch (_: IOException) {
+        }
+    }
+
     private suspend fun read(owner: String): List<Spot> = decode(store.data.catch { emit(emptyPreferences()) }.first()[slot(owner)])
 
     private fun slot(owner: String) = stringPreferencesKey("spots:$owner")

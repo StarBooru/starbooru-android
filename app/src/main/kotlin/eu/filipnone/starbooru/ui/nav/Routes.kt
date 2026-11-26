@@ -37,6 +37,10 @@ data object ForumRoute : Route
 @Serializable
 data class TagRoute(val name: String) : Route
 
+/** The privacy policy, or the terms. */
+@Serializable
+data class LegalRoute(val privacy: Boolean) : Route
+
 /** The recycle bin, opened from Settings. */
 @Serializable
 data object TrashRoute : Route

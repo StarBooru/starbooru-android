@@ -53,7 +53,14 @@ class StringsInStepTest {
                         file = "$folder/${file.name}",
                         plural = plural,
                         translatable = node.getAttribute("translatable") != "false",
-                        args = items.flatMap { arguments(it.textContent) }.toSet(),
+                        // A string marked unformatted takes no arguments: its % is a percent.
+                        args = if (node.getAttribute("formatted") ==
+                            "false"
+                        ) {
+                            emptySet()
+                        } else {
+                            items.flatMap { arguments(it.textContent) }.toSet()
+                        },
                         quantities = items.map { it.getAttribute("quantity") }.toSet(),
                     )
                 val before = texts.put(name, text)

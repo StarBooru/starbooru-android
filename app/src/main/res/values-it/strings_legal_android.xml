@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- I paragrafi dell'informativa su cosa resta sul dispositivo, come lo tiene questa app. -->
+<resources>
+    <string name="privacy_device_storage_android">Questa app tiene, nella sua memoria privata: l\'indirizzo del server, il tuo token di accesso (cifrato con una chiave nell\'Android Keystore che non lascia mai il dispositivo), il tuo nome utente e ruolo, le tue preferenze (come il tema, l\'aspetto della galleria e i tuoi swipe), il punto in cui era la galleria nelle tue ultime 30 ricerche e gli ultimi 60 post che hai aperto.</string>
+    <string name="privacy_device_sign_in_android">Mentre accedi tramite un provider di identità, l\'app resta in ascolto solo su questo dispositivo, per l\'unica risposta che ti riporta qui, e smette appena arriva.</string>
+    <string name="privacy_device_sign_out_android">Uscendo vengono rimossi il token, il nome utente e il ruolo, le ricerche ricordate dalla galleria e i post che hai aperto. L\'indirizzo del server e le preferenze restano finché non cancelli i dati dell\'app nelle impostazioni di Android o non la disinstalli.</string>
+    <string name="privacy_device_cache_android">Immagini e video restano nella cache dell\'app, fino al limite scelto nelle Impostazioni, così si riaprono anche senza rete; Svuota nelle Impostazioni la cancella, e Android può farlo quando manca spazio. L\'app non viene mai inclusa nei backup e non manda nulla a nessuno tranne il tuo server.</string>
+</resources>

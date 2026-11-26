@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The privacy policy's paragraphs on what stays on the device, as this app keeps it. -->
+<resources>
+    <string name="privacy_device_storage_android">This app keeps, in its own private storage: the server address, your sign-in token (encrypted with a key in the Android Keystore that never leaves the device), your username and role, your preferences (such as the theme, the gallery\'s layout and your swipes), where the gallery was in your last 30 searches, and the last 60 posts you opened.</string>
+    <string name="privacy_device_sign_in_android">While you sign in through an identity provider, the app listens on this device only, for the one answer that brings you back, and stops once it comes.</string>
+    <string name="privacy_device_sign_out_android">Signing out removes the token, your username and role, the searches the gallery remembered and the posts you opened. The server address and the preferences stay until you clear the app\'s storage in Android\'s settings or uninstall it.</string>
+    <string name="privacy_device_cache_android">Pictures and videos are kept in the app\'s cache, up to the limit set in Settings, so they open again without the network; Clear in Settings empties it, and Android may too when space runs short. The app is never backed up, and sends nothing to anyone but your server.</string>
+</resources>

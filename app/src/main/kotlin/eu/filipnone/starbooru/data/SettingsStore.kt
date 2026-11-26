@@ -40,6 +40,9 @@ class SettingsStore(private val store: DataStore<Preferences>) {
         val CACHE_MB = intPreferencesKey("cache_mb")
         val SWIPE_LEFT = stringPreferencesKey("swipe_left")
         val SWIPE_RIGHT = stringPreferencesKey("swipe_right")
+        val EFFECTS = stringPreferencesKey("effects")
+        val SAVER = stringPreferencesKey("battery_saver")
+        val ORIGINALS = booleanPreferencesKey("originals")
 
         inline fun <reified E : Enum<E>> enumOf(name: String?, default: E): E = enumValues<E>().firstOrNull { it.name == name } ?: default
 
@@ -62,6 +65,9 @@ class SettingsStore(private val store: DataStore<Preferences>) {
                 cacheMb = prefs[CACHE_MB]?.takeIf { it in 0..65_536 } ?: d.cacheMb,
                 swipeLeft = SwipeAction.of(prefs[SWIPE_LEFT]),
                 swipeRight = SwipeAction.of(prefs[SWIPE_RIGHT]),
+                effects = enumOf(prefs[EFFECTS], d.effects),
+                saver = enumOf(prefs[SAVER], d.saver),
+                originals = prefs[ORIGINALS] ?: d.originals,
             )
         }
 
@@ -83,6 +89,9 @@ class SettingsStore(private val store: DataStore<Preferences>) {
             prefs[CACHE_MB] = s.cacheMb
             prefs[SWIPE_LEFT] = s.swipeLeft.key
             prefs[SWIPE_RIGHT] = s.swipeRight.key
+            prefs[EFFECTS] = s.effects.name
+            prefs[SAVER] = s.saver.name
+            prefs[ORIGINALS] = s.originals
         }
     }
 }

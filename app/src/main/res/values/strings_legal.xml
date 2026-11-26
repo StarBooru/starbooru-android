@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="privacy_title">Privacy Policy</string>
+    <string name="privacy_lead">StarBooru is software that runs on a server chosen by you or someone you trust. Nothing you store is sent to the StarBooru project, or to anyone else except as this page says.</string>
+    <string name="privacy_responsible">Who is responsible</string>
+    <string name="privacy_responsible_body">The person or organisation that runs this server (the operator) decides who may sign up and is responsible for the data on it. Questions about your data go to them.</string>
+    <string name="privacy_server">What the server stores</string>
+    <string name="privacy_server_account">Your account: username, role and a salted Argon2id hash of your password. The password itself is never stored. If you sign in through the operator’s identity provider, the server keeps that provider’s id for you and the username or email it reports, to recognise you next time.</string>
+    <string name="privacy_server_profile">On a public server, what you put on your profile: a display name, a few words about you and a picture, kept as two small copies cut to the square you picked. The picture you uploaded isn\'t kept.</string>
+    <string name="privacy_server_sessions">Your sessions: a hash of each sign-in token, the kind of device it came from (for example “Firefox on Linux” or “StarBooru app on Android”), when it was created and last used, and when it expires. API keys you create are kept the same way: a hash of the key, its first characters to tell it apart, its name, and when it was last used.</string>
+    <string name="privacy_server_files">Your uploads: each file with its size, dimensions, checksum and a visual fingerprint for the duplicate finder, and what the server reads from it: the date in the file, its main colours and any text in a still image. The server notes who uploaded each post.</string>
+    <string name="privacy_server_content">What you add: tags, the people marked in a post, ratings, sources, translations of comic pages, votes with when you cast them, and saved searches.</string>
+    <string name="privacy_server_forum">On a public server, what you write in its forum, with when you wrote and last edited it, and your votes on tags. A post you delete keeps its place, empty.</string>
+    <string name="privacy_server_shares">For each share link you make: the posts in it, its title, when it expires, and how many times and when it was last opened (not by whom).</string>
+    <string name="privacy_server_sites">For other sites: the searches you save on other boorus, the accounts you save for them (the login as you typed it, the key encrypted with the server’s secret), the addresses you import, kept for 7 days after they finish, and each library import with its counts until you remove it.</string>
+    <string name="privacy_server_limits">To slow down password guessing, the server counts failed sign-ins per account and per network address, and sign-ups per address. These counts are kept in memory for at most an hour and never written to disk.</string>
+    <string name="privacy_server_guest_limits">On a public server, the server counts the requests of people browsing without an account by their network address, to keep any one of them from asking too fast. These counts are kept in memory for a minute and never written to disk.</string>
+    <string name="privacy_not_done">What StarBooru does not do</string>
+    <string name="privacy_not_done_tracking">No analytics, advertising or tracking, and no third-party services beyond an identity provider or an AI provider the operator chooses to set up. This app loads its code, styles and icons from this server alone.</string>
+    <string name="privacy_not_done_contacts">The server contacts other sites only when you search, browse or import from another booru, import from a URL or sign in through the operator’s identity provider, and when an administrator installs a local AI model, which it downloads from where the model is published. Its requests name StarBooru as the client and carry none of your details, except the account you saved for that site, which goes to that site alone.</string>
+    <string name="privacy_not_done_boorus">When you browse another booru here, your browser loads that site’s pictures from the site itself, without saying which page asked for them, so the site sees your network address as it would on its own pages. Pictures from sites that serve them only to their own pages come through this server instead.</string>
+    <string name="privacy_not_done_reverse">When you look a picture up with Find source, the browser sends a small copy of it to the site you pick, and nothing before you pick one. iqdb and SauceNAO get the copy uploaded. Google Lens and trace.moe get a link to it and fetch it from this server when it can be reached from the internet; otherwise you paste or upload the copy there yourself. That site sees your network address, as on its own pages.</string>
+    <string name="privacy_not_done_ai">If an administrator sets up an AI provider, it gets thumbnails of posts to suggest tags (new uploads too, when automatic tagging is on), the text read in an image when you translate it, and the image itself when its comic or manga panels are translated, by hand or for new uploads when automatic translation is on. A provider on the operator’s own network keeps them there; local models run on the server, and nothing leaves it.</string>
+    <string name="privacy_not_done_library">While a whole library is being imported, the key you gave for that site is kept on the server, and in any backup taken meanwhile; it’s erased when the import ends.</string>
+    <string name="privacy_not_done_logs">File contents, the text read in images, passwords and tokens are never written to the server’s logs.</string>
+    <string name="privacy_who_sees">Who can see your posts</string>
+    <string name="privacy_who_sees_body">Everyone with an account on this server can see the posts on it, and download the original files with anything they hold, such as where a photo was taken. A post shows its score, not who voted. Media links handed to the app are signed and expire, so a copied link stops working within 12 hours. If you make a share link, anyone who has it can see the posts in it, without their tags, until it expires or you remove it.</string>
+    <string name="privacy_who_sees_public">On a public server, people without an account can see its posts, tags and Explore too, and download the files, but not the recycle bin, and not who voted. They can\'t vote, upload or save anything. A post is shared there by its own address, which anyone can open.</string>
+    <string name="privacy_who_sees_profiles">A public server also shows everyone, guests included, each account\'s profile (its picture, display name, words about itself, when it joined and how much it posted), who uploaded each post, and its forum with who wrote what. Votes on tags show only as scores. Switching the server to private deletes the pictures, the profile texts, the forum and the votes on tags.</string>
+    <string name="privacy_keeping">Keeping and deleting</string>
+    <string name="privacy_keeping_bin">Deleted posts go to the recycle bin. From there an administrator, or whoever uploaded them, can erase them with their files, and the operator can have the bin emptied by itself after a set number of days.</string>
+    <string name="privacy_keeping_sessions">Sessions end when you sign out, after 90 days, or when you sign out other devices in Settings. Changing your password signs out every other device; API keys keep working until you remove them or they expire.</string>
+    <string name="privacy_keeping_admins">Administrators of this server see each account’s username, role, when it joined and was last active, and how much it has uploaded. They can set a storage limit, reset a forgotten password, disable an account or delete it. To delete your account, ask one of them: that removes its sessions, keys, votes and saved searches, while its posts stay.</string>
+    <string name="privacy_keeping_backups">Administrators can back up the database, by hand or on a schedule. A backup holds everything listed above except the files, so something erased here stays in older backups until they are deleted. The operator may keep other copies on their own schedule.</string>
+    <string name="privacy_device">What stays on your device</string>
+    <string name="terms_title">Terms of Service</string>
+    <string name="terms_lead">These terms cover your use of this StarBooru server. The operator who runs it may add to them.</string>
+    <string name="terms_account">Your account</string>
+    <string name="terms_account_keys">Keep your password and API keys to yourself, and sign out devices you no longer use (Settings › Signed-in devices).</string>
+    <string name="terms_account_admins">The first account on a server is its administrator. Administrators can manage tags, aliases and implications, empty the recycle bin, change the server’s settings, set up AI tools, make backups, and manage accounts: roles, storage limits, password resets, disabling and deleting.</string>
+    <string name="terms_content">Your content</string>
+    <string name="terms_content_rights">Upload and import only what you have the right to keep and to share with the people on this server and anyone you send a share link to, and what is legal where the server runs.</string>
+    <string name="terms_content_yours">You keep every right to what you upload. You let the server store it, make thumbnails and previews, and show it to the accounts on this server and to the people you share it with.</string>
+    <string name="terms_content_originals">Originals are kept byte for byte. Rate posts honestly, so that rating filters work for everyone.</string>
+    <string name="terms_fair">Fair use</string>
+    <string name="terms_fair_access">Don\'t try to reach other people\'s accounts or data, or to get around the server\'s limits.</string>
+    <string name="terms_fair_load">Don\'t overload the server, or the sites it reaches for you, with automated requests.</string>
+    <string name="terms_warranty">No warranty</string>
+    <string name="terms_warranty_body">StarBooru is provided as is, without warranty of any kind. Keep your own copy of anything you can\'t afford to lose. The operator can suspend accounts that break these terms and can change them; the current version is always on this page.</string>
+    <string name="terms_1">These terms cover your use of this StarBooru server. The operator who runs it may add to them.</string>
+    <string name="terms_2">Your account</string>
+    <string name="terms_3">Keep your password to yourself, and sign out devices you no longer use (Settings › Signed-in devices).</string>
+    <string name="terms_4">The first account on a server is its administrator. Administrators can manage tags, aliases and implications, empty the recycle bin, change the server’s settings, and manage accounts: roles, storage limits, password resets, disabling and deleting.</string>
+    <string name="terms_5">Your content</string>
+    <string name="terms_6">Upload only what you have the right to keep and share with the other people on this server, and what is legal where the server runs.</string>
+    <string name="terms_7">You keep every right to what you upload. You let the server store it, make thumbnails and previews, and show it to the accounts on this server.</string>
+    <string name="terms_8">Originals are kept byte for byte. Rate posts honestly, so that rating filters work for everyone.</string>
+    <string name="terms_9">Fair use</string>
+    <string name="terms_10">Don\'t try to reach other people\'s accounts or data, or to get around the server\'s limits.</string>
+    <string name="terms_11">Don\'t overload the server with automated requests.</string>
+    <string name="terms_12">No warranty</string>
+    <string name="terms_13">StarBooru is provided as is, without warranty of any kind. Keep your own copy of anything you can\'t afford to lose. The operator can suspend accounts that break these terms and can change them; the current version is always on this page.</string>
+    <string name="legal_nav">Legal</string>
+    <string name="legal_privacy_short">Privacy</string>
+    <string name="legal_terms_short">Terms</string>
+    <!-- name, address -->
+    <string name="legal_server">For %1$s at %2$s</string>
+    <!-- address -->
+    <string name="legal_server_address">For the server at %1$s</string>
+</resources>

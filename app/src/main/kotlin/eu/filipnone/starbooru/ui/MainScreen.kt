@@ -60,6 +60,7 @@ import eu.filipnone.starbooru.ui.gallery.GalleryViewModel
 import eu.filipnone.starbooru.ui.nav.ExploreRoute
 import eu.filipnone.starbooru.ui.nav.ForumRoute
 import eu.filipnone.starbooru.ui.nav.GalleryRoute
+import eu.filipnone.starbooru.ui.nav.LegalRoute
 import eu.filipnone.starbooru.ui.nav.PostRoute
 import eu.filipnone.starbooru.ui.nav.SettingsRoute
 import eu.filipnone.starbooru.ui.nav.Tab
@@ -69,6 +70,8 @@ import eu.filipnone.starbooru.ui.nav.TrashRoute
 import eu.filipnone.starbooru.ui.nav.UploadRoute
 import eu.filipnone.starbooru.ui.nav.entries
 import eu.filipnone.starbooru.ui.nav.rememberNavigationState
+import eu.filipnone.starbooru.ui.settings.LegalScreen
+import eu.filipnone.starbooru.ui.settings.SettingsActions
 import eu.filipnone.starbooru.ui.settings.SettingsScreen
 import eu.filipnone.starbooru.ui.signin.SignInScreen
 import eu.filipnone.starbooru.ui.signin.SignInViewModel
@@ -137,18 +140,15 @@ private fun Shell(
     val current = nav.current
     var search by rememberSaveable { mutableStateOf("") }
     var exploreQuery by rememberSaveable { mutableStateOf("") }
+    var settingsQuery by rememberSaveable { mutableStateOf("") }
     // Whose history the viewer adds to: one list per account on each server.
-    val owner =
-        when (account) {
-            is AccountState.SignedIn -> "${account.server}#${account.user.id}"
-            is AccountState.Guest -> "${account.server}#guest"
-            else -> ""
-        }
+    val owner = graph.owner(account)
     LaunchedEffect(current) {
         when (current) {
             is GalleryRoute -> search = current.query
             is PostRoute -> search = current.query
             ExploreRoute -> search = exploreQuery
+            SettingsRoute -> search = settingsQuery
             else -> {}
         }
     }
@@ -159,6 +159,11 @@ private fun Shell(
     val searchFor: (String) -> Unit = searchFor@{ q ->
         val query = q.trim()
         // On Explore, the search narrows Explore.
+        // On Settings, the search finds settings.
+        if (nav.tab == Tab.Settings && nav.current == SettingsRoute) {
+            settingsQuery = query
+            return@searchFor
+        }
         if (nav.tab == Tab.Explore && nav.current == ExploreRoute) {
             exploreQuery = query
             return@searchFor
@@ -184,9 +189,13 @@ private fun Shell(
                 bars = bars.value,
                 hand = settings.hand,
                 search = search,
-                onSearch = { search = it },
+                onSearch = {
+                    search = it
+                    // Settings narrow as the words are typed.
+                    if (nav.current == SettingsRoute) settingsQuery = it
+                },
                 onSubmit = searchFor,
-                hints = hints,
+                hints = hints.takeIf { nav.current != SettingsRoute },
                 savedSearches = savedList,
                 onHelp = { cheatSheet = true },
                 onBrand = { nav.select(Tab.Gallery) },
@@ -264,10 +273,25 @@ private fun Shell(
                                 settings = settings,
                                 account = account,
                                 serverVersion = info?.version,
-                                onChange = update,
-                                onSignOut = { scope.launch { graph.account.signOut() } },
-                                onSignIn = { scope.launch { graph.account.toSignIn() } },
-                                onTrash = { nav.open(TrashRoute) },
+                                search = settingsQuery,
+                                actions =
+                                    SettingsActions(
+                                        onChange = update,
+                                        onSignOut = { scope.launch { graph.signOut() } },
+                                        onSignIn = { scope.launch { graph.account.toSignIn() } },
+                                        onTrash = { nav.open(TrashRoute) },
+                                        onHelp = { cheatSheet = true },
+                                        onPrivacy = { nav.open(LegalRoute(privacy = true)) },
+                                        onTerms = { nav.open(LegalRoute(privacy = false)) },
+                                    ),
+                            )
+                        }
+                        entry<LegalRoute> { route ->
+                            LegalScreen(
+                                privacy = route.privacy,
+                                server = server,
+                                serverName = info?.name,
+                                onOther = { nav.replace(LegalRoute(!route.privacy)) },
                             )
                         }
                         entry<TrashRoute> {

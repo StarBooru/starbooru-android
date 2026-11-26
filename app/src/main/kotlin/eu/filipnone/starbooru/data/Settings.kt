@@ -9,6 +9,12 @@ enum class ThemeMode { System, Light, Dark }
 /** Which side the rail, the viewer's panel and its zoom tools sit on. */
 enum class Hand { Either, Left, Right }
 
+/** The visual effects: glass and glows. Automatic reduces them once scrolling stutters. */
+enum class Effects { Auto, Full, Lite }
+
+/** The battery saver. Automatic follows the system's battery saver and Data Saver. */
+enum class Saver { Auto, Always, Never }
+
 /** The app's own settings, kept on the device. */
 data class Settings(
     val theme: ThemeMode = ThemeMode.System,
@@ -27,6 +33,10 @@ data class Settings(
     /** What swiping a tile sideways does. Off until chosen, as on the web: a sideways swipe is easy to make by mistake. */
     val swipeLeft: SwipeAction = SwipeAction.Off,
     val swipeRight: SwipeAction = SwipeAction.Off,
+    val effects: Effects = Effects.Auto,
+    val saver: Saver = Saver.Auto,
+    /** The viewer always opens originals, never the lighter copies. */
+    val originals: Boolean = false,
 ) {
     /** Whether the rail and the viewer's panel sit on the right. */
     val rightHanded: Boolean get() = hand == Hand.Right

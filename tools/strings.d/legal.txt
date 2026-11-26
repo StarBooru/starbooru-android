@@ -1,0 +1,7 @@
+# The privacy policy and the terms. The four paragraphs about what stays on
+# the device are Android's own, in strings_legal_android.xml.
+
+[legal]
+privacy-title privacy-lead privacy-responsible privacy-responsible-body privacy-server privacy-server-.*
+privacy-not-done privacy-not-done-.* privacy-who-sees privacy-who-sees-.* privacy-keeping privacy-keeping-.*
+privacy-device terms-.* legal-nav legal-privacy-short legal-terms-short legal-server legal-server-address
