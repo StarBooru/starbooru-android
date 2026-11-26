@@ -541,6 +541,9 @@ private fun NavCell(
         if (selected) {
             pop.snapTo(0.6f)
             pop.animateTo(1f, tween(420, easing = StarSpringEasing))
+        } else {
+            // A pop cut short by the next tab must not leave the icon small.
+            pop.snapTo(1f)
         }
     }
     val press by animateFloatAsState(if (pressed) 0.86f else 1f, tween(150), label = "press")

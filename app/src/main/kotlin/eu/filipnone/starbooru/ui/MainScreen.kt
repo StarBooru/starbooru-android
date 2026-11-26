@@ -81,6 +81,7 @@ import eu.filipnone.starbooru.ui.tags.TagsScreen
 import eu.filipnone.starbooru.ui.tags.TagsViewModel
 import eu.filipnone.starbooru.ui.trash.TrashScreen
 import eu.filipnone.starbooru.ui.trash.TrashViewModel
+import eu.filipnone.starbooru.ui.upload.UploadScreen
 import eu.filipnone.starbooru.ui.viewer.ViewerScreen
 import eu.filipnone.starbooru.ui.viewer.ViewerViewModel
 import kotlinx.coroutines.launch
@@ -151,6 +152,15 @@ private fun Shell(
             SettingsRoute -> search = settingsQuery
             else -> {}
         }
+    }
+    // Where the app was sent from outside: Upload for a share.
+    val arriving by graph.arriving.collectAsStateWithLifecycle()
+    LaunchedEffect(arriving) {
+        val route = arriving ?: return@LaunchedEffect
+        graph.arriving.value = null
+        // A guest has no Upload: what was shared waits there for an account.
+        if (route == UploadRoute && guest) return@LaunchedEffect
+        nav.open(route)
     }
     // A tab the server no longer shows (the forum after a switch to private)
     // falls back to the gallery.
@@ -266,7 +276,7 @@ private fun Shell(
                                 onTag = { nav.open(TagRoute(it)) },
                             )
                         }
-                        entry<UploadRoute> { Soon(Tab.Upload.icon, stringResource(Tab.Upload.label)) }
+                        entry<UploadRoute> { UploadScreen(graph, onOpenPost = { id -> nav.open(PostRoute(id)) }) }
                         entry<ForumRoute> { Soon(Tab.Forum.icon, stringResource(Tab.Forum.label)) }
                         entry<SettingsRoute> {
                             SettingsScreen(

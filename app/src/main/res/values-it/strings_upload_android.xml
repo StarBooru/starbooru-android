@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Upload text the web app doesn't have, or has in a form Android can't take. The rest is in strings_upload.xml. -->
+<resources>
+    <string name="upload_photos">Foto e video</string>
+    <string name="upload_paste">Incolla</string>
+    <string name="upload_clear_finished">Togli i completati</string>
+    <string name="upload_empty">Scegli foto e video da caricare, o condividili qui da un\'altra app.</string>
+    <!-- done, count -->
+    <string name="upload_adding">Aggiungo %1$d di %2$d…</string>
+    <!-- done, count -->
+    <plurals name="upload_progress">
+        <item quantity="one">%1$d di %2$d completato</item>
+        <item quantity="other">%1$d di %2$d completati</item>
+    </plurals>
+    <!-- count -->
+    <plurals name="upload_summary_known">
+        <item quantity="one">%1$d già presente</item>
+        <item quantity="other">%1$d già presenti</item>
+    </plurals>
+    <!-- count -->
+    <plurals name="upload_summary_failed">
+        <item quantity="one">%1$d non riuscito</item>
+        <item quantity="other">%1$d non riusciti</item>
+    </plurals>
+    <!-- id -->
+    <string name="upload_known_post_bin">Già presente come post #%1$s, nel cestino</string>
+    <!-- names -->
+    <string name="upload_skipped_only">Si accettano solo immagini e video. Esclusi: %1$s.</string>
+    <string name="upload_channel">Caricamenti</string>
+    <string name="upload_channel_hint">A che punto sono i file che carichi, e quando hanno finito</string>
+    <!-- at, count -->
+    <string name="upload_sending_count">Caricamento %1$d di %2$d</string>
+    <string name="upload_stop_all">Interrompi</string>
+    <string name="upload_finished">Caricamenti finiti</string>
+</resources>

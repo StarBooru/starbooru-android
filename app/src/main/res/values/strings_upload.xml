@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="upload_files">Choose files</string>
+    <string name="upload_folder">Choose a folder</string>
+    <string name="upload_folder_tags">Tag files with their folder name</string>
+    <string name="upload_link">Add a link</string>
+    <string name="upload_clear">Clear list</string>
+    <string name="upload_urls_placeholder">Paste links to files or booru posts, one per line</string>
+    <string name="upload_urls_label">Links to files or booru posts</string>
+    <string name="upload_urls_only">Enter addresses that start with http:// or https://.</string>
+    <!-- more, names -->
+    <plurals name="upload_skipped">
+        <item quantity="zero">Only images and videos are taken. Left out: %2$s.</item>
+        <item quantity="other">Only images and videos are taken. Left out: %2$s and %1$d more.</item>
+    </plurals>
+    <string name="upload_paste_nothing">There was no file or link to paste.</string>
+    <string name="upload_shared_tags">Tags for all files</string>
+    <string name="upload_source">Source</string>
+    <string name="upload_source_placeholder">Source (optional)</string>
+    <!-- count -->
+    <plurals name="upload_start">
+        <item quantity="zero">Upload</item>
+        <item quantity="one">Upload 1 file</item>
+        <item quantity="other">Upload %1$d files</item>
+    </plurals>
+    <string name="upload_queued">Queued</string>
+    <string name="upload_uploading">Uploading</string>
+    <string name="upload_uploaded">Uploaded</string>
+    <string name="upload_stopped">Cancelled</string>
+    <string name="upload_failed">Failed</string>
+    <string name="upload_known">Already here</string>
+    <!-- id -->
+    <string name="upload_known_post">Already here as post #%1$s</string>
+    <!-- id -->
+    <string name="upload_open_post">Open post #%1$s</string>
+    <!-- max -->
+    <string name="upload_too_big">Bigger than this server takes (%1$s at most).</string>
+    <string name="upload_unsupported">This server only takes an image or a video in a format it knows.</string>
+    <!-- error -->
+    <string name="upload_unreadable">Can\'t read the file: %1$s</string>
+    <string name="upload_gone">The file is no longer at hand. Add it again.</string>
+    <string name="upload_file_tags_placeholder">Tags for this file only</string>
+    <!-- name -->
+    <string name="upload_file_tags_label">Tags for %1$s</string>
+    <!-- name -->
+    <string name="upload_remove">Remove %1$s</string>
+    <!-- name -->
+    <string name="upload_cancel">Stop uploading %1$s</string>
+    <!-- name -->
+    <string name="upload_retry">Try %1$s again</string>
+    <!-- name -->
+    <string name="upload_open">Open %1$s</string>
+    <string name="upload_close">Close</string>
+    <string name="upload_remove_item">Remove from upload</string>
+    <string name="upload_open_link">Open link</string>
+    <!-- rating -->
+    <string name="upload_rating_usual">Same as the rest (%1$s)</string>
+    <string name="upload_done">Imported</string>
+    <string name="upload_job_running">Importing</string>
+    <!-- count -->
+    <plurals name="activity_uploaded">
+        <item quantity="one">1 file uploaded</item>
+        <item quantity="other">%1$d files uploaded</item>
+    </plurals>
+</resources>

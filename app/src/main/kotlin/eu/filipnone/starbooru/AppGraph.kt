@@ -17,11 +17,14 @@ import eu.filipnone.starbooru.data.MediaCache
 import eu.filipnone.starbooru.data.SavedSearches
 import eu.filipnone.starbooru.data.SettingsStore
 import eu.filipnone.starbooru.data.Spots
+import eu.filipnone.starbooru.data.upload.UploadQueue
+import eu.filipnone.starbooru.ui.nav.Route
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
@@ -34,8 +37,11 @@ private val Context.historyData: DataStore<Preferences> by preferencesDataStore(
 private val Context.spotsData: DataStore<Preferences> by preferencesDataStore("spots")
 
 /** What lives as long as the app: the stores and the session. */
-class AppGraph(context: Context) {
+class AppGraph(private val context: Context) {
     val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+
+    /** Where the app was asked to go from outside (a share, a notification); the frame takes it once. */
+    val arriving = MutableStateFlow<Route?>(null)
     val settings = SettingsStore(context.settingsData)
     val history = History(context.historyData)
     val spots = Spots(context.spotsData, ::searchKey)
@@ -59,6 +65,7 @@ class AppGraph(context: Context) {
     /** Signs out, and forgets what the account looked at, as the privacy policy says. */
     suspend fun signOut() {
         val who = owner(account.state.value)
+        UploadQueue.get(context).signedOut()
         account.signOut()
         if (who.isNotEmpty()) {
             history.clear(who)

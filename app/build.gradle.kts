@@ -243,6 +243,7 @@ dependencies {
     implementation(libs.androidx.window)
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.ui.compose)
+    implementation(libs.androidx.work.runtime)
 
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
@@ -256,6 +257,7 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(libs.coil.gif)
+    implementation(libs.coil.video)
     implementation(libs.haze)
     implementation(libs.haze.blur)
 

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Upload text the web app doesn't have, or has in a form Android can't take. The rest is in strings_upload.xml. -->
+<resources>
+    <string name="upload_photos">Photos and videos</string>
+    <string name="upload_paste">Paste</string>
+    <string name="upload_clear_finished">Clear finished</string>
+    <string name="upload_empty">Pick photos and videos to upload, or share them here from another app.</string>
+    <!-- done, count -->
+    <string name="upload_adding">Adding %1$d of %2$d…</string>
+    <!-- done, count -->
+    <plurals name="upload_progress">
+        <item quantity="one">%1$d of %2$d done</item>
+        <item quantity="other">%1$d of %2$d done</item>
+    </plurals>
+    <!-- count -->
+    <plurals name="upload_summary_known">
+        <item quantity="one">%1$d already here</item>
+        <item quantity="other">%1$d already here</item>
+    </plurals>
+    <!-- count -->
+    <plurals name="upload_summary_failed">
+        <item quantity="one">%1$d failed</item>
+        <item quantity="other">%1$d failed</item>
+    </plurals>
+    <!-- id -->
+    <string name="upload_known_post_bin">Already here as post #%1$s, in the recycle bin</string>
+    <!-- names -->
+    <string name="upload_skipped_only">Only images and videos are taken. Left out: %1$s.</string>
+    <string name="upload_channel">Uploads</string>
+    <string name="upload_channel_hint">How the files you upload are getting on, and when they are done</string>
+    <!-- at, count -->
+    <string name="upload_sending_count">Uploading %1$d of %2$d</string>
+    <string name="upload_stop_all">Stop</string>
+    <string name="upload_finished">Uploads finished</string>
+</resources>

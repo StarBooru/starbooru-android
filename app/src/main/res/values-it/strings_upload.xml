@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="upload_files">Scegli i file</string>
+    <string name="upload_folder">Scegli una cartella</string>
+    <string name="upload_folder_tags">Tagga i file con il nome della loro cartella</string>
+    <string name="upload_link">Aggiungi un link</string>
+    <string name="upload_clear">Svuota l\'elenco</string>
+    <string name="upload_urls_placeholder">Incolla link a file o a post di un booru, uno per riga</string>
+    <string name="upload_urls_label">Link a file o a post di un booru</string>
+    <string name="upload_urls_only">Inserisci indirizzi che iniziano con http:// o https://.</string>
+    <!-- more, names -->
+    <plurals name="upload_skipped">
+        <item quantity="zero">Si accettano solo immagini e video. Esclusi: %2$s.</item>
+        <item quantity="one">Si accettano solo immagini e video. Esclusi: %2$s e un altro.</item>
+        <item quantity="other">Si accettano solo immagini e video. Esclusi: %2$s e altri %1$d.</item>
+    </plurals>
+    <string name="upload_paste_nothing">Non c\'era nessun file o link da incollare.</string>
+    <string name="upload_shared_tags">Tag per tutti i file</string>
+    <string name="upload_source">Fonte</string>
+    <string name="upload_source_placeholder">Fonte (facoltativa)</string>
+    <!-- count -->
+    <plurals name="upload_start">
+        <item quantity="zero">Carica</item>
+        <item quantity="one">Carica 1 file</item>
+        <item quantity="other">Carica %1$d file</item>
+    </plurals>
+    <string name="upload_queued">In coda</string>
+    <string name="upload_uploading">In caricamento</string>
+    <string name="upload_uploaded">Caricato</string>
+    <string name="upload_stopped">Annullato</string>
+    <string name="upload_failed">Non riuscito</string>
+    <string name="upload_known">Già presente</string>
+    <!-- id -->
+    <string name="upload_known_post">Già presente come post #%1$s</string>
+    <!-- id -->
+    <string name="upload_open_post">Apri il post #%1$s</string>
+    <!-- max -->
+    <string name="upload_too_big">Più grande di quanto accetta questo server (al massimo %1$s).</string>
+    <string name="upload_unsupported">Questo server accetta solo un\'immagine o un video in un formato che conosce.</string>
+    <!-- error -->
+    <string name="upload_unreadable">Impossibile leggere il file: %1$s</string>
+    <string name="upload_gone">Il file non è più disponibile. Aggiungilo di nuovo.</string>
+    <string name="upload_file_tags_placeholder">Tag solo per questo file</string>
+    <!-- name -->
+    <string name="upload_file_tags_label">Tag per %1$s</string>
+    <!-- name -->
+    <string name="upload_remove">Rimuovi %1$s</string>
+    <!-- name -->
+    <string name="upload_cancel">Interrompi il caricamento di %1$s</string>
+    <!-- name -->
+    <string name="upload_retry">Riprova %1$s</string>
+    <!-- name -->
+    <string name="upload_open">Apri %1$s</string>
+    <string name="upload_close">Chiudi</string>
+    <string name="upload_remove_item">Togli dal caricamento</string>
+    <string name="upload_open_link">Apri il link</string>
+    <!-- rating -->
+    <string name="upload_rating_usual">Come gli altri (%1$s)</string>
+    <string name="upload_done">Importato</string>
+    <string name="upload_job_running">In importazione</string>
+    <!-- count -->
+    <plurals name="activity_uploaded">
+        <item quantity="one">1 file caricato</item>
+        <item quantity="other">%1$d file caricati</item>
+    </plurals>
+</resources>

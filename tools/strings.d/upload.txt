@@ -1,0 +1,17 @@
+# The Upload page, its sheet and the notices of a finished batch. Not
+# upload-progress, activity-known or activity-failed: Italian has plural
+# forms for them where English has one, so they are written by hand in
+# strings_upload_android.xml.
+
+[upload]
+upload-files upload-folder upload-folder-tags upload-link upload-clear
+upload-urls-placeholder upload-urls-label upload-urls-only upload-skipped
+upload-paste-nothing upload-shared-tags upload-source upload-source-placeholder
+upload-start upload-queued upload-uploading upload-uploaded
+upload-stopped upload-failed upload-known upload-known-post upload-open-post
+upload-too-big upload-unsupported upload-unreadable upload-gone
+upload-file-tags-placeholder upload-file-tags-label upload-remove upload-cancel
+upload-retry upload-open upload-close upload-remove-item upload-open-link
+upload-rating-usual upload-done upload-job-running
+activity-uploaded
+tag-error-.* add cancel
