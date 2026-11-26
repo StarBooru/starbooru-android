@@ -108,7 +108,9 @@ class SearchHints(private val account: Account) {
         value: TextFieldValue,
         tag: String,
     ): TextFieldValue? {
-        val at = word ?: return null
+        // The word as the box holds it now: one kept from before more
+        // typing could replace only part of it.
+        val at = searchWordAt(value.text, value.selection.end.toUInt()) ?: return null
         val done = completeWord(value.text, at, tag) ?: return null
         hints = emptyList()
         return TextFieldValue(done.value, TextRange(done.caret.toInt()))
