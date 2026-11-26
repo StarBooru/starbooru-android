@@ -5,6 +5,16 @@
 use chrono::{DateTime, Utc};
 use starbooru_client::Client;
 
+mod browse;
+mod edits;
+mod tags;
+mod transfer;
+
+pub use browse::{Explore, Home, HomePost, Person, SavedSearch, TagTrend, Usage};
+pub use edits::{BulkEdit, BulkResult, PostUpdate, PurgeResult, TRASH_QUERY, trash_query};
+pub use tags::{MAX_TAG_LIMIT, Tag, TagDetail, TagOrder, TagPage, TagUpdate};
+pub use transfer::{DuplicatePost, duplicate_of};
+
 pub(crate) fn millis(t: DateTime<Utc>) -> i64 {
     t.timestamp_millis()
 }
@@ -88,6 +98,18 @@ impl From<starbooru_core::TagCategory> for TagCategory {
             starbooru_core::TagCategory::Character => TagCategory::Character,
             starbooru_core::TagCategory::Copyright => TagCategory::Copyright,
             starbooru_core::TagCategory::Meta => TagCategory::Meta,
+        }
+    }
+}
+
+impl From<TagCategory> for starbooru_core::TagCategory {
+    fn from(c: TagCategory) -> Self {
+        match c {
+            TagCategory::General => starbooru_core::TagCategory::General,
+            TagCategory::Artist => starbooru_core::TagCategory::Artist,
+            TagCategory::Character => starbooru_core::TagCategory::Character,
+            TagCategory::Copyright => starbooru_core::TagCategory::Copyright,
+            TagCategory::Meta => starbooru_core::TagCategory::Meta,
         }
     }
 }

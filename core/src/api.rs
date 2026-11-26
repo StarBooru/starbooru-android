@@ -1,6 +1,7 @@
 //! `Api`: one server, signed in or as a guest. Kotlin makes a new one when
 //! the server or the session changes; each async method is a `suspend`
-//! function there.
+//! function there. The methods are split by screen: tags, editing posts,
+//! browsing, and files in and out.
 
 use std::sync::Arc;
 
@@ -8,8 +9,17 @@ use starbooru_client::Client;
 use starbooru_core::Credentials;
 
 use crate::error::Result;
-use crate::model::{Neighbors, Post, PostPage, ServerInfo, SignedIn, User};
+use crate::model::{Neighbors, Post, PostPage, ServerInfo, SignedIn, Usage, User};
 use crate::oidc::ProviderSignIn;
+
+mod browse;
+mod edits;
+#[cfg(test)]
+mod live;
+mod tags;
+mod transfer;
+
+pub use transfer::UploadProgress;
 
 #[derive(uniffi::Object)]
 pub struct Api {
@@ -61,6 +71,11 @@ impl Api {
 
     pub async fn me(&self) -> Result<User> {
         Ok(self.client.me().await?.into())
+    }
+
+    /// What the account has uploaded, against its storage limit.
+    pub async fn usage(&self) -> Result<Usage> {
+        Ok(self.client.usage().await?.into())
     }
 
     /// One page of a search's results. `seed` keeps `order:random` the same

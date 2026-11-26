@@ -77,6 +77,14 @@ impl From<ClientError> for CoreError {
     }
 }
 
+impl From<std::io::Error> for CoreError {
+    fn from(error: std::io::Error) -> Self {
+        CoreError::Io {
+            detail: error.to_string(),
+        }
+    }
+}
+
 pub type Result<T> = std::result::Result<T, CoreError>;
 
 #[cfg(test)]
