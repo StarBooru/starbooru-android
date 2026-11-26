@@ -33,6 +33,10 @@ data object SettingsRoute : Route
 @Serializable
 data object ForumRoute : Route
 
+/** A tag's page. */
+@Serializable
+data class TagRoute(val name: String) : Route
+
 /** The recycle bin, opened from Settings. */
 @Serializable
 data object TrashRoute : Route

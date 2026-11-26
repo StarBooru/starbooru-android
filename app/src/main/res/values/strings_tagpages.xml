@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <!-- count -->
+    <plurals name="tags_count">
+        <item quantity="one">1 tag</item>
+        <item quantity="other">%1$d tags</item>
+    </plurals>
+    <string name="tags_sort">Sort tags</string>
+    <string name="tags_most_used">Most used</string>
+    <string name="tags_a_z">A–Z</string>
+    <string name="tags_filter_label">Filter tags by name or alias</string>
+    <string name="tags_filter_placeholder">Filter tags</string>
+    <string name="tags_show_all">Show all tags</string>
+    <string name="tags_people">People</string>
+    <!-- count, shown -->
+    <plurals name="tags_posts">
+        <item quantity="one">1 post</item>
+        <item quantity="other">%2$s posts</item>
+    </plurals>
+    <string name="tags_any_category">All</string>
+    <string name="tags_none_yet">No tags yet</string>
+    <string name="tags_none_match">No tags match</string>
+    <string name="tags_appear">Tags appear here once posts use them.</string>
+    <!-- name -->
+    <string name="tags_missing">No tag called “%1$s”</string>
+    <string name="tags_all">All tags</string>
+    <!-- count -->
+    <plurals name="tags_browse">
+        <item quantity="one">Browse 1 post</item>
+        <item quantity="other">Browse %1$d posts</item>
+    </plurals>
+    <!-- name -->
+    <string name="tags_is_alias">“%1$s” is an alias of this tag.</string>
+    <string name="tags_category">Category</string>
+    <!-- name, category -->
+    <string name="tags_category_of">%1$s: %2$s. Change the category</string>
+    <string name="tags_change_category">Change the category</string>
+    <!-- name, category -->
+    <string name="tags_recoloured">%1$s is now %2$s</string>
+    <!-- reason -->
+    <string name="tags_recolour_failed">Couldn\'t change the category: %1$s</string>
+    <!-- name -->
+    <string name="tags_search_named">Show posts tagged %1$s</string>
+    <string name="tags_tree">Place in the tree</string>
+    <string name="tags_tree_hint">Searching a tag also finds the tags under it, and the top of the tree is the section a post\'s tags are grouped under.</string>
+    <string name="tags_tree_top">At the top: nothing above it.</string>
+    <string name="tags_parent">Parent tag</string>
+    <string name="tags_move">Move under</string>
+    <string name="tags_move_top">Move to the top</string>
+    <string name="tags_children">Under it</string>
+    <string name="tags_children_none">Nothing under it yet.</string>
+    <string name="tags_aliases">Aliases</string>
+    <string name="tags_aliases_hint">Other names for this tag. Tagging or searching with an alias uses this tag. Adding an alias that is already a tag merges it into this one.</string>
+    <string name="tags_aliases_none">No aliases.</string>
+    <string name="tags_implies">Implies</string>
+    <string name="tags_implies_hint">Posts with this tag get these tags too, including posts tagged earlier.</string>
+    <string name="tags_implies_none">Implies no other tags.</string>
+    <string name="tags_implied_by">Implied by</string>
+    <string name="tags_implied_by_hint">Tags that add this one.</string>
+    <string name="tags_implied_by_none">No tag implies this one.</string>
+    <string name="tags_new_alias">New alias</string>
+    <string name="tags_implied_tag">Implied tag</string>
+    <string name="tags_remove">Remove</string>
+    <!-- name -->
+    <string name="tags_remove_named">Remove %1$s</string>
+    <string name="tags_admins_only">Only admins can change this.</string>
+    <!-- count, name -->
+    <plurals name="tags_merge_confirm">
+        <item quantity="one">“%2$s” is a tag of its own, on 1 post. As an alias it merges into this tag, and that can\'t be undone.</item>
+        <item quantity="other">“%2$s” is a tag of its own, on %1$d posts. As an alias it merges into this tag, and that can\'t be undone.</item>
+    </plurals>
+    <string name="tags_merge">Merge</string>
+    <string name="tag_menu_search">Search this tag</string>
+    <string name="tag_menu_add">Add to this search</string>
+    <string name="tag_menu_exclude">Leave it out</string>
+    <string name="tag_menu_details">Tag details</string>
+    <string name="tag_menu_copy">Copy name</string>
+    <string name="tag_copied">Tag name copied</string>
+    <string name="tag_copy_failed">Couldn\'t copy the tag name</string>
+    <!-- tag -->
+    <string name="tag_error_prefix">“%1$s” can\'t be a tag: a tag can\'t start with - or ~.</string>
+    <!-- tag, max -->
+    <string name="tag_error_long">“%1$s” is too long for a tag. Keep it to %2$s characters.</string>
+    <!-- max -->
+    <string name="tag_error_many">A post can have at most %1$s tags.</string>
+    <!-- tag -->
+    <string name="tag_error_other">“%1$s” can\'t be a tag.</string>
+</resources>

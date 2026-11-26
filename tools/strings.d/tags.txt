@@ -1,0 +1,4 @@
+# The Tags page and a tag's page.
+
+[tagpages]
+tags-.* tag-menu-.* tag-copied tag-copy-failed tag-error-.*

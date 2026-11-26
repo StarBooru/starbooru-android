@@ -57,6 +57,7 @@ import eu.filipnone.starbooru.ui.nav.GalleryRoute
 import eu.filipnone.starbooru.ui.nav.PostRoute
 import eu.filipnone.starbooru.ui.nav.SettingsRoute
 import eu.filipnone.starbooru.ui.nav.Tab
+import eu.filipnone.starbooru.ui.nav.TagRoute
 import eu.filipnone.starbooru.ui.nav.TagsRoute
 import eu.filipnone.starbooru.ui.nav.TrashRoute
 import eu.filipnone.starbooru.ui.nav.UploadRoute
@@ -65,6 +66,10 @@ import eu.filipnone.starbooru.ui.nav.rememberNavigationState
 import eu.filipnone.starbooru.ui.settings.SettingsScreen
 import eu.filipnone.starbooru.ui.signin.SignInScreen
 import eu.filipnone.starbooru.ui.signin.SignInViewModel
+import eu.filipnone.starbooru.ui.tags.TagScreen
+import eu.filipnone.starbooru.ui.tags.TagViewModel
+import eu.filipnone.starbooru.ui.tags.TagsScreen
+import eu.filipnone.starbooru.ui.tags.TagsViewModel
 import eu.filipnone.starbooru.ui.trash.TrashScreen
 import eu.filipnone.starbooru.ui.trash.TrashViewModel
 import eu.filipnone.starbooru.ui.viewer.ViewerScreen
@@ -189,7 +194,20 @@ private fun Shell(
                             )
                         }
                         entry<ExploreRoute> { Soon(Tab.Explore.icon, stringResource(Tab.Explore.label)) }
-                        entry<TagsRoute> { Soon(Tab.Tags.icon, stringResource(Tab.Tags.label)) }
+                        entry<TagsRoute> {
+                            val vm = viewModel { TagsViewModel(graph.account, createSavedStateHandle()) }
+                            TagsScreen(vm, server, onTag = { nav.open(TagRoute(it)) })
+                        }
+                        entry<TagRoute> { route ->
+                            val vm = viewModel { TagViewModel(graph.account, route.name) }
+                            TagScreen(
+                                vm = vm,
+                                server = server,
+                                admin = (account as? AccountState.SignedIn)?.user?.admin == true,
+                                onSearch = searchFor,
+                                onTag = { nav.open(TagRoute(it)) },
+                            )
+                        }
                         entry<UploadRoute> { Soon(Tab.Upload.icon, stringResource(Tab.Upload.label)) }
                         entry<ForumRoute> { Soon(Tab.Forum.icon, stringResource(Tab.Forum.label)) }
                         entry<SettingsRoute> {

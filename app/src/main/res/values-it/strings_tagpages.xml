@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <!-- count -->
+    <plurals name="tags_count">
+        <item quantity="one">1 tag</item>
+        <item quantity="other">%1$d tag</item>
+    </plurals>
+    <string name="tags_sort">Ordina i tag</string>
+    <string name="tags_most_used">Più usati</string>
+    <string name="tags_a_z">A–Z</string>
+    <string name="tags_filter_label">Filtra i tag per nome o alias</string>
+    <string name="tags_filter_placeholder">Filtra i tag</string>
+    <string name="tags_show_all">Mostra tutti i tag</string>
+    <string name="tags_people">Persone</string>
+    <!-- count, shown -->
+    <plurals name="tags_posts">
+        <item quantity="one">1 post</item>
+        <item quantity="other">%2$s post</item>
+    </plurals>
+    <string name="tags_any_category">Tutti</string>
+    <string name="tags_none_yet">Ancora nessun tag</string>
+    <string name="tags_none_match">Nessun tag corrisponde</string>
+    <string name="tags_appear">I tag compaiono qui quando i post li usano.</string>
+    <!-- name -->
+    <string name="tags_missing">Nessun tag chiamato “%1$s”</string>
+    <string name="tags_all">Tutti i tag</string>
+    <!-- count -->
+    <plurals name="tags_browse">
+        <item quantity="one">Sfoglia 1 post</item>
+        <item quantity="other">Sfoglia %1$d post</item>
+    </plurals>
+    <!-- name -->
+    <string name="tags_is_alias">“%1$s” è un alias di questo tag.</string>
+    <string name="tags_category">Categoria</string>
+    <!-- name, category -->
+    <string name="tags_category_of">%1$s: %2$s. Cambia la categoria</string>
+    <string name="tags_change_category">Cambia la categoria</string>
+    <!-- name, category -->
+    <string name="tags_recoloured">Ora %1$s è %2$s</string>
+    <!-- reason -->
+    <string name="tags_recolour_failed">Impossibile cambiare la categoria: %1$s</string>
+    <!-- name -->
+    <string name="tags_search_named">Mostra i post con il tag %1$s</string>
+    <string name="tags_tree">Posizione nell\'albero</string>
+    <string name="tags_tree_hint">Cercare un tag trova anche i tag sotto di esso, e la cima dell\'albero è la sezione in cui vengono raggruppati i tag di un post.</string>
+    <string name="tags_tree_top">In cima: niente sopra.</string>
+    <string name="tags_parent">Tag genitore</string>
+    <string name="tags_move">Sposta sotto</string>
+    <string name="tags_move_top">Porta in cima</string>
+    <string name="tags_children">Sotto di esso</string>
+    <string name="tags_children_none">Ancora niente sotto.</string>
+    <string name="tags_aliases">Alias</string>
+    <string name="tags_aliases_hint">Altri nomi per questo tag. Taggare o cercare con un alias usa questo tag. Aggiungere un alias che è già un tag lo unisce a questo.</string>
+    <string name="tags_aliases_none">Nessun alias.</string>
+    <string name="tags_implies">Implica</string>
+    <string name="tags_implies_hint">I post con questo tag ricevono anche questi tag, compresi quelli taggati in precedenza.</string>
+    <string name="tags_implies_none">Non implica altri tag.</string>
+    <string name="tags_implied_by">Implicato da</string>
+    <string name="tags_implied_by_hint">Tag che aggiungono questo.</string>
+    <string name="tags_implied_by_none">Nessun tag implica questo.</string>
+    <string name="tags_new_alias">Nuovo alias</string>
+    <string name="tags_implied_tag">Tag implicato</string>
+    <string name="tags_remove">Rimuovi</string>
+    <!-- name -->
+    <string name="tags_remove_named">Rimuovi %1$s</string>
+    <string name="tags_admins_only">Solo gli amministratori possono modificarlo.</string>
+    <!-- count, name -->
+    <plurals name="tags_merge_confirm">
+        <item quantity="one">“%2$s” è già un tag, su 1 post. Come alias viene unito a questo tag, e non si può annullare.</item>
+        <item quantity="other">“%2$s” è già un tag, su %1$d post. Come alias viene unito a questo tag, e non si può annullare.</item>
+    </plurals>
+    <string name="tags_merge">Unisci</string>
+    <string name="tag_menu_search">Cerca questo tag</string>
+    <string name="tag_menu_add">Aggiungi alla ricerca</string>
+    <string name="tag_menu_exclude">Escludilo</string>
+    <string name="tag_menu_details">Dettagli del tag</string>
+    <string name="tag_menu_copy">Copia il nome</string>
+    <string name="tag_copied">Nome del tag copiato</string>
+    <string name="tag_copy_failed">Non è stato possibile copiare il nome del tag</string>
+    <!-- tag -->
+    <string name="tag_error_prefix">“%1$s” non può essere un tag: un tag non può iniziare con - o ~.</string>
+    <!-- tag, max -->
+    <string name="tag_error_long">“%1$s” è troppo lungo per un tag. Resta entro %2$s caratteri.</string>
+    <!-- max -->
+    <string name="tag_error_many">Un post può avere al massimo %1$s tag.</string>
+    <!-- tag -->
+    <string name="tag_error_other">“%1$s” non può essere un tag.</string>
+</resources>
