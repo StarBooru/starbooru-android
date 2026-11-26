@@ -11,8 +11,11 @@ uniffi::setup_scaffolding!();
 pub mod address;
 pub mod api;
 pub mod error;
+pub mod gallery;
+pub mod layout;
 pub mod model;
 pub mod oidc;
+pub mod viewer;
 
 pub use api::Api;
 pub use error::CoreError;
