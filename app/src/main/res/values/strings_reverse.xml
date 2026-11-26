@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="reverse_title">Look this picture up on other sites</string>
+    <string name="reverse_menu">Find the source on</string>
+    <string name="reverse_lens">Google Lens</string>
+    <string name="reverse_iqdb">iqdb</string>
+    <string name="reverse_saucenao">SauceNAO</string>
+    <string name="reverse_trace">trace.moe</string>
+    <string name="reverse_address">Sends a link to a small copy</string>
+    <!-- site -->
+    <string name="reverse_open">Open %1$s</string>
+    <!-- reason -->
+    <string name="reverse_read_failed">Couldn\'t get the picture to send: %1$s</string>
+</resources>

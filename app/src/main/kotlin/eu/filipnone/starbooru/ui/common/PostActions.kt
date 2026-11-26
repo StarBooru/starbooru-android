@@ -23,6 +23,8 @@ import eu.filipnone.starbooru.core.ScoreKind
 import eu.filipnone.starbooru.data.Account
 import eu.filipnone.starbooru.data.AccountState
 import eu.filipnone.starbooru.data.Files
+import eu.filipnone.starbooru.ui.viewer.Reverse
+import eu.filipnone.starbooru.ui.viewer.ReverseSite
 import eu.filipnone.starbooru.ui.viewer.Tally
 import eu.filipnone.starbooru.ui.viewer.Votes
 import kotlinx.coroutines.CoroutineScope
@@ -172,6 +174,39 @@ class PostActions internal constructor(
                         res.getQuantityString(R.plurals.download_saved_many, posts.size, posts.size)
                     }
                 notices?.offer(text, res.getString(R.string.press_open)) { Files.open(context, uri, mime) }
+            }
+        }
+    }
+
+    /**
+     * Looks the post's picture up on [site]: by its address when the server
+     * is on the internet, otherwise by a small copy saved to the gallery for
+     * the site's own upload button, with a notice that opens the site.
+     */
+    fun reverse(
+        post: Post,
+        site: ReverseSite,
+    ) {
+        val picture = Reverse.picture(post) ?: return
+        if (Reverse.reachable(picture)) {
+            openInTab(context, site.address(picture))
+            return
+        }
+        askPermission {
+            scope.launch {
+                try {
+                    val api = account.api.value ?: return@launch
+                    val type = Reverse.fileType(picture)?.first ?: "image/jpeg"
+                    Files.saveCopy(context, api, picture, Reverse.fileName(post.id, picture), type)
+                    val name = res.getString(site.label)
+                    notices?.offer(res.getString(R.string.reverse_saved_android, name), res.getString(R.string.reverse_open, name)) {
+                        openInTab(context, site.page)
+                    }
+                } catch (e: CoreException) {
+                    notices?.say(res.getString(R.string.reverse_read_failed, describe(e, res, server)))
+                } catch (_: java.io.IOException) {
+                    notices?.say(res.getString(R.string.download_failed))
+                }
             }
         }
     }

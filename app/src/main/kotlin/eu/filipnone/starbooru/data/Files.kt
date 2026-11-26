@@ -39,12 +39,38 @@ object Files {
         val local = fetch(context, api, post, name)
         return withContext(Dispatchers.IO) {
             try {
-                if (Build.VERSION.SDK_INT >=
-                    Build.VERSION_CODES.Q
-                ) {
-                    intoMediaStore(context, post, name, local)
+                val (into, folder) = collection(post)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    intoMediaStore(context, into, folder, post.mime, name, local)
                 } else {
-                    intoFolder(context, post, name, local)
+                    intoFolder(context, folder, post.mime, name, local)
+                }
+            } finally {
+                local.delete()
+            }
+        }
+    }
+
+    /**
+     * Saves the picture at [url] (a lighter copy of a post) to the gallery as
+     * [name], for a site's own upload button, and answers where.
+     */
+    suspend fun saveCopy(
+        context: Context,
+        api: ApiInterface,
+        url: String,
+        name: String,
+        mime: String,
+    ): Uri {
+        val dir = File(context.cacheDir, "downloads").apply { mkdirs() }
+        val local = File(dir, name)
+        api.downloadTo(url, local.absolutePath)
+        return withContext(Dispatchers.IO) {
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    intoMediaStore(context, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, Environment.DIRECTORY_PICTURES, mime, name, local)
+                } else {
+                    intoFolder(context, Environment.DIRECTORY_PICTURES, mime, name, local)
                 }
             } finally {
                 local.delete()
@@ -116,16 +142,17 @@ object Files {
 
     private fun intoMediaStore(
         context: Context,
-        post: Post,
+        into: Uri,
+        folder: String,
+        mime: String,
         name: String,
         local: File,
     ): Uri {
         val resolver = context.contentResolver
-        val (into, folder) = collection(post)
         val values =
             ContentValues().apply {
                 put(MediaStore.MediaColumns.DISPLAY_NAME, name)
-                put(MediaStore.MediaColumns.MIME_TYPE, post.mime)
+                put(MediaStore.MediaColumns.MIME_TYPE, mime)
                 put(MediaStore.MediaColumns.RELATIVE_PATH, "$folder/$FOLDER")
                 put(MediaStore.MediaColumns.IS_PENDING, 1)
             }
@@ -145,15 +172,15 @@ object Files {
     @Suppress("DEPRECATION")
     private fun intoFolder(
         context: Context,
-        post: Post,
+        folder: String,
+        mime: String,
         name: String,
         local: File,
     ): Uri {
-        val (_, folder) = collection(post)
         val dir = File(Environment.getExternalStoragePublicDirectory(folder), FOLDER).apply { mkdirs() }
         val file = unique(dir, name)
         local.inputStream().use { input -> file.outputStream().use { input.copyTo(it) } }
-        MediaScannerConnection.scanFile(context, arrayOf(file.absolutePath), arrayOf(post.mime), null)
+        MediaScannerConnection.scanFile(context, arrayOf(file.absolutePath), arrayOf(mime), null)
         return FileProvider.getUriForFile(context, "${context.packageName}.files", file)
     }
 

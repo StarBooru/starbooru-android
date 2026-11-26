@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Reverse search when the server isn't on the internet: the copy goes to the gallery for the site's upload button. -->
+<resources>
+    <string name="reverse_save_android">Saves a small copy to upload there</string>
+    <!-- site -->
+    <string name="reverse_saved_android">Picture saved to the gallery. Upload it on %1$s from there.</string>
+</resources>

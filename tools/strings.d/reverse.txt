@@ -1,0 +1,6 @@
+# Reverse search from the viewer. Saving for an upload is Android's own, in
+# strings_reverse_android.xml.
+
+[reverse]
+reverse-button reverse-title reverse-menu reverse-lens reverse-iqdb reverse-saucenao reverse-trace
+reverse-address reverse-open reverse-read-failed

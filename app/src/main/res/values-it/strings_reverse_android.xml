@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ricerca inversa quando il server non è su internet: la copia va nella galleria, per il pulsante di caricamento del sito. -->
+<resources>
+    <string name="reverse_save_android">Salva una copia piccola da caricare lì</string>
+    <!-- site -->
+    <string name="reverse_saved_android">Immagine salvata nella galleria. Caricala su %1$s da lì.</string>
+</resources>

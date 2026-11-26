@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,11 +21,16 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -82,11 +88,54 @@ fun PostBar(
             Spacer(Modifier.width(4.dp))
             BarButton(R.drawable.ic_download, stringResource(R.string.post_download), labels) { actions.download(listOf(post)) }
             BarButton(R.drawable.ic_share, stringResource(R.string.share_button), labels) { actions.share(listOf(post)) }
+            if (Reverse.offered(post)) ReverseButton(post, actions, labels)
             Spacer(Modifier.weight(1f))
             if (!actions.guest && !post.deleted) {
                 BarButton(R.drawable.ic_delete, stringResource(R.string.post_delete_title), labels, danger = true) {
                     actions.delete(post, onGone = onDeleted, onBack = onRestored)
                 }
+            }
+        }
+    }
+}
+
+/** Find source: a menu of the four sites, each saying how the picture gets there. */
+@Composable
+private fun ReverseButton(
+    post: Post,
+    actions: PostActions,
+    labels: Boolean,
+) {
+    var open by remember { mutableStateOf(false) }
+    val reachable = Reverse.picture(post)?.let { Reverse.reachable(it) } == true
+    Box {
+        BarButton(R.drawable.ic_search, stringResource(R.string.reverse_button), labels) { open = true }
+        DropdownMenu(expanded = open, onDismissRequest = { open = false }, shape = RoundedCornerShape(28.dp)) {
+            Text(
+                stringResource(R.string.reverse_menu),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            )
+            ReverseSite.entries.forEach { site ->
+                DropdownMenuItem(
+                    text = {
+                        Column {
+                            Text(stringResource(site.label), fontWeight = FontWeight.SemiBold)
+                            Text(
+                                stringResource(if (reachable) R.string.reverse_address else R.string.reverse_save_android),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    },
+                    leadingIcon = { Icon(painterResource(if (reachable) R.drawable.ic_link else R.drawable.ic_download), null) },
+                    onClick = {
+                        open = false
+                        actions.reverse(post, site)
+                    },
+                    modifier = Modifier.heightIn(min = 56.dp),
+                )
             }
         }
     }
