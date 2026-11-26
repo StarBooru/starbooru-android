@@ -9,6 +9,7 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import eu.filipnone.starbooru.data.Account
 import eu.filipnone.starbooru.data.CoreApis
+import eu.filipnone.starbooru.data.History
 import eu.filipnone.starbooru.data.KeystoreSecretStore
 import eu.filipnone.starbooru.data.MediaCache
 import eu.filipnone.starbooru.data.SettingsStore
@@ -25,11 +26,13 @@ import kotlinx.coroutines.launch
 
 private val Context.settingsData: DataStore<Preferences> by preferencesDataStore("settings")
 private val Context.accountData: DataStore<Preferences> by preferencesDataStore("account")
+private val Context.historyData: DataStore<Preferences> by preferencesDataStore("history")
 
 /** What lives as long as the app: the stores and the session. */
 class AppGraph(context: Context) {
     val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     val settings = SettingsStore(context.settingsData)
+    val history = History(context.historyData)
     val apis = CoreApis
     val account =
         Account(

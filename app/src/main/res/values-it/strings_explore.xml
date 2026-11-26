@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="explore_nothing">Ancora niente da esplorare</string>
+    <string name="explore_nothing_body">Carica immagini o video e compariranno qui.</string>
+    <string name="explore_everything">Esplora tutto</string>
+    <string name="explore_window">Tendenze di</string>
+    <string name="explore_today">Oggi</string>
+    <string name="explore_week">Settimana</string>
+    <string name="explore_month">Mese</string>
+    <string name="explore_year">Anno</string>
+    <string name="explore_phrase_today">oggi</string>
+    <string name="explore_phrase_week">questa settimana</string>
+    <string name="explore_phrase_month">questo mese</string>
+    <string name="explore_phrase_year">quest\'anno</string>
+    <!-- count -->
+    <plurals name="explore_phrase_days">
+        <item quantity="one">nell\'ultimo giorno</item>
+        <item quantity="other">negli ultimi %1$d giorni</item>
+    </plurals>
+    <string name="explore_trending">Di tendenza</string>
+    <!-- when -->
+    <string name="explore_no_likes">Nessun Mi piace %1$s. Metti Mi piace ai post e compariranno qui.</string>
+    <string name="explore_popular_tags">Tag popolari</string>
+    <!-- when -->
+    <string name="explore_tags_note">sui post aggiunti %1$s</string>
+    <!-- when -->
+    <string name="explore_no_tags">Nessun post con tag aggiunto %1$s.</string>
+    <!-- when -->
+    <string name="explore_added">Post aggiunti %1$s</string>
+    <string name="explore_people">Persone</string>
+    <string name="explore_people_all">Vedi tutte</string>
+    <string name="explore_popular_characters">Personaggi popolari</string>
+    <!-- when -->
+    <string name="explore_characters_note">nei post piaciuti %1$s</string>
+    <!-- when -->
+    <string name="explore_no_characters">Nessun post piaciuto %1$s ha personaggi.</string>
+    <string name="explore_recent">Visti di recente</string>
+    <string name="explore_recent_clear">Svuota</string>
+    <string name="explore_recent_clear_label">Svuota i visti di recente</string>
+    <string name="explore_recent_cleared">Cronologia svuotata</string>
+    <string name="explore_on_this_day">Accadde oggi</string>
+    <string name="explore_no_memories">Nessun post aggiunto in questa data negli anni passati.</string>
+    <!-- count -->
+    <plurals name="explore_years_ago">
+        <item quantity="one">1 anno fa</item>
+        <item quantity="other">%1$d anni fa</item>
+    </plurals>
+    <string name="explore_random">Scelti a caso</string>
+    <string name="explore_shuffle">Mescola</string>
+    <string name="explore_search">Cerca in Esplora</string>
+    <string name="explore_collection">Raccolta</string>
+    <!-- when -->
+    <string name="explore_no_upvotes">Nessun voto positivo %1$s. Vota i post che ti piacciono e compariranno qui.</string>
+    <string name="explore_filter_placeholder">Restringi, ad es. -rating:e</string>
+    <string name="explore_filter_label">Restringi con una ricerca</string>
+</resources>

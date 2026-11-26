@@ -40,6 +40,8 @@ class ViewerViewModel(
     val query: String,
     val seed: Long?,
     private val saved: SavedStateHandle,
+    /** Told of each post shown, for Explore's Recently viewed. */
+    private val onSeen: (Long) -> Unit = {},
 ) : ViewModel() {
     private val posts = LinkedHashMap<Long, Post>(16, 0.75f, true)
     private val sides = HashMap<Long, Neighbors>()
@@ -121,6 +123,7 @@ class ViewerViewModel(
                         return@launch
                     }
                 _state.update { if (it.id == id) it.copy(post = post, error = null) else it }
+                if (!post.deleted) onSeen(id)
                 launch {
                     val found =
                         related[id] ?: try {

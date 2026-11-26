@@ -1,0 +1,4 @@
+# Explore.
+
+[explore]
+explore-.*

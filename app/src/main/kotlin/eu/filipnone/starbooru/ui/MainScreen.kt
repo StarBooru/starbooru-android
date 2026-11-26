@@ -46,6 +46,8 @@ import eu.filipnone.starbooru.ui.common.LocalSharedTransition
 import eu.filipnone.starbooru.ui.common.LocalViewerFocus
 import eu.filipnone.starbooru.ui.common.Notices
 import eu.filipnone.starbooru.ui.common.Soon
+import eu.filipnone.starbooru.ui.explore.ExploreScreen
+import eu.filipnone.starbooru.ui.explore.ExploreViewModel
 import eu.filipnone.starbooru.ui.frame.Frame
 import eu.filipnone.starbooru.ui.frame.LocalBars
 import eu.filipnone.starbooru.ui.frame.LocalFrame
@@ -127,10 +129,19 @@ private fun Shell(
     val notices = remember { Notices(snack, scope) }
     val current = nav.current
     var search by rememberSaveable { mutableStateOf("") }
+    var exploreQuery by rememberSaveable { mutableStateOf("") }
+    // Whose history the viewer adds to: one list per account on each server.
+    val owner =
+        when (account) {
+            is AccountState.SignedIn -> "${account.server}#${account.user.id}"
+            is AccountState.Guest -> "${account.server}#guest"
+            else -> ""
+        }
     LaunchedEffect(current) {
         when (current) {
             is GalleryRoute -> search = current.query
             is PostRoute -> search = current.query
+            ExploreRoute -> search = exploreQuery
             else -> {}
         }
     }
@@ -140,6 +151,11 @@ private fun Shell(
     val update: ((Settings) -> Settings) -> Unit = { change -> scope.launch { graph.settings.update(change) } }
     val searchFor: (String) -> Unit = searchFor@{ q ->
         val query = q.trim()
+        // On Explore, the search narrows Explore.
+        if (nav.tab == Tab.Explore && nav.current == ExploreRoute) {
+            exploreQuery = query
+            return@searchFor
+        }
         if (nav.tab != Tab.Gallery) nav.select(Tab.Gallery)
         val top = nav.current
         if (top is GalleryRoute && top.query == query) return@searchFor
@@ -182,7 +198,9 @@ private fun Shell(
                         entry<PostRoute> { route ->
                             val vm =
                                 viewModel {
-                                    ViewerViewModel(graph.account, route.id, route.query, route.seed, createSavedStateHandle())
+                                    ViewerViewModel(graph.account, route.id, route.query, route.seed, createSavedStateHandle()) { id ->
+                                        graph.scope.launch { graph.history.open(owner, id) }
+                                    }
                                 }
                             ViewerScreen(
                                 vm = vm,
@@ -194,7 +212,20 @@ private fun Shell(
                                 onSearch = searchFor,
                             )
                         }
-                        entry<ExploreRoute> { Soon(Tab.Explore.icon, stringResource(Tab.Explore.label)) }
+                        entry<ExploreRoute> {
+                            val vm = viewModel { ExploreViewModel(graph.account, graph.history, createSavedStateHandle()) }
+                            ExploreScreen(
+                                vm = vm,
+                                server = server,
+                                mode = info?.mode,
+                                query = exploreQuery,
+                                onOpen = { post -> nav.open(PostRoute(post.id)) },
+                                onSearch = { q ->
+                                    nav.select(Tab.Gallery)
+                                    nav.open(GalleryRoute(q))
+                                },
+                            )
+                        }
                         entry<TagsRoute> {
                             val vm = viewModel { TagsViewModel(graph.account, createSavedStateHandle()) }
                             TagsScreen(vm, server, onTag = { nav.open(TagRoute(it)) })

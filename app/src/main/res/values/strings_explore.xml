@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="explore_nothing">Nothing to explore yet</string>
+    <string name="explore_nothing_body">Upload images or videos, and they show up here.</string>
+    <string name="explore_everything">Explore everything</string>
+    <string name="explore_window">Trending over</string>
+    <string name="explore_today">Today</string>
+    <string name="explore_week">Week</string>
+    <string name="explore_month">Month</string>
+    <string name="explore_year">Year</string>
+    <string name="explore_phrase_today">today</string>
+    <string name="explore_phrase_week">this week</string>
+    <string name="explore_phrase_month">this month</string>
+    <string name="explore_phrase_year">this year</string>
+    <!-- count -->
+    <plurals name="explore_phrase_days">
+        <item quantity="one">in the last day</item>
+        <item quantity="other">in the last %1$d days</item>
+    </plurals>
+    <string name="explore_trending">Trending</string>
+    <!-- when -->
+    <string name="explore_no_likes">No likes %1$s. Like posts and they show up here.</string>
+    <string name="explore_popular_tags">Popular tags</string>
+    <!-- when -->
+    <string name="explore_tags_note">on posts added %1$s</string>
+    <!-- when -->
+    <string name="explore_no_tags">No tagged posts were added %1$s.</string>
+    <!-- when -->
+    <string name="explore_added">Posts added %1$s</string>
+    <string name="explore_people">People</string>
+    <string name="explore_people_all">See all</string>
+    <string name="explore_popular_characters">Popular characters</string>
+    <!-- when -->
+    <string name="explore_characters_note">in posts liked %1$s</string>
+    <!-- when -->
+    <string name="explore_no_characters">No liked posts with characters %1$s.</string>
+    <string name="explore_recent">Recently viewed</string>
+    <string name="explore_recent_clear">Clear</string>
+    <string name="explore_recent_clear_label">Clear recently viewed</string>
+    <string name="explore_recent_cleared">History cleared</string>
+    <string name="explore_on_this_day">On this day</string>
+    <string name="explore_no_memories">Nothing was added on this date in earlier years.</string>
+    <!-- count -->
+    <plurals name="explore_years_ago">
+        <item quantity="one">1 year ago</item>
+        <item quantity="other">%1$d years ago</item>
+    </plurals>
+    <string name="explore_random">Random picks</string>
+    <string name="explore_shuffle">Shuffle</string>
+    <string name="explore_search">Search Explore</string>
+    <string name="explore_collection">Collection</string>
+    <!-- when -->
+    <string name="explore_no_upvotes">No upvotes %1$s. Vote on posts you like and they show up here.</string>
+    <string name="explore_filter_placeholder">Narrow down, e.g. -rating:e</string>
+    <string name="explore_filter_label">Narrow down with a search</string>
+</resources>

@@ -63,6 +63,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -328,6 +329,7 @@ private fun SearchCapsule(
     modifier: Modifier = Modifier,
 ) {
     val label = stringResource(R.string.search_label)
+    val focus = LocalFocusManager.current
     Row(
         modifier
             .height(BarHeight)
@@ -352,26 +354,39 @@ private fun SearchCapsule(
                 modifier = Modifier.padding(start = 8.dp, end = 4.dp).size(24.dp),
             )
         }
-        Box(Modifier.weight(1f).padding(horizontal = 6.dp), contentAlignment = Alignment.CenterStart) {
-            if (text.isEmpty()) {
-                Text(
-                    stringResource(R.string.search_placeholder),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.bodyLarge,
-                    maxLines = 1,
-                )
-            }
-            BasicTextField(
-                value = text,
-                onValueChange = onText,
-                singleLine = true,
-                textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
-                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search, autoCorrectEnabled = false),
-                keyboardActions = KeyboardActions(onSearch = { onSubmit(text) }),
-                modifier = Modifier.fillMaxWidth().semantics { contentDescription = label },
-            )
-        }
+        // The field takes the whole capsule, so a tap anywhere on it types.
+        BasicTextField(
+            value = text,
+            onValueChange = onText,
+            singleLine = true,
+            textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search, autoCorrectEnabled = false),
+            keyboardActions =
+                KeyboardActions(onSearch = {
+                    onSubmit(text)
+                    // The results take the screen the keyboard had.
+                    focus.clearFocus()
+                }),
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .semantics { contentDescription = label },
+            decorationBox = { field ->
+                Box(Modifier.fillMaxSize().padding(horizontal = 6.dp), contentAlignment = Alignment.CenterStart) {
+                    if (text.isEmpty()) {
+                        Text(
+                            stringResource(R.string.search_placeholder),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.bodyLarge,
+                            maxLines = 1,
+                        )
+                    }
+                    field()
+                }
+            },
+        )
         if (text.isNotEmpty()) {
             IconButton(onClick = {
                 onText("")
