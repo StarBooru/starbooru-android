@@ -13,7 +13,7 @@ class ZoomTest {
     private fun assertAt(
         x: Float,
         y: Float,
-        zoom: Zoom
+        zoom: Zoom,
     ) {
         assertEquals("x of $zoom", x, zoom.offset.x, 1e-4f)
         assertEquals("y of $zoom", y, zoom.offset.y, 1e-4f)
@@ -71,7 +71,7 @@ class ZoomTest {
             WheelDelta.Pixels(80f),
             WheelDelta.Lines(3f),
             WheelDelta.Lines(6f),
-            WheelDelta.Pages(1f)
+            WheelDelta.Pages(1f),
         )) {
             assertEquals("$delta", notch, wheelFactor(delta), 1e-6f)
         }
@@ -110,7 +110,7 @@ class ZoomTest {
             WheelDelta.Pixels(Float.NaN),
             WheelDelta.Lines(Float.NaN),
             WheelDelta.Pages(Float.NaN),
-            WheelDelta.Notches(Float.NaN)
+            WheelDelta.Notches(Float.NaN),
         )) {
             assertEquals("$delta", z, z.zoomAt(wheelFactor(delta), Offset.Zero, bounds))
         }

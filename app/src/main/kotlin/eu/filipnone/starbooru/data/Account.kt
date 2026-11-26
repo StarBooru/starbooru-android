@@ -86,6 +86,9 @@ class Account(private val store: DataStore<Preferences>, private val secrets: Se
             val id = prefs[USER_ID]
             val name = prefs[USERNAME]
             val guest = prefs[GUEST_SERVER]
+            // A token without its session (a write that failed on a full
+            // disk) is never used again: forget it.
+            if (token != null && server == null) secrets.write(null)
             val next =
                 when {
                     server != null && token != null && id != null && name != null ->

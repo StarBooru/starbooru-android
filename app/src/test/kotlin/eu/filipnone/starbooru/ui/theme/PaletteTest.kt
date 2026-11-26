@@ -23,7 +23,7 @@ class PaletteTest {
     private fun rgb(
         r: Int,
         g: Int,
-        b: Int
+        b: Int,
     ): Int = (0xFF shl 24) or (r shl 16) or (g shl 8) or b
 
     private fun hex(argb: Int): String = "#%06x".format(argb and 0xFFFFFF)
@@ -83,7 +83,7 @@ class PaletteTest {
     fun findsTheHueOfAColour() {
         fun near(
             argb: Int,
-            want: Int
+            want: Int,
         ) {
             val got = hueOf(argb)
             assertNotNull(hex(argb), got)
@@ -171,7 +171,7 @@ class PaletteTest {
             Role("cat-artist", 0.5, 0.16, 110.0),
             Role("cat-character", 0.5, 0.14, 215.0),
             Role("cat-copyright", 0.5, 0.16, 40.0),
-            Role("cat-meta", 0.5, 0.12, 300.0)
+            Role("cat-meta", 0.5, 0.12, 300.0),
         )
 
     private val darkRoles =
@@ -190,7 +190,7 @@ class PaletteTest {
             Role("cat-artist", 0.8, 0.12, 110.0),
             Role("cat-character", 0.8, 0.11, 215.0),
             Role("cat-copyright", 0.8, 0.12, 40.0),
-            Role("cat-meta", 0.8, 0.09, 300.0)
+            Role("cat-meta", 0.8, 0.09, 300.0),
         )
 
     /** The roles by the names tokens.css gives them, as opaque ARGB. */
@@ -219,12 +219,12 @@ class PaletteTest {
             "scrim" to scrim,
             "on-scrim" to onScrim,
             "aurora" to aurora,
-            "shadow" to shadow
+            "shadow" to shadow,
         ).mapValues { (_, color) -> color.copy(alpha = 1f).toArgb() }
 
     private fun palette(
         look: Look,
-        seed: Seed
+        seed: Seed,
     ): Map<String, Int> = starRoles(seed, look).byName()
 
     private fun Map<String, Int>.role(name: String): Int = this[name] ?: error("no --$name")
@@ -262,7 +262,7 @@ class PaletteTest {
         val o = starRoles(Seed.preset(285), Look.Oled)
         assertEquals(
             d.copy(canvas = o.canvas, surface = o.surface, surface2 = o.surface2, surface3 = o.surface3, glass = o.glass, stage = o.stage),
-            o
+            o,
         )
         assertEquals(hex(oklchToArgb(0.17, 0.014, 285.0)), hex(o.surface))
         assertEquals(0.8f, o.glass.alpha, 0.01f)
@@ -289,7 +289,7 @@ class PaletteTest {
     fun whiteAndBlackAreToldApartAndStayReadable() {
         fun primary(
             look: Look,
-            argb: Int
+            argb: Int,
         ) = hex(starRoles(Seed.picked(argb), look).primary)
         // Light can't show a white primary on its white canvas: white is the
         // lightest grey that white text still reads on, black is near black.
@@ -306,11 +306,11 @@ class PaletteTest {
     /** `starbooru_core::color::wheel_color`: the colour picker's wheel, hues clockwise from red at the top. */
     private fun wheelColor(
         x: Double,
-        y: Double
+        y: Double,
     ): Int {
         fun remEuclid(
             a: Double,
-            b: Double
+            b: Double,
         ) = (a % b).let { if (it < 0) it + b else it }
         val saturation = min(hypot(x, y), 1.0)
         val hue = remEuclid(atan2(x, -y) * (180.0 / PI), 360.0) / 60.0
@@ -349,7 +349,7 @@ class PaletteTest {
                 rgb(0xc0, 0xe0, 0xff),
                 rgb(0x40, 0x00, 0x00),
                 rgb(0x00, 0x00, 0x80),
-                rgb(0x00, 0xa0, 0xa0)
+                rgb(0x00, 0xa0, 0xa0),
             )
         return all + picks.map { Seed.picked(it) }
     }
@@ -373,7 +373,7 @@ class PaletteTest {
                 Pairing("an artist's chip", "cat-artist", "surface-2", 4.0),
                 Pairing("a character's chip", "cat-character", "surface-2", 4.0),
                 Pairing("a copyright's chip", "cat-copyright", "surface-2", 4.0),
-                Pairing("a meta tag's chip", "cat-meta", "surface-2", 4.0)
+                Pairing("a meta tag's chip", "cat-meta", "surface-2", 4.0),
             )
         for (seed in accents()) {
             for (look in looks) {
@@ -392,7 +392,7 @@ class PaletteTest {
     fun oledIsBlackWithSurfacesThatStandApart() {
         fun Map<String, Int>.step(
             a: String,
-            b: String
+            b: String,
         ) = oklabOf(role(a)).l - oklabOf(role(b)).l
         for (seed in accents()) {
             val oled = palette(Look.Oled, seed)
@@ -407,7 +407,7 @@ class PaletteTest {
             assertTrue(
                 "$seed",
                 contrastRatio(oled.role("outline"), oled.role("surface")) >=
-                    contrastRatio(dark.role("outline"), dark.role("surface"))
+                    contrastRatio(dark.role("outline"), dark.role("surface")),
             )
         }
     }

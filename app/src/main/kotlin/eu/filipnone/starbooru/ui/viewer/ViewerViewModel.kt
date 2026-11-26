@@ -58,16 +58,23 @@ class ViewerViewModel(
     fun go(side: Side): Boolean {
         val s = _state.value
         val near = s.neighbors
-        if (near == null) {
+        // Before the server says, the post standing in on that side (the one
+        // just left) can still be gone back to.
+        val standIn =
+            when (side) {
+                Side.Prev -> s.prev
+                Side.Next -> s.next
+            }
+        if (near == null && standIn == null) {
             // The neighbours never came: ask again rather than stay stuck.
             if (loading?.isActive != true) load(s.id)
             return false
         }
         val id =
             when (side) {
-                Side.Prev -> near.prev
-                Side.Next -> near.next
-            } ?: return false
+                Side.Prev -> near?.prev
+                Side.Next -> near?.next
+            } ?: standIn?.id ?: return false
         saved[ID] = id
         val known = sides[id]
         // What's already here stands in until the server answers: the post
@@ -135,11 +142,16 @@ class ViewerViewModel(
                         return@launch
                     }
                 _state.update { if (it.id == id) it.copy(neighbors = near) else it }
-                // Each side on its own, so one that fails leaves the other.
-                val prev = near.prev?.let { fetch(it) }
-                _state.update { if (it.id == id) it.copy(prev = prev) else it }
-                val next = near.next?.let { fetch(it) }
-                _state.update { if (it.id == id) it.copy(next = next) else it }
+                // Both sides at once, each on its own: a slow or failing one
+                // doesn't hold the other back.
+                launch {
+                    val prev = near.prev?.let { fetch(it) }
+                    _state.update { if (it.id == id) it.copy(prev = prev) else it }
+                }
+                launch {
+                    val next = near.next?.let { fetch(it) }
+                    _state.update { if (it.id == id) it.copy(next = next) else it }
+                }
             }
     }
 
