@@ -153,6 +153,7 @@ fun ViewerScreen(
     onBack: () -> Unit,
     onSearch: (String) -> Unit,
     onOpen: (Post) -> Unit,
+    onTag: (String) -> Unit = {},
 ) {
     val flow by vm.state.collectAsStateWithLifecycle()
     val actions = rememberPostActions(account) { vm.replace(it) }
@@ -204,7 +205,7 @@ fun ViewerScreen(
             @Composable { modifier: Modifier ->
                 Column(modifier.graphicsLayer { alpha = 1f - pull }) {
                     when {
-                        post != null -> PostDetails(post, onSearch)
+                        post != null -> PostDetails(post, onSearch, onTag)
                         error != null -> Problem(describe(error, server), vm::retry)
                     }
                 }

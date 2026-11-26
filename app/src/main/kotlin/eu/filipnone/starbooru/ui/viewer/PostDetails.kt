@@ -3,6 +3,7 @@ package eu.filipnone.starbooru.ui.viewer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -57,10 +58,11 @@ import java.util.TimeZone
 fun PostDetails(
     post: Post,
     onSearch: (String) -> Unit,
+    onTag: (String) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Column(modifier, verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        TagsCard(post, onSearch)
+        TagsCard(post, onSearch, onTag)
         DetailsCard(post, onSearch)
     }
 }
@@ -88,6 +90,7 @@ private fun Card(
 private fun TagsCard(
     post: Post,
     onSearch: (String) -> Unit,
+    onTag: (String) -> Unit,
 ) {
     val groups = remember(post.tagDetails, post.tags) { groupTags(post.tagDetails) }
     Card(stringResource(R.string.post_tags)) {
@@ -96,7 +99,7 @@ private fun TagsCard(
         } else if (groups.isEmpty()) {
             // A list from an older server, without categories.
             FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                post.tags.forEach { TagChip(it, TagCategory.GENERAL, onSearch) }
+                post.tags.forEach { TagChip(it, TagCategory.GENERAL, onSearch, onTag) }
             }
         } else {
             val headed = tagGroupsHeaded(groups)
@@ -111,7 +114,7 @@ private fun TagsCard(
                     )
                 }
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    group.tags.forEach { TagChip(it.name, it.category, onSearch) }
+                    group.tags.forEach { TagChip(it.name, it.category, onSearch, onTag) }
                 }
             }
         }
@@ -152,6 +155,7 @@ private fun TagChip(
     name: String,
     category: TagCategory,
     onSearch: (String) -> Unit,
+    onTag: (String) -> Unit,
 ) {
     val roles = StarBooruTheme.roles
     val colour =
@@ -168,7 +172,12 @@ private fun TagChip(
             .clip(RoundedCornerShape(8.dp))
             .background(roles.surface2)
             .border(1.dp, roles.outline, RoundedCornerShape(8.dp))
-            .clickable(role = Role.Button) { onSearch(name) }
+            // A tap searches the tag; a long press opens its page.
+            .combinedClickable(
+                role = Role.Button,
+                onLongClickLabel = stringResource(R.string.tag_menu_details),
+                onLongClick = { onTag(name) },
+            ) { onSearch(name) }
             .padding(horizontal = 12.dp, vertical = 6.dp),
         contentAlignment = Alignment.Center,
     ) {

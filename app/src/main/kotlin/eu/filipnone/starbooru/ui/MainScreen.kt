@@ -189,6 +189,7 @@ private fun Shell(
                                 account = graph.account,
                                 server = server,
                                 onOpen = { post -> nav.open(PostRoute(post.id)) },
+                                onTag = { nav.open(TagRoute(it)) },
                                 onBack = { nav.back() },
                                 onSearch = searchFor,
                             )
