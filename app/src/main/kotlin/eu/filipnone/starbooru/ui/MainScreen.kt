@@ -41,6 +41,7 @@ import eu.filipnone.starbooru.core.ScoreKind
 import eu.filipnone.starbooru.core.trashQuery
 import eu.filipnone.starbooru.data.AccountState
 import eu.filipnone.starbooru.data.Settings
+import eu.filipnone.starbooru.ui.common.LocalGuest
 import eu.filipnone.starbooru.ui.common.LocalNotices
 import eu.filipnone.starbooru.ui.common.LocalReducedMotion
 import eu.filipnone.starbooru.ui.common.LocalSharedTransition
@@ -174,6 +175,7 @@ private fun Shell(
             LocalViewerFocus provides focus,
             LocalBars provides bars,
             LocalNotices provides notices,
+            LocalGuest provides guest,
         ) {
             Frame(
                 tabs = tabs,
