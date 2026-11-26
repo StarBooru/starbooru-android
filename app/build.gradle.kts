@@ -25,7 +25,7 @@ plugins {
 
 // The version of the next release. versionCode grows with it, and stays above
 // the reference's 1 so this app updates it in place.
-val appVersion = "0.1.0"
+val appVersion = "0.2.0"
 
 fun versionCodeOf(version: String): Int {
     val (major, minor, patch) =

@@ -1,6 +1,6 @@
 # Roadmap
 
-_Status as of 2026-11-26: Foundation done (v0.1.0). Scope comes from starbooru-server's `docs/checklist.md` › android app. starbooru-web already has everything the server offers an app (its `docs/roadmap.md` and `docs/architecture.md`), so this app follows it screen by screen and adds what a phone or a tablet does better. Items marked (server) need starbooru-server first._
+_Status as of 2026-11-27: Foundation (v0.1.0) and Daily use (v0.2.0) done. Scope comes from starbooru-server's `docs/checklist.md` › android app. starbooru-web already has everything the server offers an app (its `docs/roadmap.md` and `docs/architecture.md`), so this app follows it screen by screen and adds what a phone or a tablet does better. Items marked (server) need starbooru-server first._
 
 ## Phones and tablets
 
@@ -30,10 +30,10 @@ An item below is done when it works at all three widths, with either hand, in li
 
 - [x] Search in the top bar with tag autocomplete, typo correction and the cheat sheet
 - [x] A tile's menu on a long press, swipes on tiles chosen per direction, a drag across tiles to select several, mass edit
-- [ ] Tag editor with chips and a new tag's category, the Tags page and each tag's page
+- [x] Tag editor with chips and a new tag's category, the Tags page and each tag's page
 - [x] Explore: recently viewed, People, On this day and random picks; Trending, Popular tags and Popular characters on a public server; the top bar's search narrows it
 - [x] Saved searches that reopen where they were left, votes as likes or stars, related posts in one row to run a thumb along
-- [ ] Upload from the photo picker, a folder, the share sheet, links and the clipboard, in chunks under WorkManager with a progress notification, finishing after the app closes (the reference couldn't)
+- [x] Upload from the photo picker, a folder, the share sheet, links and the clipboard, in chunks under WorkManager with a progress notification, finishing after the app closes (the reference couldn't)
 - [x] Download a post or a selection to the phone's gallery, never over a file of the same name, with a notice that opens it
 - [x] Recycle bin
 - [x] Media cache on disk keyed by SHA-256, with its limit, size and Clear in Settings. Offline, what's cached still opens and each page says it can't reach the server
@@ -53,7 +53,7 @@ An item below is done when it works at all three widths, with either hand, in li
 - [ ] Tag blacklist, with covered posts in the viewer
 - [ ] The home page and its drifting background
 - [ ] Administration, the server's updates included
-- [ ] Privacy and terms pages
+- [x] Privacy and terms pages
 
 ## 4. Phones
 
