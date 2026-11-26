@@ -1,7 +1,6 @@
 package eu.filipnone.starbooru.ui.settings
 
 import android.os.Build
-import android.text.format.Formatter
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -63,6 +62,7 @@ import eu.filipnone.starbooru.data.Hand
 import eu.filipnone.starbooru.data.MediaCache
 import eu.filipnone.starbooru.data.Settings
 import eu.filipnone.starbooru.data.ThemeMode
+import eu.filipnone.starbooru.ui.common.fileSize
 import eu.filipnone.starbooru.ui.frame.LocalFrame
 import eu.filipnone.starbooru.ui.theme.SWATCHES
 import eu.filipnone.starbooru.ui.theme.Seed
@@ -166,7 +166,7 @@ private fun CacheCard(
         Hint(stringResource(R.string.cache_hint))
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                stringResource(R.string.cache_used, used?.let { Formatter.formatShortFileSize(context, it) } ?: "…"),
+                stringResource(R.string.cache_used, used?.let { fileSize(it) } ?: "…"),
                 modifier = Modifier.weight(1f),
             )
             FilledTonalButton(
@@ -191,7 +191,12 @@ private fun CacheCard(
                             if (mb == 0) {
                                 stringResource(R.string.cache_off)
                             } else {
-                                Formatter.formatShortFileSize(context, mb * 1024L * 1024L)
+                                // Whole numbers: the choices are round.
+                                if (mb < 1024) {
+                                    stringResource(R.string.size_mb, mb.toString())
+                                } else {
+                                    stringResource(R.string.size_gb, (mb / 1024).toString())
+                                }
                             },
                         )
                     },

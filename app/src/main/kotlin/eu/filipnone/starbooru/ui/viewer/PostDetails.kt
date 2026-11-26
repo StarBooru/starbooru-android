@@ -37,21 +37,19 @@ import eu.filipnone.starbooru.R
 import eu.filipnone.starbooru.core.MediaKind
 import eu.filipnone.starbooru.core.Post
 import eu.filipnone.starbooru.core.Rating
-import eu.filipnone.starbooru.core.SizeUnit
 import eu.filipnone.starbooru.core.TagCategory
 import eu.filipnone.starbooru.core.TagGroup
 import eu.filipnone.starbooru.core.TagGroupKind
 import eu.filipnone.starbooru.core.colorQuery
 import eu.filipnone.starbooru.core.dimensions
 import eu.filipnone.starbooru.core.fileDateText
-import eu.filipnone.starbooru.core.fileSizeParts
 import eu.filipnone.starbooru.core.formatDuration
 import eu.filipnone.starbooru.core.groupTags
 import eu.filipnone.starbooru.core.sourceUrl
 import eu.filipnone.starbooru.core.tagGroupsHeaded
 import eu.filipnone.starbooru.core.timeText
+import eu.filipnone.starbooru.ui.common.fileSize
 import eu.filipnone.starbooru.ui.theme.StarBooruTheme
-import java.text.DecimalFormatSymbols
 import java.util.TimeZone
 
 /** The cards beside or under the picture: its tags, then the file's details. */
@@ -194,11 +192,9 @@ private fun DetailsCard(
     val uri = LocalUriHandler.current
     val zone = remember { TimeZone.getDefault() }
     fun offset(at: Long) = zone.getOffset(at) / 1000
-    val mark = remember { DecimalFormatSymbols.getInstance().decimalSeparator.toString() }
     Card(stringResource(R.string.post_details)) {
         Row(stringResource(R.string.rating), ratingName(post.rating))
-        val size = fileSizeParts(post.fileSize, mark)
-        Row(stringResource(R.string.post_size), sizeText(size.number, size.unit))
+        Row(stringResource(R.string.post_size), fileSize(post.fileSize))
         Row(stringResource(R.string.post_dimensions), dimensions(post.width, post.height))
         if (post.kind == MediaKind.VIDEO) post.durationMs?.let { formatDuration(it) }?.let { Row(stringResource(R.string.post_length), it) }
         Row(stringResource(R.string.post_type), post.mime)
@@ -275,22 +271,6 @@ private fun ratingName(rating: Rating): String =
             Rating.QUESTIONABLE -> R.string.rating_questionable
             Rating.EXPLICIT -> R.string.rating_explicit
         },
-    )
-
-@Composable
-private fun sizeText(
-    number: String,
-    unit: SizeUnit,
-): String =
-    stringResource(
-        when (unit) {
-            SizeUnit.B -> R.string.size_b
-            SizeUnit.KB -> R.string.size_kb
-            SizeUnit.MB -> R.string.size_mb
-            SizeUnit.GB -> R.string.size_gb
-            SizeUnit.TB -> R.string.size_tb
-        },
-        number,
     )
 
 private fun parse(hex: String): Color? {
