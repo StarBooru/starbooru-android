@@ -50,6 +50,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.AbsoluteAlignment
@@ -58,6 +59,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
@@ -71,8 +73,10 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -80,6 +84,7 @@ import androidx.compose.ui.unit.sp
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 import eu.filipnone.starbooru.R
+import eu.filipnone.starbooru.core.SavedSearch
 import eu.filipnone.starbooru.data.Hand
 import eu.filipnone.starbooru.ui.nav.Tab
 import eu.filipnone.starbooru.ui.theme.StarBooruTheme
@@ -119,6 +124,9 @@ fun Frame(
     search: String,
     onSearch: (String) -> Unit,
     onSubmit: (String) -> Unit,
+    /** What the search box suggests, if anything; the frame draws it under the box. */
+    hints: SearchHints?,
+    savedSearches: List<SavedSearch>?,
     onBrand: () -> Unit,
     onSignIn: (() -> Unit)?,
     content: @Composable () -> Unit,
@@ -199,6 +207,8 @@ fun Frame(
                     search = search,
                     onSearch = onSearch,
                     onSubmit = onSubmit,
+                    hints = hints,
+                    savedSearches = savedSearches,
                     onBrand = onBrand,
                     modifier = Modifier.padding(top = sysTop + gap, start = sysLeft + gap, end = sysRight + gap),
                     roles = roles,
@@ -264,15 +274,17 @@ private fun TopBar(
     search: String,
     onSearch: (String) -> Unit,
     onSubmit: (String) -> Unit,
+    hints: SearchHints?,
+    savedSearches: List<SavedSearch>?,
     onBrand: () -> Unit,
     roles: StarRoles,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier.fillMaxWidth().height(BarHeight)) {
+    Box(modifier.fillMaxWidth()) {
         if (width != WidthClass.Compact) {
             Row(
                 Modifier
-                    .align(Alignment.CenterStart)
+                    .align(Alignment.TopStart)
                     .height(BarHeight)
                     .glass(CircleShape, roles)
                     .clickable(onClick = onBrand)
@@ -301,7 +313,7 @@ private fun TopBar(
                 Modifier.fillMaxWidth()
             } else {
                 Modifier
-                    .align(Alignment.Center)
+                    .align(Alignment.TopCenter)
                     .padding(horizontal = if (width == WidthClass.Expanded) 200.dp else 64.dp)
                     .widthIn(max = 680.dp)
                     .fillMaxWidth()
@@ -310,6 +322,8 @@ private fun TopBar(
             text = search,
             onText = onSearch,
             onSubmit = onSubmit,
+            hints = hints,
+            savedSearches = savedSearches,
             leadingBrand = width == WidthClass.Compact,
             onBrand = onBrand,
             roles = roles,
@@ -323,6 +337,8 @@ private fun SearchCapsule(
     text: String,
     onText: (String) -> Unit,
     onSubmit: (String) -> Unit,
+    hints: SearchHints?,
+    savedSearches: List<SavedSearch>?,
     leadingBrand: Boolean,
     onBrand: () -> Unit,
     roles: StarRoles,
@@ -330,75 +346,104 @@ private fun SearchCapsule(
 ) {
     val label = stringResource(R.string.search_label)
     val focus = LocalFocusManager.current
-    Row(
-        modifier
-            .height(BarHeight)
-            .glass(CircleShape, roles)
-            .padding(start = 8.dp, end = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        if (leadingBrand) {
-            IconButton(onClick = onBrand, modifier = Modifier.size(44.dp)) {
-                Icon(
-                    painterResource(R.drawable.ic_brand_mark_compact),
-                    contentDescription = stringResource(R.string.app_name),
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.height(28.dp).aspectRatio(512f / 436f),
-                )
-            }
-        } else {
-            Icon(
-                painterResource(R.drawable.ic_search),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(start = 8.dp, end = 4.dp).size(24.dp),
-            )
-        }
-        // The field takes the whole capsule, so a tap anywhere on it types.
-        BasicTextField(
-            value = text,
-            onValueChange = onText,
-            singleLine = true,
-            textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
-            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search, autoCorrectEnabled = false),
-            keyboardActions =
-                KeyboardActions(onSearch = {
-                    onSubmit(text)
-                    // The results take the screen the keyboard had.
-                    focus.clearFocus()
-                }),
-            modifier =
-                Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-                    .semantics { contentDescription = label },
-            decorationBox = { field ->
-                Box(Modifier.fillMaxSize().padding(horizontal = 6.dp), contentAlignment = Alignment.CenterStart) {
-                    if (text.isEmpty()) {
-                        Text(
-                            stringResource(R.string.search_placeholder),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            style = MaterialTheme.typography.bodyLarge,
-                            maxLines = 1,
-                        )
-                    }
-                    field()
+    // The caret is the box's own; the words come from outside, as pages change them.
+    var value by remember { mutableStateOf(TextFieldValue(text, TextRange(text.length))) }
+    if (value.text != text) value = TextFieldValue(text, TextRange(text.length))
+    var focused by remember { mutableStateOf(false) }
+    LaunchedEffect(value, focused, savedSearches) { hints?.typed(value, savedSearches, focused) }
+    val submit = { q: String ->
+        onSubmit(q)
+        hints?.close()
+        // The results take the screen the keyboard had.
+        focus.clearFocus()
+    }
+    Column(modifier) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .height(BarHeight)
+                .glass(CircleShape, roles)
+                .padding(start = 8.dp, end = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (leadingBrand) {
+                IconButton(onClick = onBrand, modifier = Modifier.size(44.dp)) {
+                    Icon(
+                        painterResource(R.drawable.ic_brand_mark_compact),
+                        contentDescription = stringResource(R.string.app_name),
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.height(28.dp).aspectRatio(512f / 436f),
+                    )
                 }
-            },
-        )
-        if (text.isNotEmpty()) {
-            IconButton(onClick = {
-                onText("")
-                onSubmit("")
-            }, modifier = Modifier.size(44.dp)) {
+            } else {
                 Icon(
-                    painterResource(R.drawable.ic_close),
-                    contentDescription = stringResource(R.string.search_clear),
+                    painterResource(R.drawable.ic_search),
+                    contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(20.dp),
+                    modifier = Modifier.padding(start = 8.dp, end = 4.dp).size(24.dp),
                 )
             }
+            // The field takes the whole capsule, so a tap anywhere on it types.
+            BasicTextField(
+                value = value,
+                onValueChange = {
+                    value = it
+                    if (it.text != text) onText(it.text)
+                },
+                singleLine = true,
+                textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search, autoCorrectEnabled = false),
+                keyboardActions = KeyboardActions(onSearch = { submit(value.text) }),
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .onFocusChanged { focused = it.isFocused }
+                        .semantics { contentDescription = label },
+                decorationBox = { field ->
+                    Box(Modifier.fillMaxSize().padding(horizontal = 6.dp), contentAlignment = Alignment.CenterStart) {
+                        if (value.text.isEmpty()) {
+                            Text(
+                                stringResource(R.string.search_placeholder),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                style = MaterialTheme.typography.bodyLarge,
+                                maxLines = 1,
+                            )
+                        }
+                        field()
+                    }
+                },
+            )
+            if (value.text.isNotEmpty()) {
+                IconButton(onClick = {
+                    onText("")
+                    submit("")
+                }, modifier = Modifier.size(44.dp)) {
+                    Icon(
+                        painterResource(R.drawable.ic_close),
+                        contentDescription = stringResource(R.string.search_clear),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
+            }
+        }
+        if (hints != null) {
+            SuggestionList(
+                hints = hints.hints,
+                onTag = { tag ->
+                    hints.complete(value, tag.name)?.let {
+                        value = it
+                        onText(it.text)
+                    }
+                },
+                onSaved = { saved ->
+                    onText(saved.query)
+                    submit(saved.query)
+                },
+                modifier = Modifier.padding(top = 8.dp),
+            )
         }
     }
 }

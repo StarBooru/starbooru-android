@@ -51,6 +51,7 @@ import eu.filipnone.starbooru.ui.explore.ExploreViewModel
 import eu.filipnone.starbooru.ui.frame.Frame
 import eu.filipnone.starbooru.ui.frame.LocalBars
 import eu.filipnone.starbooru.ui.frame.LocalFrame
+import eu.filipnone.starbooru.ui.frame.SearchHints
 import eu.filipnone.starbooru.ui.gallery.GalleryScreen
 import eu.filipnone.starbooru.ui.gallery.GalleryViewModel
 import eu.filipnone.starbooru.ui.nav.ExploreRoute
@@ -125,6 +126,8 @@ private fun Shell(
     val tabs = Tab.shown(public, guest)
     val focus = remember { mutableStateOf<Long?>(null) }
     val bars = remember { mutableStateOf(true) }
+    val hints = remember(graph) { SearchHints(graph.account) }
+    val savedList by graph.savedSearches.list.collectAsStateWithLifecycle()
     val snack = remember { SnackbarHostState() }
     val notices = remember { Notices(snack, scope) }
     val current = nav.current
@@ -178,6 +181,8 @@ private fun Shell(
                 search = search,
                 onSearch = { search = it },
                 onSubmit = searchFor,
+                hints = hints,
+                savedSearches = savedList,
                 onBrand = { nav.select(Tab.Gallery) },
                 onSignIn = if (guest) ({ scope.launch { graph.account.toSignIn() } }) else null,
             ) {
