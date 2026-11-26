@@ -34,6 +34,7 @@ settings-account settings-signed-in-as settings-server-version settings-sign-out
 settings-appearance settings-theme theme-system theme-light theme-dark settings-oled
 settings-oled-hint settings-accent settings-accent-custom accent-.* settings-hand hand-.*
 settings-language settings-language-system lang-english lang-italian
+settings-gestures settings-swipe-left settings-swipe-right
 
 [player]
 player-play player-pause player-replay player-position player-mute player-unmute player-loop

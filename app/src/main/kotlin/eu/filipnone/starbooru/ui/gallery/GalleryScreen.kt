@@ -1,5 +1,6 @@
 package eu.filipnone.starbooru.ui.gallery
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -47,6 +48,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -54,12 +56,16 @@ import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -75,6 +81,9 @@ import coil3.compose.AsyncImage
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 import eu.filipnone.starbooru.R
+import eu.filipnone.starbooru.core.BulkEdit
+import eu.filipnone.starbooru.core.BulkResult
+import eu.filipnone.starbooru.core.CoreException
 import eu.filipnone.starbooru.core.GalleryView
 import eu.filipnone.starbooru.core.MediaKind
 import eu.filipnone.starbooru.core.Post
@@ -88,18 +97,24 @@ import eu.filipnone.starbooru.core.searchTitle
 import eu.filipnone.starbooru.core.sorted
 import eu.filipnone.starbooru.core.sorts
 import eu.filipnone.starbooru.core.toMiddle
+import eu.filipnone.starbooru.data.Account
 import eu.filipnone.starbooru.data.Settings
+import eu.filipnone.starbooru.ui.common.LocalNotices
 import eu.filipnone.starbooru.ui.common.LocalReducedMotion
 import eu.filipnone.starbooru.ui.common.LocalViewerFocus
 import eu.filipnone.starbooru.ui.common.Media
 import eu.filipnone.starbooru.ui.common.clock
 import eu.filipnone.starbooru.ui.common.describe
+import eu.filipnone.starbooru.ui.common.rememberPostActions
 import eu.filipnone.starbooru.ui.common.sharedPost
 import eu.filipnone.starbooru.ui.common.tintColor
 import eu.filipnone.starbooru.ui.frame.LocalFrame
 import eu.filipnone.starbooru.ui.frame.LocalGlassSource
 import eu.filipnone.starbooru.ui.frame.WidthClass
 import eu.filipnone.starbooru.ui.frame.glass
+import eu.filipnone.starbooru.ui.gestures.Side
+import eu.filipnone.starbooru.ui.gestures.SwipeAction
+import eu.filipnone.starbooru.ui.gestures.TileSwipe
 import eu.filipnone.starbooru.ui.theme.StarBooruTheme
 import eu.filipnone.starbooru.ui.theme.StarSpringEasing
 import kotlin.math.floor
@@ -111,6 +126,7 @@ private const val GAP_DP = 8.0
 @Composable
 fun GalleryScreen(
     vm: GalleryViewModel,
+    account: Account,
     server: String,
     settings: Settings,
     onSettings: ((Settings) -> Settings) -> Unit,
@@ -118,6 +134,48 @@ fun GalleryScreen(
     onSearch: (String) -> Unit,
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
+    val selecting by vm.selecting.collectAsStateWithLifecycle()
+    val selection by vm.selection.collectAsStateWithLifecycle()
+    val actions = rememberPostActions(account) { vm.replace(it) }
+
+    // What a tile's menu or a swipe does to one post.
+    fun run(
+        choice: TileChoice,
+        post: Post,
+    ) {
+        when (choice) {
+            TileChoice.Open -> onOpen(post)
+
+            TileChoice.Like -> actions.like(post)
+
+            TileChoice.Select -> {
+                vm.select(true)
+                vm.setSelection(vm.selection.value.toggle(post.id))
+            }
+
+            TileChoice.Share -> actions.share(listOf(post))
+
+            TileChoice.Download -> actions.download(listOf(post))
+
+            TileChoice.Delete -> {
+                var gone = emptyList<Pair<Int, Post>>()
+                actions.delete(post, onGone = { gone = vm.remove(setOf(post.id)) }, onBack = { back ->
+                    vm.putBack(
+                        gone.map {
+                            it.first to
+                                back
+                        },
+                    )
+                })
+            }
+        }
+    }
+    val haptics = LocalHapticFeedback.current
+    var menuFor by rememberSaveable { mutableStateOf<Long?>(null) }
+    var editing by rememberSaveable { mutableStateOf(false) }
+    val touch = remember { GridTouch() }
+    val res = LocalResources.current
+    val notices = LocalNotices.current
     val frame = LocalFrame.current
     val density = LocalDensity.current
     val scroll = rememberScrollState()
@@ -164,6 +222,86 @@ fun GalleryScreen(
                 layout.tiles.indices.filter { i ->
                     val t = layout.tiles[i]
                     t.y + t.height >= from && t.y <= to
+                }
+            }
+
+        val visibleNow by rememberUpdatedState(visible)
+        val layoutNow by rememberUpdatedState(layout)
+        val postsNow by rememberUpdatedState(state.posts)
+        val selectingNow by rememberUpdatedState(selecting)
+        val settingsNow by rememberUpdatedState(settings)
+        val host =
+            remember {
+                object : GridHost {
+                    override fun tileAt(at: Offset): Pair<Long, Float>? {
+                        val x = at.x / pxPerDp
+                        val y = at.y / pxPerDp
+                        val tiles = layoutNow.tiles
+                        val i =
+                            visibleNow.firstOrNull { i ->
+                                val t = tiles.getOrNull(i) ?: return@firstOrNull false
+                                x >= t.x && x < t.x + t.width && y >= t.y && y < t.y + t.height
+                            } ?: return null
+                        val id = postsNow.getOrNull(i)?.id ?: return null
+                        return id to (tiles.getOrNull(i)?.width?.toFloat() ?: 0f)
+                    }
+
+                    override val selecting: Boolean get() = selectingNow
+
+                    override fun canSwipe(side: Side): Boolean =
+                        TileSwipe.action(side, settingsNow.swipeLeft, settingsNow.swipeRight) != SwipeAction.Off
+
+                    override fun tap(id: Long) {
+                        if (selectingNow) {
+                            vm.setSelection(vm.selection.value.toggle(id))
+                        } else {
+                            postsNow.firstOrNull { it.id == id }?.let(onOpen)
+                        }
+                    }
+
+                    override fun hold(id: Long) {
+                        haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                        menuFor = id
+                    }
+
+                    override fun swiped(
+                        id: Long,
+                        side: Side,
+                    ) {
+                        val post = postsNow.firstOrNull { it.id == id } ?: return
+                        haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                        when (TileSwipe.action(side, settingsNow.swipeLeft, settingsNow.swipeRight)) {
+                            SwipeAction.Like -> run(TileChoice.Like, post)
+                            SwipeAction.Select -> run(TileChoice.Select, post)
+                            SwipeAction.Share -> run(TileChoice.Share, post)
+                            SwipeAction.Download -> run(TileChoice.Download, post)
+                            SwipeAction.Delete -> run(TileChoice.Delete, post)
+                            SwipeAction.Off -> {}
+                        }
+                    }
+
+                    private var dragging: DragPick? = null
+
+                    override fun drag(
+                        from: Long,
+                        to: Long,
+                    ) {
+                        val pick = dragging?.copy(to = to) ?: DragPick(vm.selection.value, from, to)
+                        dragging = pick
+                        pick.selection(vm.ids())?.let { vm.setSelection(it) }
+                        haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                    }
+
+                    override fun dragEnded() {
+                        dragging = null
+                    }
+
+                    override fun edgeSpeed(at: Offset): Float {
+                        val y = at.y + gridTop - scroll.value
+                        return DragPick.edgeSpeed(y, topPadPx, viewportPx - frame.padding.calculateBottomPadding().value * pxPerDp)
+                    }
+
+                    override fun scrollBy(px: Float): Float = scroll.dispatchRawDelta(px)
                 }
             }
 
@@ -226,6 +364,8 @@ fun GalleryScreen(
                 query = vm.query,
                 settings = settings,
                 widthDp = widthDp,
+                selecting = selecting,
+                onSelect = vm::select,
                 onSort = { onSearch(sorted(vm.query, it)) },
                 onSettings = onSettings,
             )
@@ -241,18 +381,35 @@ fun GalleryScreen(
                 Modifier
                     .fillMaxWidth()
                     .height(layout.height.toFloat().dp)
-                    .onPlaced { gridTop = it.positionInParent().y + topPadPx },
+                    .onPlaced { gridTop = it.positionInParent().y + topPadPx }
+                    .gridGestures(host, touch, scope, pxPerDp),
             ) {
                 for (i in visible) {
                     val post = state.posts.getOrNull(i) ?: continue
                     val rect = layout.tiles.getOrNull(i) ?: continue
                     androidx.compose.runtime.key(post.id) {
+                        val swiping = touch.swiped == post.id
+                        val slide = if (swiping) touch.slide else 0f
                         Tile(
                             post = post,
                             index = i,
                             flush = settings.flush,
                             animate = !reduced,
-                            onClick = { onOpen(post) },
+                            pressed = touch.pressed == post.id,
+                            slide = slide,
+                            swipe = if (slide > 0f) settings.swipeRight else settings.swipeLeft,
+                            armed = swiping && touch.armed,
+                            selecting = selecting,
+                            picked = post.id in selection,
+                            menu = menuFor == post.id,
+                            liked = actions.liked(post),
+                            canDelete = !actions.guest,
+                            onMenu = { choice ->
+                                menuFor = null
+                                if (choice != null) run(choice, post) else menuFor = post.id
+                            },
+                            onOpen = { onOpen(post) },
+                            onToggle = { vm.setSelection(selection.toggle(post.id)) },
                             modifier =
                                 Modifier
                                     .offset { IntOffset((rect.x * pxPerDp).toInt(), (rect.y * pxPerDp).toInt()) }
@@ -264,7 +421,7 @@ fun GalleryScreen(
             Footer(state, server, onRetry = vm::loadMore, onReload = vm::reload, query = vm.query)
         }
 
-        val showTop by remember { androidx.compose.runtime.derivedStateOf { scroll.value > viewportPx } }
+        val showTop by remember { androidx.compose.runtime.derivedStateOf { scroll.value > viewportPx && !vm.selecting.value } }
         val topAlign = if (frame.rightHanded ||
             frame.hand == eu.filipnone.starbooru.data.Hand.Either
         ) {
@@ -273,6 +430,68 @@ fun GalleryScreen(
             AbsoluteAlignment.BottomLeft
         }
         CompositionLocalProvider(LocalGlassSource provides glass) {
+            AnimatedVisibility(
+                visible = selecting,
+                enter = fadeIn() + androidx.compose.animation.slideInVertically { it },
+                exit = fadeOut() + androidx.compose.animation.slideOutVertically { it },
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = frame.padding.calculateBottomPadding() + 8.dp, start = 16.dp, end = 16.dp),
+            ) {
+                val ids = state.posts.map { it.id }
+                BulkBar(
+                    count = selection.size,
+                    full = selection.isFull(ids),
+                    canDelete = !actions.guest,
+                    onClose = { vm.select(false) },
+                    onAll = { vm.setSelection(selection.toggleAll(ids)) },
+                    onEdit = { editing = true },
+                    onShare = { actions.share(picked(state.posts, selection)) },
+                    onDownload = { actions.download(picked(state.posts, selection)) },
+                    onDelete = {
+                        scope.launch {
+                            val chosen = selection.inOrder(ids)
+                            try {
+                                val result = account.call { it.bulkEdit(BulkEdit(ids = chosen, delete = true)) }
+                                val gone = vm.remove(chosen.toSet())
+                                vm.select(false)
+                                notices?.offer(bulkReport(res, result, deleting = true), res.getString(R.string.press_undo)) {
+                                    scope.launch {
+                                        val back = mutableListOf<Pair<Int, Post>>()
+                                        var failed = 0
+                                        var why: Throwable? = null
+                                        for ((index, post) in gone) {
+                                            try {
+                                                back += index to account.call { it.restorePost(post.id) }
+                                            } catch (e: CoreException) {
+                                                // A post that was never moved can't come back; that's no news.
+                                                if ((e as? CoreException.Api)?.status?.toInt() != 403) {
+                                                    failed++
+                                                    why = e
+                                                }
+                                            }
+                                        }
+                                        vm.putBack(back)
+                                        why?.let {
+                                            notices.say(
+                                                res.getQuantityString(
+                                                    R.plurals.bulk_restore_failed,
+                                                    failed,
+                                                    failed,
+                                                    describe(it, res, server),
+                                                ),
+                                            )
+                                        }
+                                    }
+                                }
+                            } catch (e: CoreException) {
+                                notices?.say(res.getString(R.string.bulk_delete_failed, describe(e, res, server)))
+                            }
+                        }
+                    },
+                )
+            }
             AnimatedVisibility(
                 visible = showTop,
                 enter = fadeIn() + scaleIn(initialScale = 0.6f),
@@ -295,6 +514,55 @@ fun GalleryScreen(
             }
         }
     }
+    BackHandler(enabled = selecting) { vm.select(false) }
+    if (editing) {
+        BulkSheet(
+            count = selection.size,
+            onDismiss = { editing = false },
+            onApply = { change ->
+                editing = false
+                scope.launch {
+                    try {
+                        val result =
+                            account.call {
+                                it.bulkEdit(
+                                    BulkEdit(
+                                        ids = selection.inOrder(vm.ids()),
+                                        addTags = change.add,
+                                        removeTags = change.remove,
+                                        rating = change.rating,
+                                    ),
+                                )
+                            }
+                        vm.select(false)
+                        notices?.say(bulkReport(res, result, deleting = false))
+                    } catch (e: CoreException) {
+                        notices?.say(describe(e, res, server))
+                    }
+                }
+            },
+        )
+    }
+}
+
+/** The picked posts, in the gallery's order. */
+private fun picked(
+    posts: List<Post>,
+    selection: Selection,
+): List<Post> = posts.filter { it.id in selection }
+
+/** What a mass edit did, in a sentence. */
+internal fun bulkReport(
+    res: android.content.res.Resources,
+    result: BulkResult,
+    deleting: Boolean,
+): String {
+    val done = result.updated.toInt()
+    val skipped = result.skipped.toInt()
+    val did = res.getQuantityString(if (deleting) R.plurals.bulk_moved else R.plurals.bulk_updated, done, done)
+    if (skipped == 0) return res.getString(R.string.bulk_done, did)
+    val left = res.getQuantityString(if (deleting) R.plurals.bulk_skipped_undeletable else R.plurals.bulk_skipped, skipped, skipped)
+    return res.getString(R.string.bulk_done_skipped, did, left)
 }
 
 @Composable
@@ -302,6 +570,8 @@ private fun Header(
     query: String,
     settings: Settings,
     widthDp: Double,
+    selecting: Boolean,
+    onSelect: (Boolean) -> Unit,
     onSort: (String) -> Unit,
     onSettings: ((Settings) -> Settings) -> Unit,
 ) {
@@ -320,6 +590,12 @@ private fun Header(
         )
         SortMenu(query, onSort)
         ViewMenu(settings, widthDp, onSettings)
+        androidx.compose.material3.IconButton(onClick = { onSelect(!selecting) }) {
+            Icon(
+                painterResource(if (selecting) R.drawable.ic_close else R.drawable.ic_check),
+                stringResource(if (selecting) R.string.gallery_stop_selecting else R.string.gallery_select),
+            )
+        }
     }
 }
 
@@ -473,88 +749,6 @@ private fun <T> Segmented(
                 shape = SegmentedButtonDefaults.itemShape(i, options.size),
                 icon = {},
             ) { Text(stringResource(label), maxLines = 1, fontSize = 13.sp) }
-        }
-    }
-}
-
-@Composable
-private fun Tile(
-    post: Post,
-    index: Int,
-    flush: Boolean,
-    animate: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier,
-) {
-    val context = LocalContext.current
-    val roles = StarBooruTheme.roles
-    val corner = if (flush) 0.dp else 16.dp
-    val shape = RoundedCornerShape(corner)
-    // New tiles pop in one after another, a beat apart.
-    val entrance = remember { Animatable(if (animate) 0f else 1f) }
-    LaunchedEffect(Unit) {
-        if (entrance.value < 1f) entrance.animateTo(1f, tween(420, delayMillis = (index % 60) * 16, easing = StarSpringEasing))
-    }
-    val description = stringResource(R.string.post_alt, post.id.toString())
-    Box(
-        modifier
-            .graphicsLayer {
-                val e = entrance.value
-                alpha = e.coerceIn(0f, 1f)
-                scaleX = 0.85f + 0.15f * e
-                scaleY = 0.85f + 0.15f * e
-            }.semantics { contentDescription = description }
-            .clickable(onClick = onClick),
-    ) {
-        Box(
-            Modifier
-                .fillMaxSize()
-                .sharedPost(post.id, corner)
-                .clip(shape)
-                .background(post.tintColor() ?: roles.surface2),
-        ) {
-            val request = Media.thumb(context, post)
-            if (request != null) {
-                AsyncImage(
-                    model = request,
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize(),
-                )
-            } else if (post.kind == MediaKind.VIDEO) {
-                Icon(
-                    painterResource(R.drawable.ic_play),
-                    null,
-                    tint = roles.onScrim,
-                    modifier = Modifier.align(Alignment.Center).size(40.dp),
-                )
-            }
-        }
-        val badge =
-            when (post.kind) {
-                MediaKind.VIDEO -> post.durationMs?.let { clock(it) } ?: ""
-                MediaKind.ANIMATION -> "GIF"
-                MediaKind.IMAGE -> null
-            }
-        if (badge != null) {
-            Row(
-                Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(8.dp)
-                    .heightIn(min = 24.dp)
-                    .clip(CircleShape)
-                    .background(roles.scrim)
-                    .padding(horizontal = 8.dp, vertical = 2.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(2.dp),
-            ) {
-                if (post.kind ==
-                    MediaKind.VIDEO
-                ) {
-                    Icon(painterResource(R.drawable.ic_play), null, tint = roles.onScrim, modifier = Modifier.size(16.dp))
-                }
-                if (badge.isNotEmpty()) Text(badge, color = roles.onScrim, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-            }
         }
     }
 }

@@ -33,4 +33,7 @@
     <string name="settings_language_system">Sistema</string>
     <string name="lang_english">English</string>
     <string name="lang_italian">Italiano</string>
+    <string name="settings_gestures">Gesti</string>
+    <string name="settings_swipe_left">Scorri a sinistra</string>
+    <string name="settings_swipe_right">Scorri a destra</string>
 </resources>

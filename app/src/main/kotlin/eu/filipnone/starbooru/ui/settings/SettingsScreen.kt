@@ -64,6 +64,8 @@ import eu.filipnone.starbooru.data.Settings
 import eu.filipnone.starbooru.data.ThemeMode
 import eu.filipnone.starbooru.ui.common.fileSize
 import eu.filipnone.starbooru.ui.frame.LocalFrame
+import eu.filipnone.starbooru.ui.gallery.actionIcon
+import eu.filipnone.starbooru.ui.gestures.SwipeAction
 import eu.filipnone.starbooru.ui.theme.SWATCHES
 import eu.filipnone.starbooru.ui.theme.Seed
 import eu.filipnone.starbooru.ui.theme.StarBooruTheme
@@ -144,11 +146,51 @@ fun SettingsScreen(
                     else -> {}
                 }
             }
+            Card(stringResource(R.string.settings_gestures)) {
+                SwipeChoice(stringResource(R.string.settings_swipe_left), settings.swipeLeft) { a -> onChange { it.copy(swipeLeft = a) } }
+                SwipeChoice(stringResource(R.string.settings_swipe_right), settings.swipeRight) { a ->
+                    onChange { it.copy(swipeRight = a) }
+                }
+            }
             CacheCard(settings, onChange)
             Card(stringResource(R.string.settings_about)) {
                 Text(stringResource(R.string.settings_version, BuildConfig.VERSION_NAME))
                 Hint("core ${coreVersion()}")
             }
+        }
+    }
+}
+
+/** What swiping a tile one way does: its icon and name, as chips. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun SwipeChoice(
+    title: String,
+    chosen: SwipeAction,
+    onPick: (SwipeAction) -> Unit,
+) {
+    Label(title)
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        SwipeAction.entries.forEach { action ->
+            FilterChip(
+                selected = chosen == action,
+                onClick = { onPick(action) },
+                leadingIcon = { Icon(painterResource(actionIcon(action)), null, Modifier.size(18.dp)) },
+                label = {
+                    Text(
+                        stringResource(
+                            when (action) {
+                                SwipeAction.Off -> R.string.swipe_off
+                                SwipeAction.Like -> R.string.swipe_like
+                                SwipeAction.Select -> R.string.swipe_select
+                                SwipeAction.Share -> R.string.share_button
+                                SwipeAction.Download -> R.string.post_download
+                                SwipeAction.Delete -> R.string.swipe_delete
+                            },
+                        ),
+                    )
+                },
+            )
         }
     }
 }

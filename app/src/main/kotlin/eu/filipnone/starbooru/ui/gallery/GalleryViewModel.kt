@@ -54,6 +54,52 @@ class GalleryViewModel(private val account: Account, val query: String, private 
         }
 
     private var page = 0u
+
+    private val _selecting = MutableStateFlow(saved[SELECTING] ?: false)
+
+    /** Whether taps pick posts rather than open them. */
+    val selecting: StateFlow<Boolean> = _selecting.asStateFlow()
+
+    private val _selection = MutableStateFlow(Selection(saved.get<LongArray>(SELECTED)?.toSet().orEmpty()))
+    val selection: StateFlow<Selection> = _selection.asStateFlow()
+
+    fun select(on: Boolean) {
+        _selecting.value = on
+        saved[SELECTING] = on
+        if (!on) setSelection(Selection())
+    }
+
+    fun setSelection(selection: Selection) {
+        _selection.value = selection
+        saved[SELECTED] = selection.ids.toLongArray()
+    }
+
+    /** The posts loaded, by id, in the gallery's order. */
+    fun ids(): List<Long> = _state.value.posts.map { it.id }
+
+    /** Takes in a post changed elsewhere: a vote, an edit. */
+    fun replace(post: Post) {
+        _state.update { st -> st.copy(posts = st.posts.map { if (it.id == post.id) post else it }) }
+    }
+
+    /** Takes posts out (to the recycle bin), and answers where each was, to put it back. */
+    fun remove(ids: Set<Long>): List<Pair<Int, Post>> {
+        val gone = _state.value.posts.withIndex().filter { it.value.id in ids }.map { it.index to it.value }
+        _state.update { st -> st.copy(posts = st.posts.filter { it.id !in ids }) }
+        setSelection(ids.fold(_selection.value) { s, id -> s.without(id) })
+        return gone
+    }
+
+    /** Puts posts back where they were, after an Undo. */
+    fun putBack(posts: List<Pair<Int, Post>>) {
+        _state.update { st ->
+            val list = st.posts.toMutableList()
+            for ((index, post) in posts.sortedBy { it.first }) {
+                if (list.none { it.id == post.id }) list.add(index.coerceIn(0, list.size), post)
+            }
+            st.copy(posts = list)
+        }
+    }
     private var job: Job? = null
 
     init {
@@ -133,6 +179,8 @@ class GalleryViewModel(private val account: Account, val query: String, private 
         const val SEED = "seed"
         const val ANCHOR = "anchor"
         const val LOADED = "loaded"
+        const val SELECTING = "selecting"
+        const val SELECTED = "selected"
         const val RESTORE_PAGE = 180
         const val RESTORE_MAX = 3000
     }

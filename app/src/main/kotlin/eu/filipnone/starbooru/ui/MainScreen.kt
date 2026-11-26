@@ -162,6 +162,7 @@ private fun Shell(
                             val vm = viewModel { GalleryViewModel(graph.account, route.query, createSavedStateHandle()) }
                             GalleryScreen(
                                 vm = vm,
+                                account = graph.account,
                                 server = server,
                                 settings = settings,
                                 onSettings = update,

@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import eu.filipnone.starbooru.core.GalleryView
+import eu.filipnone.starbooru.ui.gestures.SwipeAction
 import eu.filipnone.starbooru.ui.theme.Seed
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -37,6 +38,8 @@ class SettingsStore(private val store: DataStore<Preferences>) {
         val COLUMNS = intPreferencesKey("gallery_columns")
         val FLUSH = booleanPreferencesKey("gallery_flush")
         val CACHE_MB = intPreferencesKey("cache_mb")
+        val SWIPE_LEFT = stringPreferencesKey("swipe_left")
+        val SWIPE_RIGHT = stringPreferencesKey("swipe_right")
 
         inline fun <reified E : Enum<E>> enumOf(name: String?, default: E): E = enumValues<E>().firstOrNull { it.name == name } ?: default
 
@@ -57,6 +60,8 @@ class SettingsStore(private val store: DataStore<Preferences>) {
                 columns = prefs[COLUMNS]?.takeIf { it in 1..24 },
                 flush = prefs[FLUSH] ?: d.flush,
                 cacheMb = prefs[CACHE_MB]?.takeIf { it in 0..65_536 } ?: d.cacheMb,
+                swipeLeft = SwipeAction.of(prefs[SWIPE_LEFT]),
+                swipeRight = SwipeAction.of(prefs[SWIPE_RIGHT]),
             )
         }
 
@@ -76,6 +81,8 @@ class SettingsStore(private val store: DataStore<Preferences>) {
             if (columns == null) prefs.remove(COLUMNS) else prefs[COLUMNS] = columns
             prefs[FLUSH] = s.flush
             prefs[CACHE_MB] = s.cacheMb
+            prefs[SWIPE_LEFT] = s.swipeLeft.key
+            prefs[SWIPE_RIGHT] = s.swipeRight.key
         }
     }
 }
