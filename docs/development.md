@@ -41,7 +41,7 @@ Check by hand, on a real phone, what tests can't reach: back at every step down 
 
 ## Releasing
 
-Releases are signed on the owner's machine, so the key never reaches GitHub:
+Releases are signed on the owner's machine, so the key never reaches GitHub. `tools/release.sh` does all of it: a clean arm64 release build, zipalign, signing, the certificate check, and `dist/SHA256SUMS`. By hand:
 
 ```sh
 K=~/.config/starbooru-release

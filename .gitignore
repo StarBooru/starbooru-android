@@ -13,3 +13,4 @@ build/
 *.aab
 *.jks
 *.keystore
+/dist
