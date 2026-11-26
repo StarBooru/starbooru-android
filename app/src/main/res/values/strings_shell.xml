@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="search_placeholder">Search tags, e.g. cat rating:safe</string>
+    <string name="search_label">Search tags</string>
+    <string name="search_clear">Clear the search</string>
+    <!-- tags -->
+    <string name="search_corrected">Spelling corrected: %1$s</string>
+    <!-- name -->
+    <string name="account_button">Your account, %1$s</string>
+    <string name="account_title">Your account</string>
+</resources>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="gallery_tag_info">Informazioni su questo tag</string>
+    <string name="gallery_syntax">Sintassi di ricerca</string>
+    <string name="gallery_to_top">Torna all\'inizio</string>
+    <string name="gallery_empty">Ancora nessun post</string>
+    <string name="gallery_empty_body">Carica immagini o video per iniziare la tua raccolta.</string>
+    <string name="gallery_try_fewer">Nessun risultato per questa ricerca. Prova con meno tag.</string>
+    <string name="gallery_select">Seleziona i post</string>
+    <string name="gallery_stop_selecting">Termina la selezione</string>
+    <string name="sort">Ordina</string>
+    <string name="sort_by">Ordina per</string>
+    <string name="sort_new">Più recenti</string>
+    <string name="sort_old">Meno recenti</string>
+    <string name="sort_score">Punteggio più alto</string>
+    <string name="sort_rating">Più votati</string>
+    <string name="sort_updated">Modificati di recente</string>
+    <string name="sort_size">File più grandi</string>
+    <string name="sort_size_asc">File più piccoli</string>
+    <string name="sort_pixels">Risoluzione più alta</string>
+    <string name="sort_longside">Lato più lungo</string>
+    <string name="sort_tags">Più tag</string>
+    <string name="sort_tags_asc">Meno tag</string>
+    <string name="sort_random">Casuale</string>
+    <string name="view_title">Disposizione della galleria</string>
+    <string name="view_shape">Forma delle miniature</string>
+    <string name="view_square">Quadrate</string>
+    <string name="view_landscape">Orizzontali</string>
+    <string name="view_portrait">Verticali</string>
+    <string name="view_staggered">Sfalsate</string>
+    <string name="view_staggered_by">Forme sfalsate</string>
+    <string name="view_everything">Tutte</string>
+    <!-- count -->
+    <plurals name="view_columns">
+        <item quantity="one">1 colonna</item>
+        <item quantity="other">%1$d colonne</item>
+    </plurals>
+    <!-- count -->
+    <string name="view_per_row">Circa %1$s per riga</string>
+    <string name="view_columns_auto">Automatico</string>
+    <string name="view_flush">Togli gli spazi e gli angoli arrotondati tra le immagini</string>
+    <!-- count -->
+    <plurals name="posts_count">
+        <item quantity="one">1 post</item>
+        <item quantity="other">%1$d post</item>
+    </plurals>
+    <!-- id -->
+    <string name="post_alt">Post %1$s</string>
+</resources>

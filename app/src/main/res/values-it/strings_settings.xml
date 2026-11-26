@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="settings_account">Account</string>
+    <string name="settings_signed_in_as">Accesso come</string>
+    <string name="settings_server_version">Versione del server</string>
+    <string name="settings_sign_out">Esci</string>
+    <string name="settings_appearance">Aspetto</string>
+    <string name="settings_theme">Tema</string>
+    <string name="theme_system">Sistema</string>
+    <string name="theme_light">Chiaro</string>
+    <string name="theme_dark">Scuro</string>
+    <string name="settings_oled">Sfondo nero</string>
+    <string name="settings_oled_hint">Risparmia batteria sugli schermi OLED</string>
+    <string name="settings_accent">Colore principale</string>
+    <string name="settings_accent_custom">Colore principale personalizzato</string>
+    <string name="accent_violet">Viola</string>
+    <string name="accent_pink">Rosa</string>
+    <string name="accent_coral">Corallo</string>
+    <string name="accent_amber">Ambra</string>
+    <string name="accent_green">Verde</string>
+    <string name="accent_teal">Verde acqua</string>
+    <string name="accent_blue">Blu</string>
+    <string name="accent_red">Rosso</string>
+    <string name="settings_hand">Mano</string>
+    <string name="hand_either">Entrambe</string>
+    <string name="hand_left">Sinistra</string>
+    <string name="hand_right">Destra</string>
+    <string name="settings_language">Lingua</string>
+    <string name="settings_language_system">Sistema</string>
+    <string name="lang_english">English</string>
+    <string name="lang_italian">Italiano</string>
+</resources>

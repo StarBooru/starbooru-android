@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="error_session_expired">Your session has expired. Sign in again.</string>
+    <string name="error_slow_down">That\'s a lot of browsing in a short time for this server. Slow down and try again in a moment, or sign in to go on now.</string>
+    <!-- seconds -->
+    <plurals name="error_slow_down_seconds">
+        <item quantity="one">That\'s a lot of browsing in a short time for this server. Slow down, and try again in 1 second, or sign in to go on now.</item>
+        <item quantity="other">That\'s a lot of browsing in a short time for this server. Slow down, and try again in %1$d seconds, or sign in to go on now.</item>
+    </plurals>
+    <!-- minutes -->
+    <plurals name="error_slow_down_minutes">
+        <item quantity="one">That\'s a lot of browsing in a short time for this server. Slow down, and try again in 1 minute, or sign in to go on now.</item>
+        <item quantity="other">That\'s a lot of browsing in a short time for this server. Slow down, and try again in %1$d minutes, or sign in to go on now.</item>
+    </plurals>
+    <!-- server -->
+    <string name="error_unreachable">Can\'t reach the server at %1$s. Check the address and your connection, then try again.</string>
+    <string name="error_bad_address">That isn\'t a server address. Enter one like https://booru.example.com.</string>
+    <!-- server -->
+    <string name="error_not_a_server">%1$s answers, but it isn\'t a StarBooru server. Check the address.</string>
+    <string name="error_rate_limited">Too many requests. Try again later.</string>
+    <!-- minutes -->
+    <plurals name="error_rate_limited_minutes">
+        <item quantity="one">Too many attempts. Try again in a minute.</item>
+        <item quantity="other">Too many attempts. Try again in %1$d minutes.</item>
+    </plurals>
+    <!-- server -->
+    <string name="error_server_fault">Something went wrong on %1$s. Try again in a minute. If it keeps happening, tell whoever runs the server; it has the details in its log.</string>
+    <!-- server -->
+    <string name="error_storage_full">%1$s has run out of disk space. Whoever runs it needs to free some before anything more can be saved.</string>
+    <!-- server -->
+    <string name="error_proxy_too_large">%1$s turned this away as too large before StarBooru saw it. Whoever runs it can raise the upload limit of the web server in front of it.</string>
+    <!-- server, status -->
+    <string name="error_unexpected_answer">%1$s gave an answer StarBooru didn\'t expect (%2$s). Check the address, or try again later.</string>
+</resources>

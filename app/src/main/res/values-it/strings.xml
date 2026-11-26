@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Testo che l'app web non ha. Il resto lo scrive tools/strings.py. -->
+<resources>
+    <string name="soon_title">In arrivo</string>
+    <string name="soon_body">Questa parte di StarBooru per Android arriva in una versione successiva. Intanto, sull\'app web funziona già tutto.</string>
+    <string name="settings_wallpaper">Sfondo</string>
+    <string name="settings_hand_hint">Mette da quel lato la navigazione, i dettagli del visualizzatore e i suoi strumenti di zoom.</string>
+    <!-- username, server -->
+    <string name="settings_signed_in_on">Accesso come %1$s su %2$s</string>
+    <!-- server -->
+    <string name="settings_guest_on">Stai sfogliando %1$s senza account</string>
+    <string name="settings_about">Informazioni</string>
+    <!-- version -->
+    <string name="settings_version">StarBooru per Android %1$s</string>
+</resources>

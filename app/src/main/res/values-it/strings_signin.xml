@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="login_tagline">La tua raccolta privata di immagini</string>
+    <!-- name, version -->
+    <string name="login_server_version">%1$s · v%2$s</string>
+    <string name="login_first_user">Questo server non ha ancora account. L\'account che crei ora diventa l\'amministratore.</string>
+    <string name="login_server">Server</string>
+    <string name="login_server_placeholder">https://booru.example.com</string>
+    <string name="login_username">Nome utente</string>
+    <string name="login_password">Password</string>
+    <string name="login_wait">Attendi…</string>
+    <string name="login_create_admin">Crea l\'account amministratore</string>
+    <string name="login_create">Crea account</string>
+    <string name="login_sign_in">Accedi</string>
+    <string name="login_have_account">Ho già un account</string>
+    <string name="login_want_account">Crea un account</string>
+    <string name="login_wrong">Nome utente o password errati.</string>
+    <string name="login_weak_password">Questa password è facile da indovinare. Prova con una più lunga, o con qualche parola che non c\'entra con le altre.</string>
+    <string name="login_or">oppure</string>
+    <!-- provider -->
+    <string name="login_with">Accedi con %1$s</string>
+    <string name="guest_sign_in">Accedi</string>
+    <string name="guest_sign_up">Crea un account</string>
+    <string name="guest_keep_browsing">Continua a sfogliare senza account</string>
+    <string name="guest_back">Torna a sfogliare</string>
+    <string name="oidc_finishing">Accesso in corso…</string>
+    <string name="oidc_denied">L\'accesso è stato annullato.</string>
+    <string name="oidc_failed">L\'accesso non è riuscito. Riprova o chiedi all\'amministratore.</string>
+    <string name="oidc_expired">Questo accesso è scaduto. Ricomincia.</string>
+</resources>

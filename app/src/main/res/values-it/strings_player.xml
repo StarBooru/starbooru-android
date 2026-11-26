@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="player_play">Riproduci</string>
+    <string name="player_pause">Pausa</string>
+    <string name="player_replay">Riproduci di nuovo</string>
+    <string name="player_position">Posizione</string>
+    <string name="player_mute">Disattiva l\'audio</string>
+    <string name="player_unmute">Riattiva l\'audio</string>
+    <string name="player_loop">Ripeti</string>
+    <string name="player_pip">Picture in picture</string>
+    <string name="player_pip_exit">Esci da picture in picture</string>
+    <string name="player_speed">Velocità di riproduzione</string>
+    <string name="zoom_out">Riduci</string>
+    <string name="zoom_fit">Adatta</string>
+    <string name="zoom_reset">Ripristina lo zoom</string>
+    <string name="zoom_in">Ingrandisci</string>
+    <string name="fullscreen">Schermo intero</string>
+    <string name="fullscreen_exit">Esci da schermo intero</string>
+</resources>

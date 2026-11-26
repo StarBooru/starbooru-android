@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="app_name">StarBooru</string>
+    <string name="page_back">Indietro</string>
+    <string name="notice_close">Chiudi</string>
+    <string name="retry">Riprova</string>
+    <string name="load_more">Carica altri</string>
+    <string name="notfound_title">Qui non c\'è niente</string>
+</resources>

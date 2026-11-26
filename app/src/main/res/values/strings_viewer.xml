@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <!-- id -->
+    <string name="post_number">Post #%1$s</string>
+    <!-- id -->
+    <string name="post_missing_title">No post %1$s</string>
+    <string name="post_missing_body">It may have been deleted for good, or the address is wrong.</string>
+    <string name="post_back">Back</string>
+    <string name="post_prev_title">Previous (←)</string>
+    <string name="post_prev">Previous post</string>
+    <string name="post_next_title">Next (→)</string>
+    <string name="post_next">Next post</string>
+    <string name="post_tags">Tags</string>
+    <string name="post_no_tags">No tags yet.</string>
+    <string name="post_details">Details</string>
+    <string name="post_size">Size</string>
+    <string name="post_dimensions">Dimensions</string>
+    <string name="post_length">Length</string>
+    <string name="post_type">Type</string>
+    <string name="post_file_date">File date</string>
+    <string name="post_colors">Colours</string>
+    <!-- color -->
+    <string name="post_color_search">Search for %1$s</string>
+    <string name="post_added">Added</string>
+    <string name="post_source">Source</string>
+    <string name="post_uploader">Uploaded by</string>
+    <string name="post_sample_note">Showing a smaller copy. Zooming in loads the original.</string>
+    <string name="post_show_original">Show original</string>
+    <string name="post_related">Related</string>
+    <string name="post_in_trash">This post is in the recycle bin.</string>
+</resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="nav_gallery">Galleria</string>
+    <string name="nav_explore">Esplora</string>
+    <string name="nav_tags">Tag</string>
+    <string name="nav_upload">Carica</string>
+    <string name="nav_settings">Impostazioni</string>
+    <string name="nav_forum">Forum</string>
+</resources>

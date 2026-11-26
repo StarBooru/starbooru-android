@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="category_general">Generale</string>
+    <string name="category_artist">Artista</string>
+    <string name="category_character">Personaggio</string>
+    <string name="category_copyright">Copyright</string>
+    <string name="category_meta">Meta</string>
+    <string name="section_people">Persone</string>
+    <string name="section_hair">Capelli</string>
+    <string name="section_eyes">Occhi</string>
+    <string name="section_skin">Pelle</string>
+    <string name="section_body">Corpo</string>
+    <string name="section_expression">Espressione</string>
+    <string name="section_pose">Posa e inquadratura</string>
+    <string name="section_clothing">Abbigliamento</string>
+    <string name="section_setting">Ambientazione</string>
+    <string name="section_style">Stile</string>
+    <string name="section_other">Altro</string>
+    <string name="rating">Classificazione</string>
+    <string name="rating_safe">sicuro</string>
+    <string name="rating_sensitive">delicato</string>
+    <string name="rating_questionable">discutibile</string>
+    <string name="rating_explicit">esplicito</string>
+    <!-- size -->
+    <string name="size_b">%1$s B</string>
+    <!-- size -->
+    <string name="size_kb">%1$s KB</string>
+    <!-- size -->
+    <string name="size_mb">%1$s MB</string>
+    <!-- size -->
+    <string name="size_gb">%1$s GB</string>
+    <!-- size -->
+    <string name="size_tb">%1$s TB</string>
+</resources>

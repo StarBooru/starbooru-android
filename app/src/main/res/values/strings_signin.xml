@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="login_tagline">Your private image library</string>
+    <!-- name, version -->
+    <string name="login_server_version">%1$s · v%2$s</string>
+    <string name="login_first_user">This server has no accounts yet. The account you create now becomes the administrator.</string>
+    <string name="login_server">Server</string>
+    <string name="login_server_placeholder">https://booru.example.com</string>
+    <string name="login_username">Username</string>
+    <string name="login_password">Password</string>
+    <string name="login_wait">Please wait…</string>
+    <string name="login_create_admin">Create administrator account</string>
+    <string name="login_create">Create account</string>
+    <string name="login_sign_in">Sign in</string>
+    <string name="login_have_account">I already have an account</string>
+    <string name="login_want_account">Create an account</string>
+    <string name="login_wrong">Wrong username or password.</string>
+    <string name="login_weak_password">This password is easy to guess. Try a longer one, or a few words that don\'t go together.</string>
+    <string name="login_or">or</string>
+    <!-- provider -->
+    <string name="login_with">Sign in with %1$s</string>
+    <string name="guest_sign_in">Sign in</string>
+    <string name="guest_sign_up">Create an account</string>
+    <string name="guest_keep_browsing">Keep browsing without an account</string>
+    <string name="guest_back">Back to browsing</string>
+    <string name="oidc_finishing">Signing you in…</string>
+    <string name="oidc_denied">The sign-in was cancelled.</string>
+    <string name="oidc_failed">The sign-in didn\'t work. Try again, or ask the administrator.</string>
+    <string name="oidc_expired">This sign-in has expired. Start again.</string>
+</resources>

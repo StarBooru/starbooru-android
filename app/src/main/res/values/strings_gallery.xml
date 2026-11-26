@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="gallery_tag_info">About this tag</string>
+    <string name="gallery_syntax">Search syntax</string>
+    <string name="gallery_to_top">Back to the top</string>
+    <string name="gallery_empty">No posts yet</string>
+    <string name="gallery_empty_body">Upload images or videos to start your collection.</string>
+    <string name="gallery_try_fewer">Nothing matches this search. Try fewer tags.</string>
+    <string name="gallery_select">Select posts</string>
+    <string name="gallery_stop_selecting">Stop selecting</string>
+    <string name="sort">Sort</string>
+    <string name="sort_by">Sort by</string>
+    <string name="sort_new">Newest</string>
+    <string name="sort_old">Oldest</string>
+    <string name="sort_score">Top score</string>
+    <string name="sort_rating">Top rated</string>
+    <string name="sort_updated">Recently edited</string>
+    <string name="sort_size">Largest file</string>
+    <string name="sort_size_asc">Smallest file</string>
+    <string name="sort_pixels">Highest resolution</string>
+    <string name="sort_longside">Longest side</string>
+    <string name="sort_tags">Most tags</string>
+    <string name="sort_tags_asc">Fewest tags</string>
+    <string name="sort_random">Random</string>
+    <string name="view_title">Gallery layout</string>
+    <string name="view_shape">Tile shape</string>
+    <string name="view_square">Square</string>
+    <string name="view_landscape">Landscape</string>
+    <string name="view_portrait">Portrait</string>
+    <string name="view_staggered">Staggered</string>
+    <string name="view_staggered_by">Staggered shapes</string>
+    <string name="view_everything">Everything</string>
+    <!-- count -->
+    <plurals name="view_columns">
+        <item quantity="one">1 column</item>
+        <item quantity="other">%1$d columns</item>
+    </plurals>
+    <!-- count -->
+    <string name="view_per_row">About %1$s per row</string>
+    <string name="view_columns_auto">Automatic</string>
+    <string name="view_flush">Remove the spaces and rounded corners between images</string>
+    <!-- count -->
+    <plurals name="posts_count">
+        <item quantity="one">1 post</item>
+        <item quantity="other">%1$d posts</item>
+    </plurals>
+    <!-- id -->
+    <string name="post_alt">Post %1$s</string>
+</resources>

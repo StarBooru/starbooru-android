@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="error_session_expired">La sessione è scaduta. Accedi di nuovo.</string>
+    <string name="error_slow_down">Stai sfogliando molto in poco tempo per questo server. Rallenta e riprova tra un attimo, o accedi per continuare subito.</string>
+    <!-- seconds -->
+    <plurals name="error_slow_down_seconds">
+        <item quantity="one">Stai sfogliando molto in poco tempo per questo server. Rallenta e riprova tra 1 secondo, o accedi per continuare subito.</item>
+        <item quantity="other">Stai sfogliando molto in poco tempo per questo server. Rallenta e riprova tra %1$d secondi, o accedi per continuare subito.</item>
+    </plurals>
+    <!-- minutes -->
+    <plurals name="error_slow_down_minutes">
+        <item quantity="one">Stai sfogliando molto in poco tempo per questo server. Rallenta e riprova tra 1 minuto, o accedi per continuare subito.</item>
+        <item quantity="other">Stai sfogliando molto in poco tempo per questo server. Rallenta e riprova tra %1$d minuti, o accedi per continuare subito.</item>
+    </plurals>
+    <!-- server -->
+    <string name="error_unreachable">Impossibile raggiungere il server %1$s. Controlla l\'indirizzo e la connessione, poi riprova.</string>
+    <string name="error_bad_address">Questo non è l\'indirizzo di un server. Scrivine uno come https://booru.example.com.</string>
+    <!-- server -->
+    <string name="error_not_a_server">%1$s risponde, ma non è un server StarBooru. Controlla l\'indirizzo.</string>
+    <string name="error_rate_limited">Troppe richieste. Riprova più tardi.</string>
+    <!-- minutes -->
+    <plurals name="error_rate_limited_minutes">
+        <item quantity="one">Troppi tentativi. Riprova tra un minuto.</item>
+        <item quantity="other">Troppi tentativi. Riprova tra %1$d minuti.</item>
+    </plurals>
+    <!-- server -->
+    <string name="error_server_fault">Qualcosa è andato storto su %1$s. Riprova tra un minuto. Se continua a succedere, avvisa chi gestisce il server: i dettagli sono nel suo log.</string>
+    <!-- server -->
+    <string name="error_storage_full">Lo spazio su disco di %1$s è finito. Chi lo gestisce deve liberarne un po\' prima che si possa salvare altro.</string>
+    <!-- server -->
+    <string name="error_proxy_too_large">%1$s l\'ha rifiutato come troppo grande prima che arrivasse a StarBooru. Chi lo gestisce può alzare il limite di caricamento del server web che gli sta davanti.</string>
+    <!-- server, status -->
+    <string name="error_unexpected_answer">%1$s ha dato una risposta che StarBooru non si aspettava (%2$s). Controlla l\'indirizzo o riprova più tardi.</string>
+</resources>

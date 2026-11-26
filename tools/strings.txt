@@ -1,0 +1,44 @@
+# The Fluent messages the app shows, by group. Each line holds message ids or
+# regular expressions over them. Run tools/strings.py after a change.
+
+[errors]
+error-session-expired error-slow-down error-slow-down-seconds error-slow-down-minutes
+error-unreachable error-bad-address error-not-a-server error-rate-limited
+error-rate-limited-minutes error-server-fault error-storage-full error-proxy-too-large
+error-unexpected-answer
+
+[signin]
+login-.* guest-sign-in guest-sign-up guest-keep-browsing guest-back
+oidc-finishing oidc-denied oidc-failed oidc-expired
+
+[nav]
+nav-gallery nav-explore nav-tags nav-upload nav-settings nav-forum
+
+[common]
+app-name page-back notice-close retry load-more notfound-title
+
+[shell]
+search-placeholder search-label search-clear search-corrected account-button account-title
+
+[gallery]
+gallery-.* sort sort-by sort-.* view-.* posts-count post-alt
+
+[viewer]
+post-number post-missing-title post-missing-body post-back post-prev-title post-prev
+post-next-title post-next post-tags post-no-tags post-details post-size post-dimensions
+post-length post-type post-file-date post-colors post-color-search post-added post-source
+post-uploader post-sample-note post-show-original post-related post-in-trash
+
+[settings]
+settings-account settings-signed-in-as settings-server-version settings-sign-out
+settings-appearance settings-theme theme-system theme-light theme-dark settings-oled
+settings-oled-hint settings-accent settings-accent-custom accent-.* settings-hand hand-.*
+settings-language settings-language-system lang-english lang-italian
+
+[player]
+player-play player-pause player-replay player-position player-mute player-unmute player-loop
+player-pip player-pip-exit player-speed
+zoom-out zoom-fit zoom-reset zoom-in fullscreen fullscreen-exit
+
+[tags]
+category-.* section-.* rating rating-.* size-.*

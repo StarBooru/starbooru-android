@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <!-- id -->
+    <string name="post_number">Post #%1$s</string>
+    <!-- id -->
+    <string name="post_missing_title">Nessun post %1$s</string>
+    <string name="post_missing_body">Potrebbe essere stato eliminato definitivamente, oppure l\'indirizzo è sbagliato.</string>
+    <string name="post_back">Indietro</string>
+    <string name="post_prev_title">Precedente (←)</string>
+    <string name="post_prev">Post precedente</string>
+    <string name="post_next_title">Successivo (→)</string>
+    <string name="post_next">Post successivo</string>
+    <string name="post_tags">Tag</string>
+    <string name="post_no_tags">Ancora nessun tag.</string>
+    <string name="post_details">Dettagli</string>
+    <string name="post_size">Dimensione</string>
+    <string name="post_dimensions">Risoluzione</string>
+    <string name="post_length">Durata</string>
+    <string name="post_type">Tipo</string>
+    <string name="post_file_date">Data del file</string>
+    <string name="post_colors">Colori</string>
+    <!-- color -->
+    <string name="post_color_search">Cerca %1$s</string>
+    <string name="post_added">Aggiunto</string>
+    <string name="post_source">Fonte</string>
+    <string name="post_uploader">Caricato da</string>
+    <string name="post_sample_note">Stai vedendo una copia più leggera. Ingrandendo si carica l’originale.</string>
+    <string name="post_show_original">Mostra originale</string>
+    <string name="post_related">Simili</string>
+    <string name="post_in_trash">Questo post è nel cestino.</string>
+</resources>
