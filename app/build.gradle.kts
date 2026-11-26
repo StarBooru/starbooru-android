@@ -240,6 +240,8 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(libs.coil.gif)
+    implementation(libs.haze)
+    implementation(libs.haze.blur)
 
     // UniFFI's Kotlin bindings call the core through JNA.
     implementation(libs.jna) { artifact { type = "aar" } }

@@ -1,0 +1,197 @@
+package eu.filipnone.starbooru.ui
+
+import android.provider.Settings.Global
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.ui.NavDisplay
+import eu.filipnone.starbooru.AppGraph
+import eu.filipnone.starbooru.core.Mode
+import eu.filipnone.starbooru.data.AccountState
+import eu.filipnone.starbooru.data.Settings
+import eu.filipnone.starbooru.ui.common.LocalReducedMotion
+import eu.filipnone.starbooru.ui.common.LocalSharedTransition
+import eu.filipnone.starbooru.ui.common.LocalViewerFocus
+import eu.filipnone.starbooru.ui.common.Soon
+import eu.filipnone.starbooru.ui.frame.Frame
+import eu.filipnone.starbooru.ui.frame.LocalBars
+import eu.filipnone.starbooru.ui.gallery.GalleryScreen
+import eu.filipnone.starbooru.ui.gallery.GalleryViewModel
+import eu.filipnone.starbooru.ui.nav.ExploreRoute
+import eu.filipnone.starbooru.ui.nav.ForumRoute
+import eu.filipnone.starbooru.ui.nav.GalleryRoute
+import eu.filipnone.starbooru.ui.nav.PostRoute
+import eu.filipnone.starbooru.ui.nav.SettingsRoute
+import eu.filipnone.starbooru.ui.nav.Tab
+import eu.filipnone.starbooru.ui.nav.TagsRoute
+import eu.filipnone.starbooru.ui.nav.UploadRoute
+import eu.filipnone.starbooru.ui.nav.entries
+import eu.filipnone.starbooru.ui.nav.rememberNavigationState
+import eu.filipnone.starbooru.ui.settings.SettingsScreen
+import eu.filipnone.starbooru.ui.signin.SignInScreen
+import eu.filipnone.starbooru.ui.signin.SignInViewModel
+import eu.filipnone.starbooru.ui.viewer.ViewerScreen
+import eu.filipnone.starbooru.ui.viewer.ViewerViewModel
+import kotlinx.coroutines.launch
+
+/** Sign-in, or the frame and its pages, as the session says. */
+@Composable
+fun MainScreen(
+    graph: AppGraph,
+    settings: Settings
+) {
+    val account by graph.account.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    // The system's Remove animations sets the animator scale to 0.
+    val reduced =
+        remember {
+            Global.getFloat(context.contentResolver, Global.ANIMATOR_DURATION_SCALE, 1f) == 0f
+        }
+    Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+        CompositionLocalProvider(LocalReducedMotion provides reduced) {
+            when (val a = account) {
+                AccountState.Starting -> {}
+
+                is AccountState.SignedOut -> {
+                    val vm = viewModel(key = "signin") { SignInViewModel(graph.account, graph.apis, createSavedStateHandle()) }
+                    LaunchedEffect(a) { vm.arrive(a.lastServer, a.expired) }
+                    SignInScreen(vm)
+                }
+
+                is AccountState.Guest, is AccountState.SignedIn -> Shell(graph, settings, a)
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+private fun Shell(
+    graph: AppGraph,
+    settings: Settings,
+    account: AccountState
+) {
+    val nav = rememberNavigationState()
+    val info by graph.account.info.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
+    val server = (account as? AccountState.SignedIn)?.server ?: (account as? AccountState.Guest)?.server.orEmpty()
+    val guest = account is AccountState.Guest
+    val public = info?.mode == Mode.PUBLIC
+    val tabs = Tab.shown(public, guest)
+    val focus = remember { mutableStateOf<Long?>(null) }
+    val bars = remember { mutableStateOf(true) }
+    val current = nav.current
+    var search by rememberSaveable { mutableStateOf("") }
+    LaunchedEffect(current) {
+        when (current) {
+            is GalleryRoute -> search = current.query
+            is PostRoute -> search = current.query
+            else -> {}
+        }
+    }
+    // A tab the server no longer shows (the forum after a switch to private)
+    // falls back to the gallery.
+    LaunchedEffect(tabs) { if (nav.tab !in tabs) nav.select(Tab.Gallery) }
+    val update: ((Settings) -> Settings) -> Unit = { change -> scope.launch { graph.settings.update(change) } }
+    val searchFor: (String) -> Unit = searchFor@{ q ->
+        val query = q.trim()
+        if (nav.tab != Tab.Gallery) nav.select(Tab.Gallery)
+        val top = nav.current
+        if (top is GalleryRoute && top.query == query) return@searchFor
+        nav.open(GalleryRoute(query))
+    }
+
+    SharedTransitionLayout {
+        CompositionLocalProvider(
+            LocalSharedTransition provides this,
+            LocalViewerFocus provides focus
+        ) {
+            Frame(
+                tabs = tabs,
+                selected = nav.tab.takeIf { it in tabs },
+                onSelect = nav::select,
+                bars = bars.value,
+                hand = settings.hand,
+                search = search,
+                onSearch = { search = it },
+                onSubmit = searchFor,
+                onBrand = { nav.select(Tab.Gallery) },
+                onSignIn = if (guest) ({ scope.launch { graph.account.toSignIn() } }) else null
+            ) {
+                val provider =
+                    entryProvider<NavKey> {
+                        entry<GalleryRoute> { route ->
+                            val vm = viewModel { GalleryViewModel(graph.account, route.query, createSavedStateHandle()) }
+                            GalleryScreen(
+                                vm = vm,
+                                server = server,
+                                settings = settings,
+                                onSettings = update,
+                                onOpen = { post -> nav.open(PostRoute(post.id, vm.query, vm.seed)) },
+                                onSearch = { q -> nav.replace(GalleryRoute(q)) }
+                            )
+                        }
+                        entry<PostRoute> { route ->
+                            val vm =
+                                viewModel {
+                                    ViewerViewModel(graph.account, route.id, route.query, route.seed, createSavedStateHandle())
+                                }
+                            ViewerScreen(
+                                vm = vm,
+                                server = server,
+                                onBack = { nav.back() },
+                                onSearch = searchFor
+                            )
+                        }
+                        entry<ExploreRoute> { Soon(Tab.Explore.icon, stringResource(Tab.Explore.label)) }
+                        entry<TagsRoute> { Soon(Tab.Tags.icon, stringResource(Tab.Tags.label)) }
+                        entry<UploadRoute> { Soon(Tab.Upload.icon, stringResource(Tab.Upload.label)) }
+                        entry<ForumRoute> { Soon(Tab.Forum.icon, stringResource(Tab.Forum.label)) }
+                        entry<SettingsRoute> {
+                            SettingsScreen(
+                                settings = settings,
+                                account = account,
+                                serverVersion = info?.version,
+                                onChange = update,
+                                onSignOut = { scope.launch { graph.account.signOut() } },
+                                onSignIn = { scope.launch { graph.account.toSignIn() } }
+                            )
+                        }
+                    }
+                NavDisplay(
+                    entries = nav.entries(provider),
+                    sharedTransitionScope = this@SharedTransitionLayout,
+                    transitionSpec = { fadeIn(tween(220)) togetherWith fadeOut(tween(90)) },
+                    popTransitionSpec = { fadeIn(tween(220)) togetherWith fadeOut(tween(90)) },
+                    predictivePopTransitionSpec = { fadeIn(tween(220)) togetherWith (fadeOut(tween(220)) + scaleOut(targetScale = 0.9f)) },
+                    onBack = { nav.back() }
+                )
+            }
+        }
+    }
+}
