@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,10 +27,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -53,16 +56,23 @@ import eu.filipnone.starbooru.ui.common.fileSize
 import eu.filipnone.starbooru.ui.theme.StarBooruTheme
 import java.util.TimeZone
 
-/** The cards beside or under the picture: its tags, then the file's details. */
+/**
+ * The cards beside or under the picture: its tags, then the file's details.
+ * With [canEdit], the tags card has an Edit button that calls [onEdit];
+ * [drafted] marks it while an edit waits unsaved.
+ */
 @Composable
 fun PostDetails(
     post: Post,
     onSearch: (String) -> Unit,
     onTag: (String) -> Unit = {},
+    canEdit: Boolean = false,
+    drafted: Boolean = false,
+    onEdit: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Column(modifier, verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        TagsCard(post, onSearch, onTag)
+        TagsCard(post, onSearch, onTag, canEdit, drafted, onEdit)
         DetailsCard(post, onSearch)
     }
 }
@@ -70,6 +80,7 @@ fun PostDetails(
 @Composable
 private fun Card(
     title: String,
+    action: (@Composable () -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {
     Column(
@@ -80,8 +91,42 @@ private fun Card(
             .padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                title,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.weight(1f),
+            )
+            action?.invoke()
+        }
         content()
+    }
+}
+
+@Composable
+private fun EditButton(
+    drafted: Boolean,
+    onClick: () -> Unit,
+) {
+    val roles = StarBooruTheme.roles
+    val tint = MaterialTheme.colorScheme.primary
+    val label = stringResource(R.string.post_edit_tags)
+    val unsaved = stringResource(R.string.post_tags_unsaved)
+    Row(
+        Modifier
+            .heightIn(min = 36.dp)
+            .clip(CircleShape)
+            .background(roles.surface2)
+            .clickable(role = Role.Button, onClickLabel = label, onClick = onClick)
+            .semantics { if (drafted) stateDescription = unsaved }
+            .padding(start = 10.dp, end = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Icon(painterResource(R.drawable.ic_edit), null, tint = tint, modifier = Modifier.size(18.dp))
+        Text(stringResource(R.string.post_edit), color = tint, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+        if (drafted) Box(Modifier.size(8.dp).clip(CircleShape).background(tint))
     }
 }
 
@@ -91,9 +136,12 @@ private fun TagsCard(
     post: Post,
     onSearch: (String) -> Unit,
     onTag: (String) -> Unit,
+    canEdit: Boolean,
+    drafted: Boolean,
+    onEdit: () -> Unit,
 ) {
     val groups = remember(post.tagDetails, post.tags) { groupTags(post.tagDetails) }
-    Card(stringResource(R.string.post_tags)) {
+    Card(stringResource(R.string.post_tags), action = if (canEdit) ({ EditButton(drafted, onEdit) }) else null) {
         if (post.tags.isEmpty()) {
             Text(stringResource(R.string.post_no_tags), color = MaterialTheme.colorScheme.onSurfaceVariant)
         } else if (groups.isEmpty()) {
@@ -122,7 +170,7 @@ private fun TagsCard(
 }
 
 @Composable
-private fun groupTitle(group: TagGroup): String =
+internal fun groupTitle(group: TagGroup): String =
     when (group.kind) {
         TagGroupKind.ARTIST -> stringResource(R.string.category_artist)
 

@@ -176,6 +176,12 @@ fun ViewerScreen(
     val post = shown.post
     val error = shown.error
     val wide = frame.width == WidthClass.Expanded && !fullscreen
+    // The editor's draft sits above both layouts, so a rotation that swaps
+    // them keeps it, and so does swiping the sheet away.
+    val who by account.state.collectAsStateWithLifecycle()
+    val draft = rememberSaveable(shown.id, saver = PostEditorState.Saver) { PostEditorState() }
+    var editing by rememberSaveable(shown.id) { mutableStateOf(false) }
+    val edited = rememberEditUndo(account) { vm.replace(it) }
     val scroll = rememberScrollState()
     var pull by remember { mutableFloatStateOf(0f) }
 
@@ -205,7 +211,19 @@ fun ViewerScreen(
             @Composable { modifier: Modifier ->
                 Column(modifier.graphicsLayer { alpha = 1f - pull }) {
                     when {
-                        post != null -> PostDetails(post, onSearch, onTag)
+                        post != null ->
+                            PostDetails(
+                                post,
+                                onSearch,
+                                onTag,
+                                canEdit = mayEdit(who, post),
+                                drafted = draft.changed,
+                                onEdit = {
+                                    draft.begin(post)
+                                    editing = true
+                                },
+                            )
+
                         error != null -> Problem(describe(error, server), vm::retry)
                     }
                 }
@@ -271,6 +289,18 @@ fun ViewerScreen(
                 details(Modifier.fillMaxWidth().widthIn(max = 720.dp).padding(bottom = 16.dp))
             }
         }
+    }
+    if (editing && post != null && mayEdit(who, post)) {
+        PostEditor(
+            post = post,
+            state = draft,
+            account = account,
+            onSaved = edited,
+            onClose = { discard ->
+                editing = false
+                if (discard) draft.clear()
+            },
+        )
     }
 }
 

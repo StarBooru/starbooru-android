@@ -1,0 +1,8 @@
+# The viewer's tag editor: tags, rating and source. Not add, cancel,
+# tag-error-* or tags-remove-named: other groups already have them.
+
+[editor]
+post-edit post-edit-tags post-add-as post-add-category post-tag-removed
+post-tags-added post-tags-removed post-tags-unsaved post-tags-no-changes
+post-tags-as-text post-tags-hint post-did-you-mean post-replace-tag
+ai-new-tag save

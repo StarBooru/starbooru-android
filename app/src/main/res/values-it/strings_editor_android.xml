@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tag editor text the web app doesn't have. The rest is in strings_editor.xml. -->
+<resources>
+    <string name="post_edit_saved">Modifiche salvate</string>
+    <!-- reason -->
+    <string name="post_edit_undo_failed">Impossibile annullare le modifiche: %1$s</string>
+</resources>

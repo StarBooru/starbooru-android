@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="post_edit">Modifica</string>
+    <string name="post_edit_tags">Modifica i tag</string>
+    <!-- category -->
+    <string name="post_add_as">Aggiungi tag come %1$s</string>
+    <string name="post_add_category">Categoria dei nuovi tag</string>
+    <!-- name -->
+    <string name="post_tag_removed">%1$s rimosso</string>
+    <!-- count -->
+    <plurals name="post_tags_added">
+        <item quantity="one">1 tag aggiunto</item>
+        <item quantity="other">%1$d tag aggiunti</item>
+    </plurals>
+    <!-- count -->
+    <plurals name="post_tags_removed">
+        <item quantity="one">1 tag rimosso</item>
+        <item quantity="other">%1$d tag rimossi</item>
+    </plurals>
+    <string name="post_tags_unsaved">Non ancora salvato</string>
+    <string name="post_tags_no_changes">Nessuna modifica</string>
+    <string name="post_tags_as_text">Modifica come testo</string>
+    <string name="post_tags_hint">Metti artist:, character:, copyright: o meta: davanti a un tag per sceglierne la categoria.</string>
+    <string name="post_did_you_mean">Intendevi?</string>
+    <!-- from, to -->
+    <string name="post_replace_tag">Sostituisci %1$s con %2$s</string>
+    <string name="ai_new_tag">nuovo</string>
+    <string name="save">Salva</string>
+</resources>
