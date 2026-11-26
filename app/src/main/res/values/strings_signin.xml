@@ -20,6 +20,8 @@
     <string name="login_or">or</string>
     <!-- provider -->
     <string name="login_with">Sign in with %1$s</string>
+    <!-- error -->
+    <string name="login_unreachable">Cannot reach the server: %1$s</string>
     <string name="guest_sign_in">Sign in</string>
     <string name="guest_sign_up">Create an account</string>
     <string name="guest_keep_browsing">Keep browsing without an account</string>

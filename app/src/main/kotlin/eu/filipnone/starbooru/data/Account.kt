@@ -1,6 +1,7 @@
 package eu.filipnone.starbooru.data
 
 import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
@@ -12,6 +13,7 @@ import eu.filipnone.starbooru.core.CoreException
 import eu.filipnone.starbooru.core.Role
 import eu.filipnone.starbooru.core.ServerInfo
 import eu.filipnone.starbooru.core.SignedIn
+import java.io.IOException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -48,7 +50,7 @@ val AccountState.server: String?
 fun interface ApiFactory {
     fun create(
         server: String,
-        token: String?
+        token: String?,
     ): ApiInterface
 }
 
@@ -98,11 +100,11 @@ class Account(private val store: DataStore<Preferences>, private val secrets: Se
 
     suspend fun signedIn(
         server: String,
-        signedIn: SignedIn
+        signedIn: SignedIn,
     ) = lock.withLock {
         val user = signedIn.user
         secrets.write(signedIn.token)
-        store.edit {
+        save {
             it[LAST_SERVER] = server
             it[SESSION_SERVER] = server
             it[USER_ID] = user.id
@@ -115,7 +117,7 @@ class Account(private val store: DataStore<Preferences>, private val secrets: Se
 
     suspend fun browseAsGuest(server: String) =
         lock.withLock {
-            store.edit {
+            save {
                 it[LAST_SERVER] = server
                 it[GUEST_SERVER] = server
             }
@@ -126,7 +128,7 @@ class Account(private val store: DataStore<Preferences>, private val secrets: Se
     suspend fun toSignIn() =
         lock.withLock {
             val server = _state.value.server ?: return@withLock
-            store.edit { it.remove(GUEST_SERVER) }
+            save { it.remove(GUEST_SERVER) }
             enter(AccountState.SignedOut(server), null)
         }
 
@@ -146,7 +148,7 @@ class Account(private val store: DataStore<Preferences>, private val secrets: Se
         lock.withLock {
             val server = _state.value.server ?: return@withLock
             secrets.write(null)
-            store.edit {
+            save {
                 it.remove(SESSION_SERVER)
                 it.remove(USER_ID)
                 it.remove(USERNAME)
@@ -174,6 +176,9 @@ class Account(private val store: DataStore<Preferences>, private val secrets: Se
         try {
             return block(api)
         } catch (e: CoreException.Unauthorized) {
+            // A late answer to a session that has since been replaced says
+            // nothing of the one in use.
+            if (_api.value !== api) throw e
             when (_state.value) {
                 is AccountState.SignedIn -> expired()
                 is AccountState.Guest -> refreshInfo().also { if (_info.value?.guests != true) toSignIn() }
@@ -183,9 +188,20 @@ class Account(private val store: DataStore<Preferences>, private val secrets: Se
         }
     }
 
+    /**
+     * Writes the stored session. A full or failing disk leaves the change
+     * for this run only, rather than taking the app down.
+     */
+    private suspend fun save(change: (MutablePreferences) -> Unit) {
+        try {
+            store.edit(change)
+        } catch (_: IOException) {
+        }
+    }
+
     private fun enter(
         next: AccountState,
-        token: String?
+        token: String?,
     ) {
         val server = next.server
         val api = server?.let { s -> runCatching { apis.create(s, token) }.getOrNull() }

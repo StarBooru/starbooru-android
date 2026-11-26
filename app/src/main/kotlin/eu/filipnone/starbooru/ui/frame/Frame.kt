@@ -99,7 +99,7 @@ data class NavItem(
     val icon: Int,
     val onClick: () -> Unit,
     /** Sign in, drawn in the primary colour. */
-    val accent: Boolean = false
+    val accent: Boolean = false,
 )
 
 /**
@@ -120,7 +120,7 @@ fun Frame(
     onSubmit: (String) -> Unit,
     onBrand: () -> Unit,
     onSignIn: (() -> Unit)?,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val roles = StarBooruTheme.roles
     BoxWithConstraints(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
@@ -148,7 +148,7 @@ fun Frame(
                             start = if (dir == LayoutDirection.Ltr) sysLeft else sysRight,
                             end = if (dir == LayoutDirection.Ltr) sysRight else sysLeft,
                             top = top,
-                            bottom = sysBottom + 12.dp + BarItem + 8.dp + 12.dp
+                            bottom = sysBottom + 12.dp + BarItem + 8.dp + 12.dp,
                         )
 
                     else -> {
@@ -158,7 +158,7 @@ fun Frame(
                             start = if (dir == LayoutDirection.Ltr) left else rightPad,
                             end = if (dir == LayoutDirection.Ltr) rightPad else left,
                             top = top,
-                            bottom = sysBottom + 12.dp
+                            bottom = sysBottom + 12.dp,
                         )
                     }
                 }
@@ -175,7 +175,7 @@ fun Frame(
                 Modifier
                     .fillMaxWidth()
                     .height(sysTop + gap)
-                    .background(Brush.verticalGradient(listOf(canvas.copy(alpha = 0.85f), canvas.copy(alpha = 0f))))
+                    .background(Brush.verticalGradient(listOf(canvas.copy(alpha = 0.85f), canvas.copy(alpha = 0f)))),
             )
         }
 
@@ -183,7 +183,7 @@ fun Frame(
             val items =
                 tabs.map { tab -> NavItem(stringResource(tab.label), tab.icon, { onSelect(tab) }) } +
                     listOfNotNull(
-                        onSignIn?.let { NavItem(stringResource(R.string.guest_sign_in), R.drawable.ic_login, it, accent = true) }
+                        onSignIn?.let { NavItem(stringResource(R.string.guest_sign_in), R.drawable.ic_login, it, accent = true) },
                     )
             val selectedIndex = tabs.indexOf(selected)
 
@@ -191,7 +191,7 @@ fun Frame(
                 visible = bars,
                 enter = fadeIn(tween(250)) + slideInVertically(tween(250, easing = StarEasing)) { -it / 2 },
                 exit = fadeOut(tween(150)) + slideOutVertically(tween(150)) { -it / 2 },
-                modifier = Modifier.align(Alignment.TopCenter)
+                modifier = Modifier.align(Alignment.TopCenter),
             ) {
                 TopBar(
                     width = width,
@@ -200,7 +200,7 @@ fun Frame(
                     onSubmit = onSubmit,
                     onBrand = onBrand,
                     modifier = Modifier.padding(top = sysTop + gap, start = sysLeft + gap, end = sysRight + gap),
-                    roles = roles
+                    roles = roles,
                 )
             }
 
@@ -209,7 +209,7 @@ fun Frame(
                     visible = bars,
                     enter = fadeIn(tween(250)) + slideInVertically(tween(250, easing = StarEasing)) { it },
                     exit = fadeOut(tween(150)) + slideOutVertically(tween(150)) { it },
-                    modifier = Modifier.align(Alignment.BottomCenter)
+                    modifier = Modifier.align(Alignment.BottomCenter),
                 ) {
                     NavSlider(
                         items = items,
@@ -222,7 +222,7 @@ fun Frame(
                                 .padding(start = sysLeft + 12.dp, end = sysRight + 12.dp, bottom = sysBottom + 12.dp)
                                 .widthIn(max = 480.dp)
                                 .fillMaxWidth()
-                                .height(BarItem + 8.dp)
+                                .height(BarItem + 8.dp),
                     )
                 }
             } else {
@@ -231,7 +231,7 @@ fun Frame(
                     visible = bars,
                     enter = fadeIn(tween(250)),
                     exit = fadeOut(tween(150)),
-                    modifier = Modifier.align(railAlign)
+                    modifier = Modifier.align(railAlign),
                 ) {
                     val itemHeight = if (short) BarItem else RailWidth
                     NavSlider(
@@ -244,12 +244,12 @@ fun Frame(
                             Modifier
                                 .padding(
                                     top = sysTop + gap + BarHeight + gap,
-                                    bottom = sysBottom + 12.dp
+                                    bottom = sysBottom + 12.dp,
                                 ).padding(
                                     start = if (right) 0.dp else sysLeft + 12.dp,
-                                    end = if (right) sysRight + 12.dp else 0.dp
+                                    end = if (right) sysRight + 12.dp else 0.dp,
                                 ).width(railWidth)
-                                .height(itemHeight * items.size + 8.dp)
+                                .height(itemHeight * items.size + 8.dp),
                     )
                 }
             }
@@ -265,7 +265,7 @@ private fun TopBar(
     onSubmit: (String) -> Unit,
     onBrand: () -> Unit,
     roles: StarRoles,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Box(modifier.fillMaxWidth().height(BarHeight)) {
         if (width != WidthClass.Compact) {
@@ -276,13 +276,13 @@ private fun TopBar(
                     .glass(CircleShape, roles)
                     .clickable(onClick = onBrand)
                     .padding(start = 12.dp, end = if (width == WidthClass.Expanded) 18.dp else 12.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
                     painterResource(R.drawable.ic_brand_mark_compact),
                     contentDescription = stringResource(R.string.app_name),
                     tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.height(30.dp).aspectRatio(512f / 436f)
+                    modifier = Modifier.height(30.dp).aspectRatio(512f / 436f),
                 )
                 if (width == WidthClass.Expanded) {
                     Spacer(Modifier.width(8.dp))
@@ -290,7 +290,7 @@ private fun TopBar(
                         painterResource(R.drawable.ic_brand_wordmark),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.height(19.dp).aspectRatio(648f / 103f)
+                        modifier = Modifier.height(19.dp).aspectRatio(648f / 103f),
                     )
                 }
             }
@@ -312,7 +312,7 @@ private fun TopBar(
             leadingBrand = width == WidthClass.Compact,
             onBrand = onBrand,
             roles = roles,
-            modifier = searchModifier
+            modifier = searchModifier,
         )
     }
 }
@@ -325,7 +325,7 @@ private fun SearchCapsule(
     leadingBrand: Boolean,
     onBrand: () -> Unit,
     roles: StarRoles,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val label = stringResource(R.string.search_label)
     Row(
@@ -333,7 +333,7 @@ private fun SearchCapsule(
             .height(BarHeight)
             .glass(CircleShape, roles)
             .padding(start = 8.dp, end = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         if (leadingBrand) {
             IconButton(onClick = onBrand, modifier = Modifier.size(44.dp)) {
@@ -341,7 +341,7 @@ private fun SearchCapsule(
                     painterResource(R.drawable.ic_brand_mark_compact),
                     contentDescription = stringResource(R.string.app_name),
                     tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.height(28.dp).aspectRatio(512f / 436f)
+                    modifier = Modifier.height(28.dp).aspectRatio(512f / 436f),
                 )
             }
         } else {
@@ -349,7 +349,7 @@ private fun SearchCapsule(
                 painterResource(R.drawable.ic_search),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(start = 8.dp, end = 4.dp).size(24.dp)
+                modifier = Modifier.padding(start = 8.dp, end = 4.dp).size(24.dp),
             )
         }
         Box(Modifier.weight(1f).padding(horizontal = 6.dp), contentAlignment = Alignment.CenterStart) {
@@ -358,7 +358,7 @@ private fun SearchCapsule(
                     stringResource(R.string.search_placeholder),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.bodyLarge,
-                    maxLines = 1
+                    maxLines = 1,
                 )
             }
             BasicTextField(
@@ -369,7 +369,7 @@ private fun SearchCapsule(
                 cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search, autoCorrectEnabled = false),
                 keyboardActions = KeyboardActions(onSearch = { onSubmit(text) }),
-                modifier = Modifier.fillMaxWidth().semantics { contentDescription = label }
+                modifier = Modifier.fillMaxWidth().semantics { contentDescription = label },
             )
         }
         if (text.isNotEmpty()) {
@@ -381,7 +381,7 @@ private fun SearchCapsule(
                     painterResource(R.drawable.ic_close),
                     contentDescription = stringResource(R.string.search_clear),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(20.dp),
                 )
             }
         }
@@ -400,7 +400,7 @@ private fun NavSlider(
     vertical: Boolean,
     labels: Boolean,
     roles: StarRoles,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val shape = RoundedCornerShape(if (vertical) 38.dp else 30.dp)
     BoxWithConstraints(modifier.glass(shape, roles).padding(4.dp)) {
@@ -416,7 +416,7 @@ private fun NavSlider(
         val end by animateDpAsState(
             cell * (index + 1),
             tween(if (forward) MOTION_QUICK else MOTION_SLOW, easing = StarEasing),
-            label = "end"
+            label = "end",
         )
         val thumbAlpha by animateFloatAsState(if (shown) 1f else 0f, tween(250), label = "thumbAlpha")
         val thumbShape = RoundedCornerShape(if (vertical) 34.dp else 26.dp)
@@ -431,11 +431,11 @@ private fun NavSlider(
                         Modifier.offset(y = start).fillMaxWidth().height((end - start).coerceAtLeast(0.dp))
                     } else {
                         Modifier.offset(x = start).fillMaxHeight().width((end - start).coerceAtLeast(0.dp))
-                    }
+                    },
                 ).shadow(2.dp, thumbShape)
                 .clip(thumbShape)
                 .background(MaterialTheme.colorScheme.primaryContainer)
-                .border(1.dp, roles.glassEdge, thumbShape)
+                .border(1.dp, roles.glassEdge, thumbShape),
         )
         val cells: @Composable (Modifier) -> Unit = { cellModifier ->
             items.forEachIndexed { i, item ->
@@ -455,7 +455,7 @@ private fun NavCell(
     item: NavItem,
     selected: Boolean,
     label: Boolean,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
     val interaction = remember { MutableInteractionSource() }
     val pressed by interaction.collectIsPressedAsState()
@@ -479,13 +479,13 @@ private fun NavCell(
             .clickable(interactionSource = interaction, indication = null, role = Role.Tab, onClick = item.onClick)
             .semantics { this.selected = selected },
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         Icon(
             painterResource(item.icon),
             contentDescription = if (label) null else item.label,
             tint = colour,
-            modifier = Modifier.size(22.dp).scale(pop.value * press)
+            modifier = Modifier.size(22.dp).scale(pop.value * press),
         )
         if (label) {
             Text(
@@ -494,7 +494,7 @@ private fun NavCell(
                 fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
-                style = MaterialTheme.typography.labelMedium
+                style = MaterialTheme.typography.labelMedium,
             )
         }
     }

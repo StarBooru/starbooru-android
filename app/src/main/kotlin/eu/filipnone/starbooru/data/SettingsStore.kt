@@ -36,6 +36,7 @@ class SettingsStore(private val store: DataStore<Preferences>) {
         val VIEW = stringPreferencesKey("gallery_view")
         val COLUMNS = intPreferencesKey("gallery_columns")
         val FLUSH = booleanPreferencesKey("gallery_flush")
+        val CACHE_MB = intPreferencesKey("cache_mb")
 
         inline fun <reified E : Enum<E>> enumOf(name: String?, default: E): E = enumValues<E>().firstOrNull { it.name == name } ?: default
 
@@ -49,18 +50,19 @@ class SettingsStore(private val store: DataStore<Preferences>) {
                     Seed(
                         hue = prefs[HUE] ?: d.seed.hue,
                         chroma = prefs[CHROMA] ?: d.seed.chroma,
-                        lightness = prefs[LIGHTNESS] ?: d.seed.lightness
+                        lightness = prefs[LIGHTNESS] ?: d.seed.lightness,
                     ),
                 hand = enumOf(prefs[HAND], d.hand),
                 galleryView = enumOf(prefs[VIEW], d.galleryView),
                 columns = prefs[COLUMNS]?.takeIf { it in 1..24 },
-                flush = prefs[FLUSH] ?: d.flush
+                flush = prefs[FLUSH] ?: d.flush,
+                cacheMb = prefs[CACHE_MB]?.takeIf { it in 0..65_536 } ?: d.cacheMb,
             )
         }
 
         fun write(
             prefs: MutablePreferences,
-            s: Settings
+            s: Settings,
         ) {
             prefs[THEME] = s.theme.name
             prefs[OLED] = s.oled
@@ -73,6 +75,7 @@ class SettingsStore(private val store: DataStore<Preferences>) {
             val columns = s.columns
             if (columns == null) prefs.remove(COLUMNS) else prefs[COLUMNS] = columns
             prefs[FLUSH] = s.flush
+            prefs[CACHE_MB] = s.cacheMb
         }
     }
 }

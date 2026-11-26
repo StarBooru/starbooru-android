@@ -2,12 +2,14 @@ import javax.inject.Inject
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
@@ -69,7 +71,7 @@ android {
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -163,10 +165,12 @@ abstract class UniffiBindingsTask : DefaultTask() {
 
     @get:OutputDirectory abstract val outputDir: DirectoryProperty
 
+    /** The host build of the core, which JVM tests load through JNA. */
+    @get:OutputFile abstract val hostLibrary: RegularFileProperty
+
     @TaskAction
     fun generate() {
         val out = outputDir.get().asFile
-        out.deleteRecursively()
         val ws = workspace.get().asFile
         // Its own target folder, so the bindgen feature doesn't rebuild the
         // libraries the APK takes.
@@ -176,15 +180,21 @@ abstract class UniffiBindingsTask : DefaultTask() {
             environment("CARGO_TARGET_DIR", target.absolutePath)
             commandLine("cargo", "build", "-p", "starbooru-android-core", "--lib")
         }
+        // Written aside first, so a core that doesn't build leaves the last
+        // good bindings in place.
+        val fresh = temporaryDir.resolve("kotlin")
+        fresh.deleteRecursively()
         exec.exec {
             workingDir = ws
             environment("CARGO_TARGET_DIR", target.absolutePath)
             commandLine(
                 "cargo", "run", "--features", "bindgen", "--bin", "uniffi-bindgen", "--",
-                "generate", "--library", target.resolve("debug/libstarbooru_android_core.so").absolutePath,
-                "--language", "kotlin", "--out-dir", out.absolutePath, "--no-format"
+                "generate", "--library", hostLibrary.get().asFile.absolutePath,
+                "--language", "kotlin", "--out-dir", fresh.absolutePath, "--no-format",
             )
         }
+        out.deleteRecursively()
+        fresh.copyRecursively(out, overwrite = true)
     }
 }
 
@@ -192,7 +202,7 @@ val rustSources =
     files(
         rootProject.file("Cargo.toml"),
         rootProject.file("Cargo.lock"),
-        rootProject.fileTree("core") { include("**/*.rs", "Cargo.toml", "uniffi.toml") }
+        rootProject.fileTree("core") { include("**/*.rs", "Cargo.toml", "uniffi.toml") },
     )
 
 val uniffiBindings =
@@ -200,6 +210,7 @@ val uniffiBindings =
         sources.from(rustSources)
         workspace.set(rootProject.layout.projectDirectory)
         outputDir.set(layout.buildDirectory.dir("generated/uniffi/kotlin"))
+        hostLibrary.set(rootProject.layout.projectDirectory.file("target/bindgen/debug/libstarbooru_android_core.so"))
     }
 
 androidComponents {

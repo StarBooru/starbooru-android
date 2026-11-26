@@ -24,7 +24,7 @@ data class ViewerState(
     val next: Post? = null,
     /** Whether there is a post on each side, once the server has said. */
     val neighbors: Neighbors? = null,
-    val error: Throwable? = null
+    val error: Throwable? = null,
 )
 
 /**
@@ -37,7 +37,7 @@ class ViewerViewModel(
     startId: Long,
     val query: String,
     val seed: Long?,
-    private val saved: SavedStateHandle
+    private val saved: SavedStateHandle,
 ) : ViewModel() {
     private val posts = LinkedHashMap<Long, Post>(16, 0.75f, true)
     private val sides = HashMap<Long, Neighbors>()
@@ -54,13 +54,24 @@ class ViewerViewModel(
     /** Moves to the post on [side], if there is one. */
     fun go(side: Side): Boolean {
         val s = _state.value
+        val near = s.neighbors
+        if (near == null) {
+            // The neighbours never came: ask again rather than stay stuck.
+            if (loading?.isActive != true) load(s.id)
+            return false
+        }
         val id =
             when (side) {
-                Side.Prev -> s.neighbors?.prev
-                Side.Next -> s.neighbors?.next
+                Side.Prev -> near.prev
+                Side.Next -> near.next
             } ?: return false
         saved[ID] = id
-        _state.value = ViewerState(id, posts[id], neighbors = sides[id])
+        val known = sides[id]
+        // What's already here stands in until the server answers: the post
+        // just left is the new one's other side.
+        val prev = known?.prev?.let { posts[it] } ?: if (side == Side.Next && known == null) s.post else null
+        val next = known?.next?.let { posts[it] } ?: if (side == Side.Prev && known == null) s.post else null
+        _state.value = ViewerState(id, posts[id], prev = prev, next = next, neighbors = known)
         load(id)
         return true
     }
@@ -72,7 +83,7 @@ class ViewerViewModel(
             s.copy(
                 post = if (s.post?.id == post.id) post else s.post,
                 prev = if (s.prev?.id == post.id) post else s.prev,
-                next = if (s.next?.id == post.id) post else s.next
+                next = if (s.next?.id == post.id) post else s.next,
             )
         }
     }
@@ -81,19 +92,36 @@ class ViewerViewModel(
         loading?.cancel()
         loading =
             viewModelScope.launch {
-                try {
-                    val post = posts[id] ?: account.call { it.post(id) }.also { keep(it) }
-                    _state.update { if (it.id == id) it.copy(post = post, error = null) else it }
-                    val near = sides[id] ?: account.call { it.neighbors(id, query, seed) }.also { sides[id] = it }
-                    _state.update { if (it.id == id) it.copy(neighbors = near) else it }
-                    val prev = near.prev?.let { p -> posts[p] ?: account.call { it.post(p) }.also { keep(it) } }
-                    val next = near.next?.let { n -> posts[n] ?: account.call { it.post(n) }.also { keep(it) } }
-                    _state.update { if (it.id == id) it.copy(prev = prev, next = next) else it }
-                } catch (e: CoreException) {
-                    _state.update { if (it.id == id && it.post == null) it.copy(error = e) else it }
-                }
+                val post =
+                    try {
+                        posts[id] ?: account.call { it.post(id) }.also { keep(it) }
+                    } catch (e: CoreException) {
+                        _state.update { if (it.id == id && it.post == null) it.copy(error = e) else it }
+                        return@launch
+                    }
+                _state.update { if (it.id == id) it.copy(post = post, error = null) else it }
+                val near =
+                    try {
+                        sides[id] ?: account.call { it.neighbors(id, query, seed) }.also { sides[id] = it }
+                    } catch (_: CoreException) {
+                        // The arrows wait; the next swipe asks again.
+                        return@launch
+                    }
+                _state.update { if (it.id == id) it.copy(neighbors = near) else it }
+                // Each side on its own, so one that fails leaves the other.
+                val prev = near.prev?.let { fetch(it) }
+                _state.update { if (it.id == id) it.copy(prev = prev) else it }
+                val next = near.next?.let { fetch(it) }
+                _state.update { if (it.id == id) it.copy(next = next) else it }
             }
     }
+
+    private suspend fun fetch(id: Long): Post? =
+        posts[id] ?: try {
+            account.call { it.post(id) }.also { keep(it) }
+        } catch (_: CoreException) {
+            null
+        }
 
     private fun keep(post: Post) {
         posts[post.id] = post

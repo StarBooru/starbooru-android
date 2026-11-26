@@ -9,7 +9,7 @@ import androidx.core.net.toUri
 /** Opens [url] in a browser tab over the app, or in the browser when there's none. */
 fun openInTab(
     context: Context,
-    url: String
+    url: String,
 ) {
     val uri = url.toUri()
     try {

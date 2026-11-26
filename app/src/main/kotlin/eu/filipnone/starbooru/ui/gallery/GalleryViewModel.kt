@@ -25,7 +25,7 @@ data class GalleryState(
     val error: Throwable? = null,
     val corrected: List<TagCorrection> = emptyList(),
     /** The first page has answered at least once. */
-    val loaded: Boolean = false
+    val loaded: Boolean = false,
 )
 
 /**
@@ -80,7 +80,7 @@ class GalleryViewModel(private val account: Account, val query: String, private 
                             loading = false,
                             hasMore = result.hasMore,
                             corrected = if (next == 1u) result.corrected else st.corrected,
-                            loaded = true
+                            loaded = true,
                         )
                     }
                 } catch (e: CoreException) {
@@ -105,13 +105,15 @@ class GalleryViewModel(private val account: Account, val query: String, private 
             viewModelScope.launch {
                 _state.update { it.copy(loading = true) }
                 val posts = ArrayList<Post>(wanted)
+                val seen = HashSet<Long>()
                 var more = true
                 var p = 0u
                 try {
                     while (more && posts.size < wanted) {
                         p += 1u
                         val result = account.call { it.posts(query, seed, p, per) }
-                        posts += result.posts
+                        // A post added meanwhile shifts the pages: one can come twice.
+                        posts += result.posts.filter { seen.add(it.id) }
                         more = result.hasMore
                         if (p == 1u) _state.update { it.copy(corrected = result.corrected) }
                     }

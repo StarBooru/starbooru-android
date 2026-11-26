@@ -95,9 +95,9 @@ fun NavigationState.entries(provider: (NavKey) -> NavEntry<NavKey>): List<NavEnt
                 entryDecorators =
                     listOf(
                         rememberSaveableStateHolderNavEntryDecorator(),
-                        rememberViewModelStoreNavEntryDecorator()
+                        rememberViewModelStoreNavEntryDecorator(),
                     ),
-                entryProvider = provider
+                entryProvider = provider,
             )
         }
     return stacksInUse.flatMap { decorated[it].orEmpty() }

@@ -7,7 +7,7 @@ twin in values-it. A message's variables become positional arguments in the
 order they first appear (listed in a comment above it); one that picks a
 plural form becomes a <plurals> with that number as %N$d.
 
-    python3 tools/strings.py [path to starbooru-web]
+    python3 tools/strings.py [path to starbooru-web] [path to the reference app]
 
 Text the web app doesn't have lives by hand in values/strings.xml and
 values-it/strings.xml.
@@ -19,6 +19,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 WEB = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT.parent / "starbooru-web"
+# The archived reference app, for the text only it had (the media cache).
+REFERENCE = Path(sys.argv[2]) if len(sys.argv) > 2 else ROOT.parent / "StarBooru"
 RES = ROOT / "app/src/main/res"
 LANGS = {"en": "values", "it": "values-it"}
 
@@ -107,7 +109,15 @@ def main():
             groups.setdefault(group, [])
         elif group:
             groups[group].extend(line.split())
-    catalogues = {lang: load(WEB / f"locales/{lang}.ftl") for lang in LANGS}
+    catalogues = {}
+    for lang in LANGS:
+        reference = REFERENCE / f"apps/app/locales/{lang}.ftl"
+        # The web app's messages first, in its order, and its words where
+        # both have one; then what only the reference has.
+        merged = load(WEB / f"locales/{lang}.ftl")
+        for key, value in (load(reference) if reference.exists() else {}).items():
+            merged.setdefault(key, value)
+        catalogues[lang] = merged
     problems = []
     for group, patterns in groups.items():
         keys = []

@@ -22,6 +22,9 @@
     <string name="accent_teal">Verde acqua</string>
     <string name="accent_blue">Blu</string>
     <string name="accent_red">Rosso</string>
+    <string name="accent_no_hue">I grigi non hanno una tonalità da cui ricavare i colori. Scegli un colore più deciso.</string>
+    <string name="accent_system">Sfondo</string>
+    <string name="accent_system_hint">Segui i colori che Android prende dallo sfondo</string>
     <string name="settings_hand">Mano</string>
     <string name="hand_either">Entrambe</string>
     <string name="hand_left">Sinistra</string>

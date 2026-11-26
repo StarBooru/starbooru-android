@@ -78,7 +78,7 @@ class KeystoreSecretStore(private val file: File) : SecretStore {
                     .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
                     .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
                     .setKeySize(256)
-                    .build()
+                    .build(),
             )
             generateKey()
         }

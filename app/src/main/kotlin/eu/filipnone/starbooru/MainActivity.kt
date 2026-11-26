@@ -43,7 +43,7 @@ class MainActivity : ComponentActivity() {
                 dark = dark,
                 oled = settings.oled,
                 dynamic = settings.wallpaperColours,
-                seed = settings.seed
+                seed = settings.seed,
             ) {
                 MainScreen(graph, settings)
             }

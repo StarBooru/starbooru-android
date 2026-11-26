@@ -33,7 +33,7 @@ val LocalPlainGlass = staticCompositionLocalOf { false }
 @Composable
 fun Modifier.glass(
     shape: Shape,
-    roles: StarRoles
+    roles: StarRoles,
 ): Modifier {
     val source = LocalGlassSource.current
     val frosted = source != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !LocalPlainGlass.current

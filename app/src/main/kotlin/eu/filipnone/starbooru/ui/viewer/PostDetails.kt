@@ -59,7 +59,7 @@ import java.util.TimeZone
 fun PostDetails(
     post: Post,
     onSearch: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(modifier, verticalArrangement = Arrangement.spacedBy(12.dp)) {
         TagsCard(post, onSearch)
@@ -70,7 +70,7 @@ fun PostDetails(
 @Composable
 private fun Card(
     title: String,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     Column(
         Modifier
@@ -78,7 +78,7 @@ private fun Card(
             .clip(RoundedCornerShape(28.dp))
             .background(StarBooruTheme.roles.surface)
             .padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+        verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
         content()
@@ -89,7 +89,7 @@ private fun Card(
 @Composable
 private fun TagsCard(
     post: Post,
-    onSearch: (String) -> Unit
+    onSearch: (String) -> Unit,
 ) {
     val groups = remember(post.tagDetails, post.tags) { groupTags(post.tagDetails) }
     Card(stringResource(R.string.post_tags)) {
@@ -109,7 +109,7 @@ private fun TagsCard(
                         fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
                         letterSpacing = 0.5.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -153,7 +153,7 @@ private fun groupTitle(group: TagGroup): String =
 private fun TagChip(
     name: String,
     category: TagCategory,
-    onSearch: (String) -> Unit
+    onSearch: (String) -> Unit,
 ) {
     val roles = StarBooruTheme.roles
     val colour =
@@ -172,7 +172,7 @@ private fun TagChip(
             .border(1.dp, roles.outline, RoundedCornerShape(8.dp))
             .clickable(role = Role.Button) { onSearch(name) }
             .padding(horizontal = 12.dp, vertical = 6.dp),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Text(
             name.replace('_', ' '),
@@ -180,7 +180,7 @@ private fun TagChip(
             fontSize = 14.sp,
             fontWeight = if (category == TagCategory.GENERAL) null else FontWeight.Medium,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }
@@ -189,7 +189,7 @@ private fun TagChip(
 @Composable
 private fun DetailsCard(
     post: Post,
-    onSearch: (String) -> Unit
+    onSearch: (String) -> Unit,
 ) {
     val uri = LocalUriHandler.current
     val zone = remember { TimeZone.getDefault() }
@@ -217,7 +217,7 @@ private fun DetailsCard(
                                 .background(colour)
                                 .border(1.dp, StarBooruTheme.roles.outline, CircleShape)
                                 .semantics { contentDescription = label }
-                                .clickable(role = Role.Button) { onSearch(colorQuery(hex)) }
+                                .clickable(role = Role.Button) { onSearch(colorQuery(hex)) },
                         )
                     }
                 }
@@ -235,8 +235,8 @@ private fun DetailsCard(
                     overflow = TextOverflow.Ellipsis,
                     modifier =
                         Modifier.weight(1f).then(
-                            if (link != null) Modifier.clickable { runCatching { uri.openUri(link) } } else Modifier
-                        )
+                            if (link != null) Modifier.clickable { runCatching { uri.openUri(link) } } else Modifier,
+                        ),
                 )
             }
         }
@@ -244,7 +244,7 @@ private fun DetailsCard(
             Text(
                 stringResource(R.string.post_sample_note),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
@@ -258,7 +258,7 @@ private fun Label(text: String) {
 @Composable
 private fun Row(
     label: String,
-    value: String
+    value: String,
 ) {
     Row(Modifier.fillMaxWidth()) {
         Label(label)
@@ -274,13 +274,13 @@ private fun ratingName(rating: Rating): String =
             Rating.SENSITIVE -> R.string.rating_sensitive
             Rating.QUESTIONABLE -> R.string.rating_questionable
             Rating.EXPLICIT -> R.string.rating_explicit
-        }
+        },
     )
 
 @Composable
 private fun sizeText(
     number: String,
-    unit: SizeUnit
+    unit: SizeUnit,
 ): String =
     stringResource(
         when (unit) {
@@ -290,7 +290,7 @@ private fun sizeText(
             SizeUnit.GB -> R.string.size_gb
             SizeUnit.TB -> R.string.size_tb
         },
-        number
+        number,
     )
 
 private fun parse(hex: String): Color? {

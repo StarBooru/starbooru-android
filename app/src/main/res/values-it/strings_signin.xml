@@ -20,6 +20,8 @@
     <string name="login_or">oppure</string>
     <!-- provider -->
     <string name="login_with">Accedi con %1$s</string>
+    <!-- error -->
+    <string name="login_unreachable">Impossibile raggiungere il server: %1$s</string>
     <string name="guest_sign_in">Accedi</string>
     <string name="guest_sign_up">Crea un account</string>
     <string name="guest_keep_browsing">Continua a sfogliare senza account</string>

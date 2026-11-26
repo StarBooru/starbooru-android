@@ -12,6 +12,9 @@ import coil3.gif.GifDecoder
 import coil3.memory.MemoryCache
 import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import coil3.request.crossfade
+import eu.filipnone.starbooru.data.MediaCache
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 class StarBooruApp :
     Application(),
@@ -29,8 +32,11 @@ class StarBooruApp :
      * name their disk key after the file's SHA-256, so a picture stays
      * cached when its address is signed again every six hours.
      */
-    override fun newImageLoader(context: PlatformContext): ImageLoader =
-        ImageLoader
+    override fun newImageLoader(context: PlatformContext): ImageLoader {
+        // The limit set in Settings, read once per loader; a change resets
+        // the loader (MediaCache.limitChanged).
+        val limitMb = runBlocking { graph.settings.settings.first().cacheMb }
+        return ImageLoader
             .Builder(context)
             .components {
                 add(OkHttpNetworkFetcherFactory())
@@ -41,15 +47,16 @@ class StarBooruApp :
                 }
             }.memoryCache { MemoryCache.Builder().maxSizePercent(context, 0.25).build() }
             .diskCache {
-                DiskCache
-                    .Builder()
-                    .directory(cacheDir.resolve("media"))
-                    .maxSizeBytes(MEDIA_CACHE_BYTES)
-                    .build()
+                if (limitMb <= 0) {
+                    null
+                } else {
+                    DiskCache
+                        .Builder()
+                        .directory(MediaCache.folder(this))
+                        .maxSizeBytes(limitMb * 1024L * 1024L)
+                        .build()
+                }
             }.crossfade(true)
             .build()
-
-    private companion object {
-        const val MEDIA_CACHE_BYTES = 512L * 1024 * 1024
     }
 }

@@ -16,7 +16,7 @@ data class Seed(
     /** A picked colour's chroma: 0 for a grey, 1 (or anything past [SWATCH_CHROMA]) for full colour. */
     val chroma: Double = 1.0,
     /** A picked colour's lightness, 0 to 1. Only a muted colour's primary follows it. */
-    val lightness: Double = 0.5
+    val lightness: Double = 0.5,
 ) {
     /** How colourful the seed is, from 0 for a grey to 1 for a preset: `--k` in the web's tokens.css. */
     val colourful: Double get() = min(1.0, chroma / SWATCH_CHROMA)
@@ -37,7 +37,7 @@ data class Seed(
             return Seed(
                 hue = hueOf(argb)?.toDouble() ?: hueOver,
                 chroma = if (chroma < MIN_CHROMA) 0.0 else thousandths(chroma),
-                lightness = thousandths(lab.l.coerceIn(0.0, 1.0))
+                lightness = thousandths(lab.l.coerceIn(0.0, 1.0)),
             )
         }
 
@@ -65,7 +65,7 @@ fun swatchArgb(hue: Int): Int = oklchToArgb(SWATCH_LIGHTNESS, SWATCH_CHROMA, hue
 enum class Look {
     Light,
     Dark,
-    Oled
+    Oled,
     ;
 
     val dark: Boolean get() = this != Light
@@ -122,13 +122,13 @@ data class StarRoles(
     /** The third light of the sign-in screen's aurora, see-through. */
     val aurora: Color,
     /** The tint of shadows, opaque: the elevation sets how dark they are. */
-    val shadow: Color
+    val shadow: Color,
 )
 
 /** The palette tokens.css builds from [seed] for [look]. */
 fun starRoles(
     seed: Seed,
-    look: Look
+    look: Look,
 ): StarRoles {
     val t = Tint(seed)
     val base =
@@ -145,7 +145,7 @@ fun starRoles(
         surface2 = t.neutral(0.21, 0.018),
         surface3 = t.neutral(0.26, 0.022),
         glass = t.neutral(0.1, 0.01, alpha = 0.8f),
-        stage = BLACK
+        stage = BLACK,
     )
 }
 
@@ -183,7 +183,7 @@ private fun light(t: Tint) =
         scrim = t.neutral(0.12, 0.01, alpha = 0.55f),
         onScrim = t.neutral(0.97, 0.01),
         aurora = t.accent(0.75, 0.14, turn = -60.0, alpha = 0.35f),
-        shadow = t.neutral(0.2, 0.04)
+        shadow = t.neutral(0.2, 0.04),
     )
 
 private fun dark(t: Tint) =
@@ -221,7 +221,7 @@ private fun dark(t: Tint) =
         scrim = t.neutral(0.12, 0.01, alpha = 0.55f),
         onScrim = t.neutral(0.97, 0.01),
         aurora = t.accent(0.75, 0.14, turn = -60.0, alpha = 0.35f),
-        shadow = BLACK
+        shadow = BLACK,
     )
 
 private val BLACK = oklchColor(0.0, 0.0, 0.0)
@@ -254,6 +254,6 @@ private class Tint(seed: Seed) {
         own: Double,
         low: Double,
         span: Double,
-        chroma: Double
+        chroma: Double,
     ) = oklchColor(own + pull * (low + span * lightness - own), min(chroma, this.chroma), hue)
 }

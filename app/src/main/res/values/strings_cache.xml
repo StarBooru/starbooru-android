@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="cache_title">Storage on this device</string>
+    <string name="cache_hint">Thumbnails and the images you open are kept on this device, so they show at once next time.</string>
+    <!-- size -->
+    <string name="cache_used">Images kept: %1$s</string>
+    <string name="cache_limit">Keep up to</string>
+    <string name="cache_off">Nothing (off)</string>
+    <string name="cache_clear">Clear</string>
+</resources>

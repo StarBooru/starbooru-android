@@ -97,7 +97,7 @@ fun SignInScreen(vm: SignInViewModel) {
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
                 .background(Brush.radialGradient(listOf(roles.aurora, MaterialTheme.colorScheme.background)))
-                .hazeSource(glassSource)
+                .hazeSource(glassSource),
         )
         CompositionLocalProvider(LocalGlassSource provides glassSource) { SignInCard(state, vm) }
     }
@@ -106,7 +106,7 @@ fun SignInScreen(vm: SignInViewModel) {
 @Composable
 private fun SignInCard(
     state: SignInState,
-    vm: SignInViewModel
+    vm: SignInViewModel,
 ) {
     val roles = StarBooruTheme.roles
     run {
@@ -118,7 +118,7 @@ private fun SignInCard(
                 .imePadding()
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
         ) {
             Column(
                 Modifier
@@ -127,7 +127,7 @@ private fun SignInCard(
                     .glass(RoundedCornerShape(28.dp), roles)
                     .padding(24.dp)
                     .animateContentSize(),
-                verticalArrangement = Arrangement.spacedBy(14.dp)
+                verticalArrangement = Arrangement.spacedBy(14.dp),
             ) {
                 Brand(state)
                 if (state.firstAccount) Banner(stringResource(R.string.login_first_user))
@@ -140,7 +140,7 @@ private fun SignInCard(
                     enabled = !state.busy,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next, autoCorrectEnabled = false),
                     shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
                 PasswordField(state, vm)
                 state.error?.let { e ->
@@ -149,7 +149,7 @@ private fun SignInCard(
                 Button(
                     onClick = vm::submit,
                     enabled = state.canSubmit,
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
                 ) {
                     Text(
                         stringResource(
@@ -158,9 +158,9 @@ private fun SignInCard(
                                 state.firstAccount -> R.string.login_create_admin
                                 state.makingAccount -> R.string.login_create
                                 else -> R.string.login_sign_in
-                            }
+                            },
                         ),
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
                     )
                 }
                 val provider = state.known?.info?.oidc
@@ -171,14 +171,14 @@ private fun SignInCard(
                             stringResource(R.string.login_or),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(horizontal = 12.dp)
+                            modifier = Modifier.padding(horizontal = 12.dp),
                         )
                         HorizontalDivider(Modifier.weight(1f))
                     }
                     FilledTonalButton(
                         onClick = vm::signInWithProvider,
                         enabled = !state.busy,
-                        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
                     ) {
                         if (state.viaProvider) {
                             CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
@@ -211,14 +211,14 @@ private fun Brand(state: SignInState) {
             painterResource(R.drawable.ic_brand_mark),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.height(72.dp).aspectRatio(512f / 434f)
+            modifier = Modifier.height(72.dp).aspectRatio(512f / 434f),
         )
         Spacer(Modifier.height(12.dp))
         Icon(
             painterResource(R.drawable.ic_brand_wordmark),
             contentDescription = stringResource(R.string.app_name),
             tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.height(26.dp).aspectRatio(648f / 103f)
+            modifier = Modifier.height(26.dp).aspectRatio(648f / 103f),
         )
         Spacer(Modifier.height(8.dp))
         val info = state.known?.info
@@ -232,7 +232,7 @@ private fun Brand(state: SignInState) {
             },
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
     }
 }
@@ -240,7 +240,7 @@ private fun Brand(state: SignInState) {
 @Composable
 private fun ServerField(
     state: SignInState,
-    vm: SignInViewModel
+    vm: SignInViewModel,
 ) {
     val check = state.check
     OutlinedTextField(
@@ -269,7 +269,7 @@ private fun ServerField(
         },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next, autoCorrectEnabled = false),
         shape = RoundedCornerShape(12.dp),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     )
     // What the address will be kept as, once it differs from what's typed.
     val kept = normalizeServer(state.server)
@@ -278,7 +278,7 @@ private fun ServerField(
             kept,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(start = 16.dp)
+            modifier = Modifier.padding(start = 16.dp),
         )
     }
 }
@@ -286,7 +286,7 @@ private fun ServerField(
 @Composable
 private fun PasswordField(
     state: SignInState,
-    vm: SignInViewModel
+    vm: SignInViewModel,
 ) {
     var shown by rememberSaveable { mutableStateOf(false) }
     OutlinedTextField(
@@ -304,14 +304,14 @@ private fun PasswordField(
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Go),
         keyboardActions = KeyboardActions(onGo = { vm.submit() }),
         shape = RoundedCornerShape(12.dp),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     )
 }
 
 @Composable
 private fun Banner(
     text: String,
-    error: Boolean = false
+    error: Boolean = false,
 ) {
     val roles = StarBooruTheme.roles
     Text(
@@ -324,6 +324,6 @@ private fun Banner(
                 .clip(RoundedCornerShape(16.dp))
                 .background(if (error) roles.dangerContainer else MaterialTheme.colorScheme.primaryContainer)
                 .padding(horizontal = 14.dp, vertical = 10.dp)
-                .semantics { liveRegion = LiveRegionMode.Polite }
+                .semantics { liveRegion = LiveRegionMode.Polite },
     )
 }

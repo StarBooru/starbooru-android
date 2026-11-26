@@ -1,6 +1,7 @@
 package eu.filipnone.starbooru.ui.settings
 
 import android.os.Build
+import android.text.format.Formatter
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -24,6 +25,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
@@ -32,12 +34,18 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -52,6 +60,7 @@ import eu.filipnone.starbooru.core.coreVersion
 import eu.filipnone.starbooru.core.shownServer
 import eu.filipnone.starbooru.data.AccountState
 import eu.filipnone.starbooru.data.Hand
+import eu.filipnone.starbooru.data.MediaCache
 import eu.filipnone.starbooru.data.Settings
 import eu.filipnone.starbooru.data.ThemeMode
 import eu.filipnone.starbooru.ui.frame.LocalFrame
@@ -60,6 +69,7 @@ import eu.filipnone.starbooru.ui.theme.Seed
 import eu.filipnone.starbooru.ui.theme.StarBooruTheme
 import eu.filipnone.starbooru.ui.theme.StarSpringEasing
 import eu.filipnone.starbooru.ui.theme.swatchArgb
+import kotlinx.coroutines.launch
 
 @Composable
 fun SettingsScreen(
@@ -68,7 +78,7 @@ fun SettingsScreen(
     serverVersion: String?,
     onChange: ((Settings) -> Settings) -> Unit,
     onSignOut: () -> Unit,
-    onSignIn: () -> Unit
+    onSignIn: () -> Unit,
 ) {
     val frame = LocalFrame.current
     Column(
@@ -77,7 +87,7 @@ fun SettingsScreen(
             .verticalScroll(rememberScrollState())
             .padding(frame.padding)
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Column(Modifier.widthIn(max = 720.dp).fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Text(stringResource(R.string.nav_settings), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold)
@@ -87,14 +97,14 @@ fun SettingsScreen(
                     listOf(
                         ThemeMode.System to R.string.theme_system,
                         ThemeMode.Light to R.string.theme_light,
-                        ThemeMode.Dark to R.string.theme_dark
+                        ThemeMode.Dark to R.string.theme_dark,
                     ),
-                    settings.theme
+                    settings.theme,
                 ) { t -> onChange { it.copy(theme = t) } }
                 SwitchRow(
                     stringResource(R.string.settings_oled),
                     stringResource(R.string.settings_oled_hint),
-                    settings.oled
+                    settings.oled,
                 ) { o -> onChange { it.copy(oled = o) } }
                 Label(stringResource(R.string.settings_accent))
                 Accents(settings, onChange)
@@ -104,14 +114,14 @@ fun SettingsScreen(
                     listOf(
                         Hand.Either to R.string.hand_either,
                         Hand.Left to R.string.hand_left,
-                        Hand.Right to R.string.hand_right
+                        Hand.Right to R.string.hand_right,
                     ),
-                    settings.hand
+                    settings.hand,
                 ) { h -> onChange { it.copy(hand = h) } }
                 Text(
                     stringResource(R.string.settings_hand_hint),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             Card(stringResource(R.string.settings_account)) {
@@ -134,9 +144,58 @@ fun SettingsScreen(
                     else -> {}
                 }
             }
+            CacheCard(settings, onChange)
             Card(stringResource(R.string.settings_about)) {
                 Text(stringResource(R.string.settings_version, BuildConfig.VERSION_NAME))
                 Hint("core ${coreVersion()}")
+            }
+        }
+    }
+}
+
+@Composable
+private fun CacheCard(
+    settings: Settings,
+    onChange: ((Settings) -> Settings) -> Unit,
+) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var used by remember { mutableStateOf<Long?>(null) }
+    LaunchedEffect(Unit) { used = MediaCache.size(context) }
+    Card(stringResource(R.string.cache_title)) {
+        Hint(stringResource(R.string.cache_hint))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                stringResource(R.string.cache_used, used?.let { Formatter.formatShortFileSize(context, it) } ?: "…"),
+                modifier = Modifier.weight(1f),
+            )
+            FilledTonalButton(
+                onClick = {
+                    scope.launch {
+                        MediaCache.clear(context)
+                        used = MediaCache.size(context)
+                    }
+                },
+                enabled = (used ?: 0L) > 0L,
+            ) { Text(stringResource(R.string.cache_clear)) }
+        }
+        Label(stringResource(R.string.cache_limit))
+        @OptIn(ExperimentalLayoutApi::class)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Settings.CACHE_CHOICES_MB.forEach { mb ->
+                FilterChip(
+                    selected = settings.cacheMb == mb,
+                    onClick = { onChange { it.copy(cacheMb = mb) } },
+                    label = {
+                        Text(
+                            if (mb == 0) {
+                                stringResource(R.string.cache_off)
+                            } else {
+                                Formatter.formatShortFileSize(context, mb * 1024L * 1024L)
+                            },
+                        )
+                    },
+                )
             }
         }
     }
@@ -146,23 +205,23 @@ fun SettingsScreen(
 @Composable
 private fun Accents(
     settings: Settings,
-    onChange: ((Settings) -> Settings) -> Unit
+    onChange: ((Settings) -> Settings) -> Unit,
 ) {
     val dynamic = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
     FlowRow(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         if (dynamic) {
             Swatch(
                 colour = MaterialTheme.colorScheme.primary,
-                label = stringResource(R.string.settings_wallpaper),
+                label = stringResource(R.string.accent_system),
                 on = settings.wallpaperColours,
-                wallpaper = true
+                wallpaper = true,
             ) { onChange { it.copy(wallpaperColours = true) } }
         }
         SWATCHES.zip(ACCENT_NAMES).forEach { (hue, name) ->
             Swatch(
                 colour = Color(swatchArgb(hue)),
                 label = stringResource(name),
-                on = (!settings.wallpaperColours || !dynamic) && settings.seed == Seed.preset(hue)
+                on = (!settings.wallpaperColours || !dynamic) && settings.seed == Seed.preset(hue),
             ) { onChange { it.copy(wallpaperColours = false, seed = Seed.preset(hue)) } }
         }
     }
@@ -177,7 +236,7 @@ private val ACCENT_NAMES =
         R.string.accent_green,
         R.string.accent_teal,
         R.string.accent_blue,
-        R.string.accent_red
+        R.string.accent_red,
     )
 
 @Composable
@@ -186,7 +245,7 @@ private fun Swatch(
     label: String,
     on: Boolean,
     wallpaper: Boolean = false,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     val ring = MaterialTheme.colorScheme.onSurface
     val pop by animateFloatAsState(if (on) 1f else 0f, tween(420, easing = StarSpringEasing), label = "swatch")
@@ -202,7 +261,7 @@ private fun Swatch(
             .padding(if (on) 5.dp else 4.dp)
             .clip(CircleShape)
             .background(colour),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         if (wallpaper) {
             Icon(painterResource(R.drawable.ic_palette), null, tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(20.dp))
@@ -215,7 +274,7 @@ private fun Swatch(
 @Composable
 private fun Card(
     title: String,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     Column(
         Modifier
@@ -223,7 +282,7 @@ private fun Card(
             .clip(RoundedCornerShape(28.dp))
             .background(StarBooruTheme.roles.surface)
             .padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
         content()
@@ -244,14 +303,14 @@ private fun Hint(text: String) {
 private fun <T> Choice(
     options: List<Pair<T, Int>>,
     selected: T,
-    onPick: (T) -> Unit
+    onPick: (T) -> Unit,
 ) {
     SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
         options.forEachIndexed { i, (value, label) ->
             SegmentedButton(
                 selected = value == selected,
                 onClick = { onPick(value) },
-                shape = SegmentedButtonDefaults.itemShape(i, options.size)
+                shape = SegmentedButtonDefaults.itemShape(i, options.size),
             ) { Text(stringResource(label), maxLines = 1) }
         }
     }
@@ -262,7 +321,7 @@ private fun SwitchRow(
     title: String,
     hint: String,
     checked: Boolean,
-    onChange: (Boolean) -> Unit
+    onChange: (Boolean) -> Unit,
 ) {
     Row(
         Modifier
@@ -270,7 +329,7 @@ private fun SwitchRow(
             .clip(RoundedCornerShape(16.dp))
             .clickable(role = Role.Switch) { onChange(!checked) }
             .padding(vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(Modifier.weight(1f)) {
             Text(title, style = MaterialTheme.typography.bodyLarge)

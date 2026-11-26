@@ -115,7 +115,7 @@ fun GalleryScreen(
     settings: Settings,
     onSettings: ((Settings) -> Settings) -> Unit,
     onOpen: (Post) -> Unit,
-    onSearch: (String) -> Unit
+    onSearch: (String) -> Unit,
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
     val frame = LocalFrame.current
@@ -142,7 +142,7 @@ fun GalleryScreen(
                     state.posts.map { TileSize(it.width, it.height) },
                     columns,
                     widthDp,
-                    gap
+                    gap,
                 )
             }
         val pxPerDp = density.density
@@ -220,28 +220,28 @@ fun GalleryScreen(
                 .hazeSource(glass)
                 .verticalScroll(scroll)
                 .padding(frame.padding)
-                .padding(horizontal = side)
+                .padding(horizontal = side),
         ) {
             Header(
                 query = vm.query,
                 settings = settings,
                 widthDp = widthDp,
                 onSort = { onSearch(sorted(vm.query, it)) },
-                onSettings = onSettings
+                onSettings = onSettings,
             )
             if (state.corrected.isNotEmpty()) {
                 Text(
                     stringResource(R.string.search_corrected, state.corrected.joinToString { "${it.from} → ${it.to}" }),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    modifier = Modifier.padding(bottom = 8.dp),
                 )
             }
             Box(
                 Modifier
                     .fillMaxWidth()
                     .height(layout.height.toFloat().dp)
-                    .onPlaced { gridTop = it.positionInParent().y + topPadPx }
+                    .onPlaced { gridTop = it.positionInParent().y + topPadPx },
             ) {
                 for (i in visible) {
                     val post = state.posts.getOrNull(i) ?: continue
@@ -256,7 +256,7 @@ fun GalleryScreen(
                             modifier =
                                 Modifier
                                     .offset { IntOffset((rect.x * pxPerDp).toInt(), (rect.y * pxPerDp).toInt()) }
-                                    .size(rect.width.toFloat().dp, rect.height.toFloat().dp)
+                                    .size(rect.width.toFloat().dp, rect.height.toFloat().dp),
                         )
                     }
                 }
@@ -281,14 +281,14 @@ fun GalleryScreen(
                     Modifier
                         .align(topAlign)
                         .padding(frame.padding)
-                        .padding(16.dp)
+                        .padding(16.dp),
             ) {
                 Box(
                     Modifier
                         .size(52.dp)
                         .glass(CircleShape, StarBooruTheme.roles)
                         .clickable { scope.launch { scroll.animateScrollTo(0) } },
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     Icon(painterResource(R.drawable.ic_arrow_up), stringResource(R.string.gallery_to_top))
                 }
@@ -303,12 +303,12 @@ private fun Header(
     settings: Settings,
     widthDp: Double,
     onSort: (String) -> Unit,
-    onSettings: ((Settings) -> Settings) -> Unit
+    onSettings: ((Settings) -> Settings) -> Unit,
 ) {
     val title = searchTitle(query)
     Row(
         Modifier.fillMaxWidth().heightIn(min = 52.dp).padding(bottom = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             title.ifEmpty { stringResource(R.string.nav_gallery) },
@@ -316,7 +316,7 @@ private fun Header(
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f).padding(start = 4.dp)
+            modifier = Modifier.weight(1f).padding(start = 4.dp),
         )
         SortMenu(query, onSort)
         ViewMenu(settings, widthDp, onSettings)
@@ -326,7 +326,7 @@ private fun Header(
 @Composable
 private fun SortMenu(
     query: String,
-    onSort: (String) -> Unit
+    onSort: (String) -> Unit,
 ) {
     var open by remember { mutableStateOf(false) }
     val current = currentSort(query)
@@ -344,7 +344,7 @@ private fun SortMenu(
                     onClick = {
                         open = false
                         if (value != current) onSort(value)
-                    }
+                    },
                 )
             }
         }
@@ -366,14 +366,14 @@ private fun sortLabel(value: String): String =
             "tags_asc" -> R.string.sort_tags_asc
             "random" -> R.string.sort_random
             else -> R.string.sort_new
-        }
+        },
     )
 
 @Composable
 private fun ViewMenu(
     settings: Settings,
     widthDp: Double,
-    onSettings: ((Settings) -> Settings) -> Unit
+    onSettings: ((Settings) -> Settings) -> Unit,
 ) {
     var open by remember { mutableStateOf(false) }
     Box {
@@ -393,9 +393,9 @@ private fun ViewMenu(
                             GalleryView.SQUARE to R.string.view_square,
                             GalleryView.LANDSCAPE to R.string.view_landscape,
                             GalleryView.PORTRAIT to R.string.view_portrait,
-                            GalleryView.STAGGERED_PORTRAIT to R.string.view_staggered
+                            GalleryView.STAGGERED_PORTRAIT to R.string.view_staggered,
                         ),
-                    selected = if (staggered) GalleryView.STAGGERED_PORTRAIT else settings.galleryView
+                    selected = if (staggered) GalleryView.STAGGERED_PORTRAIT else settings.galleryView,
                 ) { v -> onSettings { it.copy(galleryView = if (v == GalleryView.STAGGERED_PORTRAIT && staggered) it.galleryView else v) } }
                 if (staggered) {
                     Spacer(Modifier.height(12.dp))
@@ -406,9 +406,9 @@ private fun ViewMenu(
                             listOf(
                                 GalleryView.STAGGERED_PORTRAIT to R.string.view_portrait,
                                 GalleryView.STAGGERED_LANDSCAPE to R.string.view_landscape,
-                                GalleryView.STAGGERED_ALL to R.string.view_everything
+                                GalleryView.STAGGERED_ALL to R.string.view_everything,
                             ),
-                        selected = settings.galleryView
+                        selected = settings.galleryView,
                     ) { v -> onSettings { it.copy(galleryView = v) } }
                 }
                 Spacer(Modifier.height(12.dp))
@@ -425,7 +425,7 @@ private fun ViewMenu(
                             pluralStringResource(R.plurals.view_columns, chosen, chosen)
                         },
                         style = MaterialTheme.typography.labelLarge,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
                     )
                     if (chosen != null) {
                         TextButton(onClick = {
@@ -438,7 +438,7 @@ private fun ViewMenu(
                         value = (chosen ?: auto).toFloat(),
                         onValueChange = { v -> onSettings { it.copy(columns = v.toInt()) } },
                         valueRange = fewest.toFloat()..most.toFloat(),
-                        steps = (most - fewest - 1).coerceAtLeast(0)
+                        steps = (most - fewest - 1).coerceAtLeast(0),
                     )
                 }
                 Row(
@@ -447,7 +447,7 @@ private fun ViewMenu(
                         .clip(RoundedCornerShape(16.dp))
                         .clickable { onSettings { it.copy(flush = !it.flush) } }
                         .padding(vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(stringResource(R.string.view_flush), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
                     androidx.compose.material3.Switch(checked = settings.flush, onCheckedChange = { f ->
@@ -463,7 +463,7 @@ private fun ViewMenu(
 private fun <T> Segmented(
     options: List<Pair<T, Int>>,
     selected: T,
-    onPick: (T) -> Unit
+    onPick: (T) -> Unit,
 ) {
     SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
         options.forEachIndexed { i, (value, label) ->
@@ -471,7 +471,7 @@ private fun <T> Segmented(
                 selected = value == selected,
                 onClick = { onPick(value) },
                 shape = SegmentedButtonDefaults.itemShape(i, options.size),
-                icon = {}
+                icon = {},
             ) { Text(stringResource(label), maxLines = 1, fontSize = 13.sp) }
         }
     }
@@ -484,7 +484,7 @@ private fun Tile(
     flush: Boolean,
     animate: Boolean,
     onClick: () -> Unit,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
     val context = LocalContext.current
     val roles = StarBooruTheme.roles
@@ -504,14 +504,14 @@ private fun Tile(
                 scaleX = 0.85f + 0.15f * e
                 scaleY = 0.85f + 0.15f * e
             }.semantics { contentDescription = description }
-            .clickable(onClick = onClick)
+            .clickable(onClick = onClick),
     ) {
         Box(
             Modifier
                 .fillMaxSize()
                 .sharedPost(post.id, corner)
                 .clip(shape)
-                .background(post.tintColor() ?: roles.surface2)
+                .background(post.tintColor() ?: roles.surface2),
         ) {
             val request = Media.thumb(context, post)
             if (request != null) {
@@ -519,14 +519,14 @@ private fun Tile(
                     model = request,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
                 )
             } else if (post.kind == MediaKind.VIDEO) {
                 Icon(
                     painterResource(R.drawable.ic_play),
                     null,
                     tint = roles.onScrim,
-                    modifier = Modifier.align(Alignment.Center).size(40.dp)
+                    modifier = Modifier.align(Alignment.Center).size(40.dp),
                 )
             }
         }
@@ -546,7 +546,7 @@ private fun Tile(
                     .background(roles.scrim)
                     .padding(horizontal = 8.dp, vertical = 2.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(2.dp)
+                horizontalArrangement = Arrangement.spacedBy(2.dp),
             ) {
                 if (post.kind ==
                     MediaKind.VIDEO
@@ -565,7 +565,7 @@ private fun Footer(
     server: String,
     query: String,
     onRetry: () -> Unit,
-    onReload: () -> Unit
+    onReload: () -> Unit,
 ) {
     Box(Modifier.fillMaxWidth().heightIn(min = 104.dp).padding(vertical = 16.dp), contentAlignment = Alignment.Center) {
         val error = state.error
@@ -576,7 +576,7 @@ private fun Footer(
                         describe(error, server),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                        modifier = Modifier.padding(horizontal = 16.dp),
                     )
                     Spacer(Modifier.height(12.dp))
                     FilledTonalButton(onClick = if (state.posts.isEmpty()) onReload else onRetry) { Text(stringResource(R.string.retry)) }
@@ -591,7 +591,7 @@ private fun Footer(
                     Text(
                         stringResource(if (query.isBlank()) R.string.gallery_empty_body else R.string.gallery_try_fewer),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
 

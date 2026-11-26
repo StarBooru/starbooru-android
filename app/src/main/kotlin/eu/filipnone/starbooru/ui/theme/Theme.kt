@@ -47,7 +47,7 @@ fun StarBooruTheme(
     oled: Boolean,
     dynamic: Boolean,
     seed: Seed,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val look = Look.of(dark, oled)
     val context = LocalContext.current
@@ -72,7 +72,7 @@ fun StarBooruTheme(
 /** Material's colour scheme over the web's roles for [seed]. */
 fun starColorScheme(
     seed: Seed,
-    look: Look
+    look: Look,
 ): ColorScheme {
     val r = starRoles(seed, look)
     // Snackbars put the inverse primary on the inverse surface, which is the
@@ -122,7 +122,7 @@ fun starColorScheme(
         surfaceContainerLow = r.surface,
         surfaceContainer = lerp(r.surface, r.surface2, 0.5f),
         surfaceContainerHigh = r.surface2,
-        surfaceContainerHighest = r.surface3
+        surfaceContainerHighest = r.surface3,
     )
 }
 
@@ -134,7 +134,7 @@ fun starColorScheme(
 fun dynamicStarRoles(
     scheme: ColorScheme,
     look: Look,
-    fallbackHue: Double
+    fallbackHue: Double,
 ): StarRoles {
     val hue = hueOf(scheme.primary.toArgb())
     val seed = if (hue != null) Seed(hue = hue.toDouble()) else Seed(hue = fallbackHue, chroma = 0.0)
@@ -155,7 +155,7 @@ fun dynamicStarRoles(
         onTertiary = scheme.onTertiary,
         danger = scheme.error,
         dangerContainer = scheme.errorContainer,
-        onDangerContainer = scheme.onErrorContainer
+        onDangerContainer = scheme.onErrorContainer,
     )
 }
 
@@ -169,7 +169,7 @@ fun blackedOut(scheme: ColorScheme): ColorScheme =
         surfaceContainerLow = scheme.surfaceContainerLowest,
         surfaceContainer = scheme.surfaceContainerLow,
         surfaceContainerHigh = scheme.surfaceContainer,
-        surfaceContainerHighest = scheme.surfaceContainerHigh
+        surfaceContainerHighest = scheme.surfaceContainerHigh,
     )
 
 /** The web's corner radii: `--radius-s`, `-m` and `-l`. */
@@ -184,7 +184,7 @@ val StarShapes =
         small = RoundedCornerShape(StarRadius.S),
         medium = RoundedCornerShape(StarRadius.M),
         large = RoundedCornerShape(StarRadius.L),
-        extraLarge = RoundedCornerShape(StarRadius.L)
+        extraLarge = RoundedCornerShape(StarRadius.L),
     )
 
 /** Material's type in the system's Roboto, with page titles a little heavier. */

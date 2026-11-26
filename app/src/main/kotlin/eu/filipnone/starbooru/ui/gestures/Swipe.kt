@@ -19,14 +19,14 @@ import kotlin.math.sign
 /** What swiping a gallery tile to one side does, as Settings › Gestures picks it. */
 enum class SwipeAction(
     /** How it is stored, the same as on the web. */
-    val key: String
+    val key: String,
 ) {
     Off("off"),
     Like("like"),
     Select("select"),
     Share("share"),
     Download("download"),
-    Delete("delete")
+    Delete("delete"),
     ;
 
     companion object {
@@ -38,7 +38,7 @@ enum class SwipeAction(
 /** The side a tile is swiped to: [Left] when the finger goes left. */
 enum class Side {
     Left,
-    Right
+    Right,
     ;
 
     companion object {
@@ -53,7 +53,7 @@ enum class SwipeAxis {
 
     /** Up or down: the gallery's scroll. */
     Scroll,
-    Sideways
+    Sideways,
 }
 
 /** Where a finger was at a moment: [timeMillis] on any steady clock, such as `PointerInputChange.uptimeMillis`. */
@@ -68,7 +68,7 @@ const val SPEED_WINDOW_MILLIS = 100L
 /** [trail] with [point] at its end, no longer than [TRAIL_LENGTH]. */
 fun trailWith(
     trail: List<TrailPoint>,
-    point: TrailPoint
+    point: TrailPoint,
 ): List<TrailPoint> = (trail + point).takeLast(TRAIL_LENGTH)
 
 /** The finger's speed along x as it let go, in dp per ms, over its last [SPEED_WINDOW_MILLIS]. */
@@ -79,7 +79,7 @@ fun speedY(trail: List<TrailPoint>): Float = speed(trail) { it.y }
 
 private inline fun speed(
     trail: List<TrailPoint>,
-    along: (TrailPoint) -> Float
+    along: (TrailPoint) -> Float,
 ): Float {
     val last = trail.lastOrNull() ?: return 0f
     // A slow start doesn't count against a fast end.
@@ -92,7 +92,7 @@ private inline fun speed(
 private fun flung(
     d: Float,
     speed: Float,
-    past: Float
+    past: Float,
 ): Boolean = abs(speed) > FLING_SPEED && speed.sign == d.sign && abs(d) > past
 
 /** A flick this fast does it however short. */
@@ -101,7 +101,7 @@ private const val FLING_SPEED = 0.5f
 /** The smaller of two lengths, where a NaN one doesn't count. */
 private fun least(
     a: Float,
-    b: Float
+    b: Float,
 ): Float =
     when {
         a.isNaN() -> b
@@ -126,7 +126,7 @@ object TileSwipe {
     /** What a finger [dx], [dy] dp from where it came down is doing. */
     fun axis(
         dx: Float,
-        dy: Float
+        dy: Float,
     ): SwipeAxis =
         when {
             !dx.isFinite() || !dy.isFinite() || hypot(dx, dy) < SLOP -> SwipeAxis.Unknown
@@ -140,7 +140,7 @@ object TileSwipe {
     /** How far the picture follows a finger [dx] along, where [can] says whether that side does something. */
     fun follow(
         dx: Float,
-        can: Boolean
+        can: Boolean,
     ): Float = if (can) dx else dx * STIFF
 
     /** The side whose action runs as a finger lets go [dx] along a tile [width] wide at [speed]: far enough, or flicked that way. */
@@ -148,7 +148,7 @@ object TileSwipe {
         dx: Float,
         width: Float,
         speed: Float,
-        can: (Side) -> Boolean
+        can: (Side) -> Boolean,
     ): Side? {
         val side = Side.of(dx)
         val far = abs(dx) >= reach(width) || flung(dx, speed, FLING_MIN)
@@ -159,7 +159,7 @@ object TileSwipe {
     fun action(
         side: Side,
         left: SwipeAction,
-        right: SwipeAction
+        right: SwipeAction,
     ): SwipeAction =
         when (side) {
             Side.Left -> left
@@ -182,7 +182,7 @@ enum class StageDrag {
     Down,
 
     /** Not the stage's: the zoom's pan or the page's scroll. */
-    None
+    None,
 }
 
 /** Swiping the viewer's picture to the previous or next post. */
@@ -199,7 +199,7 @@ object ViewerSwipe {
     /** Null while the finger is still within [SLOP], then whether it went more sideways than up or down. */
     fun sideways(
         dx: Float,
-        dy: Float
+        dy: Float,
     ): Boolean? = if (hypot(dx, dy) >= SLOP) abs(dx) > abs(dy) else null
 
     /**
@@ -211,7 +211,7 @@ object ViewerSwipe {
         dx: Float,
         dy: Float,
         zoomed: Boolean,
-        pullable: Boolean
+        pullable: Boolean,
     ): StageDrag {
         val sideways = sideways(dx, dy) ?: return StageDrag.Undecided
         return when {
@@ -229,7 +229,7 @@ object ViewerSwipe {
     fun turn(
         dx: Float,
         speed: Float,
-        stageWidth: Float
+        stageWidth: Float,
     ): Turn? {
         if (!(abs(dx) >= reach(stageWidth) || flung(dx, speed, FLING_MIN))) return null
         return if (dx < 0f) Turn.Next else Turn.Previous
@@ -238,7 +238,7 @@ object ViewerSwipe {
     /** Where the picture follows the finger to: at an end of the list it gives a little and no more. */
     fun resist(
         dx: Float,
-        atEnd: Boolean
+        atEnd: Boolean,
     ): Float = if (atEnd) dx * AT_END else dx
 }
 
@@ -259,7 +259,7 @@ object PullToClose {
     fun follow(
         fx: Float,
         fy: Float,
-        base: Offset = Offset.Zero
+        base: Offset = Offset.Zero,
     ): Offset {
         val dy = base.y + fy
         return Offset(base.x + fx * 0.5f, if (dy > 0f) dy else dy * 0.2f)
@@ -268,7 +268,7 @@ object PullToClose {
     /** How far the page behind has faded, 0 to 1, with the picture [y] dp down a stage [stageHeight] dp tall. */
     fun pull(
         y: Float,
-        stageHeight: Float
+        stageHeight: Float,
     ): Float {
         val p = maxOf(0f, y) / maxOf(1f, stageHeight * 0.5f)
         return if (p.isNaN()) 0f else p.coerceIn(0f, 1f)
@@ -281,6 +281,6 @@ object PullToClose {
     fun closes(
         dy: Float,
         speed: Float,
-        stageHeight: Float
+        stageHeight: Float,
     ): Boolean = dy >= reach(stageHeight) || (speed > FLING_SPEED && dy > FLING_MIN)
 }

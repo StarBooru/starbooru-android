@@ -14,14 +14,14 @@ import eu.filipnone.starbooru.core.tint
 object Media {
     fun thumb(
         context: Context,
-        post: Post
+        post: Post,
     ): ImageRequest? = post.thumbUrl?.let { request(context, it, "thumb:${post.sha256}") }
 
     /** The smaller copy of a big still picture, or the original. */
     fun view(
         context: Context,
         post: Post,
-        original: Boolean
+        original: Boolean,
     ): ImageRequest {
         val sample = post.sampleUrl
         return if (!original && sample != null) {
@@ -34,7 +34,7 @@ object Media {
     private fun request(
         context: Context,
         url: String,
-        key: String
+        key: String,
     ): ImageRequest =
         ImageRequest
             .Builder(context)

@@ -10,6 +10,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import eu.filipnone.starbooru.data.Account
 import eu.filipnone.starbooru.data.CoreApis
 import eu.filipnone.starbooru.data.KeystoreSecretStore
+import eu.filipnone.starbooru.data.MediaCache
 import eu.filipnone.starbooru.data.SettingsStore
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
@@ -17,6 +18,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 private val Context.settingsData: DataStore<Preferences> by preferencesDataStore("settings")
@@ -31,11 +35,19 @@ class AppGraph(context: Context) {
         Account(
             store = context.accountData,
             secrets = KeystoreSecretStore(File(context.noBackupFilesDir, "session.bin")),
-            apis = apis
+            apis = apis,
         )
 
     init {
         scope.launch { account.load() }
+        // A new cache limit takes a new image loader, once it's saved.
+        scope.launch {
+            settings.settings
+                .map { it.cacheMb }
+                .distinctUntilChanged()
+                .drop(1)
+                .collect { MediaCache.limitChanged() }
+        }
         // What the server is (private or public, likes or stars, guests or
         // not) can change under the app, so it asks again every two minutes
         // while the app is in front, as the web app does.

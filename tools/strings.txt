@@ -42,3 +42,6 @@ zoom-out zoom-fit zoom-reset zoom-in fullscreen fullscreen-exit
 
 [tags]
 category-.* section-.* rating rating-.* size-.*
+
+[cache]
+cache-title cache-hint cache-used cache-limit cache-off cache-clear

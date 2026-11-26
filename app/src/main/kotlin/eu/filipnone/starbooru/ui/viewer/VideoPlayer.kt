@@ -78,7 +78,7 @@ private const val REST_AFTER_MS = 2_800L
 fun VideoPlayer(
     post: Post,
     modifier: Modifier = Modifier,
-    onTap: () -> Unit = {}
+    onTap: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val player =
@@ -123,7 +123,7 @@ fun VideoPlayer(
         modifier.clickable(interactionSource = null, indication = null) {
             touched++
             onTap()
-        }
+        },
     ) {
         val glass = rememberHazeState()
         PlayerSurface(player = player, surfaceType = SURFACE_TYPE_TEXTURE_VIEW, modifier = Modifier.fillMaxSize().hazeSource(glass))
@@ -133,14 +133,14 @@ fun VideoPlayer(
                 playPause.showPlay && !started,
                 enter = fadeIn(),
                 exit = fadeOut(),
-                modifier = Modifier.align(Alignment.Center)
+                modifier = Modifier.align(Alignment.Center),
             ) {
                 Box(
                     Modifier
                         .size(64.dp)
                         .glass(CircleShape, StarBooruTheme.roles)
                         .clickable { playPause.onClick() },
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     Icon(painterResource(R.drawable.ic_play), stringResource(R.string.player_play), modifier = Modifier.size(32.dp))
                 }
@@ -156,7 +156,7 @@ fun VideoPlayer(
 @Composable
 private fun BoxScope.Bar(
     player: Player,
-    onTouch: () -> Unit
+    onTouch: () -> Unit,
 ) {
     val roles = StarBooruTheme.roles
     val playPause = rememberPlayPauseButtonState(player)
@@ -174,7 +174,7 @@ private fun BoxScope.Bar(
             .height(48.dp)
             .glass(CircleShape, roles)
             .padding(horizontal = 2.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(onClick = {
             playPause.onClick()
@@ -182,7 +182,7 @@ private fun BoxScope.Bar(
         }, enabled = playPause.isEnabled) {
             Icon(
                 painterResource(if (playPause.showPlay) R.drawable.ic_play else R.drawable.ic_pause),
-                stringResource(if (playPause.showPlay) R.string.player_play else R.string.player_pause)
+                stringResource(if (playPause.showPlay) R.string.player_play else R.string.player_pause),
             )
         }
         Text(clock(at), fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface)
@@ -198,7 +198,7 @@ private fun BoxScope.Bar(
                 scrubbing = false
             },
             colors = SliderDefaults.colors(inactiveTrackColor = roles.glassLine),
-            modifier = Modifier.weight(1f).padding(horizontal = 10.dp)
+            modifier = Modifier.weight(1f).padding(horizontal = 10.dp),
         )
         Text(clock(duration), fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurfaceVariant)
         IconButton(onClick = {
@@ -207,7 +207,7 @@ private fun BoxScope.Bar(
         }, enabled = mute.isEnabled) {
             Icon(
                 painterResource(if (mute.showMuted) R.drawable.ic_volume_mute else R.drawable.ic_volume),
-                stringResource(if (mute.showMuted) R.string.player_unmute else R.string.player_mute)
+                stringResource(if (mute.showMuted) R.string.player_unmute else R.string.player_mute),
             )
         }
         IconButton(onClick = {
@@ -222,7 +222,7 @@ private fun BoxScope.Bar(
                 modifier =
                     Modifier
                         .then(if (repeat) Modifier.background(MaterialTheme.colorScheme.primaryContainer, CircleShape) else Modifier)
-                        .padding(6.dp)
+                        .padding(6.dp),
             )
         }
     }

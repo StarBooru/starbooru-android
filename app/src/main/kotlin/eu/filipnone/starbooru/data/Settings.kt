@@ -20,8 +20,17 @@ data class Settings(
     /** A column count picked by the user; `null` follows the width. */
     val columns: Int? = null,
     /** Tiles without gaps or rounded corners. */
-    val flush: Boolean = false
+    val flush: Boolean = false,
+    /** How much of the disk pictures may take, in megabytes; 0 keeps none. */
+    val cacheMb: Int = DEFAULT_CACHE_MB,
 ) {
     /** Whether the rail and the viewer's panel sit on the right. */
     val rightHanded: Boolean get() = hand == Hand.Right
+
+    companion object {
+        const val DEFAULT_CACHE_MB = 512
+
+        /** The limits Settings offers, as the reference did. */
+        val CACHE_CHOICES_MB = listOf(0, 128, 256, 512, 1024, 2048, 4096)
+    }
 }

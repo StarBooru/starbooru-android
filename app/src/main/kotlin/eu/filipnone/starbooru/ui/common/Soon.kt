@@ -25,12 +25,12 @@ import eu.filipnone.starbooru.ui.frame.LocalFrame
 @Composable
 fun Soon(
     icon: Int,
-    title: String
+    title: String,
 ) {
     Column(
         Modifier.fillMaxSize().padding(LocalFrame.current.padding).padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         Icon(painterResource(icon), null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(56.dp))
         Spacer(Modifier.height(16.dp))
@@ -41,7 +41,7 @@ fun Soon(
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
-            modifier = Modifier.widthIn(max = 420.dp)
+            modifier = Modifier.widthIn(max = 420.dp),
         )
     }
 }

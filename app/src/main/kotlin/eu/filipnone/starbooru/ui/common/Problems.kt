@@ -16,7 +16,7 @@ fun describe(
     error: Throwable,
     res: Resources,
     server: String,
-    signingIn: Boolean = false
+    signingIn: Boolean = false,
 ): String {
     val shown = runCatching { shownServer(server) }.getOrDefault(server)
     return when (error) {
@@ -65,5 +65,5 @@ fun describe(
 fun describe(
     error: Throwable,
     server: String,
-    signingIn: Boolean = false
+    signingIn: Boolean = false,
 ): String = describe(error, LocalResources.current, server, signingIn)

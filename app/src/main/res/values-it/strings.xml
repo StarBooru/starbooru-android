@@ -3,7 +3,6 @@
 <resources>
     <string name="soon_title">In arrivo</string>
     <string name="soon_body">Questa parte di StarBooru per Android arriva in una versione successiva. Intanto, sull\'app web funziona già tutto.</string>
-    <string name="settings_wallpaper">Sfondo</string>
     <string name="settings_hand_hint">Mette da quel lato la navigazione, i dettagli del visualizzatore e i suoi strumenti di zoom.</string>
     <!-- username, server -->
     <string name="settings_signed_in_on">Accesso come %1$s su %2$s</string>

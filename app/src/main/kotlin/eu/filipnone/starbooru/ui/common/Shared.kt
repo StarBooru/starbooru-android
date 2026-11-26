@@ -27,7 +27,7 @@ val LocalReducedMotion = staticCompositionLocalOf { false }
 @Composable
 fun Modifier.sharedPost(
     id: Long,
-    corner: Dp
+    corner: Dp,
 ): Modifier {
     val shared = LocalSharedTransition.current ?: return this
     if (LocalReducedMotion.current) return this
@@ -38,7 +38,7 @@ fun Modifier.sharedPost(
             sharedContentState = rememberSharedContentState("post-$id"),
             animatedVisibilityScope = scope,
             resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
-            clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(corner))
+            clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(corner)),
         )
     }
 }

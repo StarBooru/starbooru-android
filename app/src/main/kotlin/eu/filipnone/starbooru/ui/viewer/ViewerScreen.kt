@@ -148,7 +148,7 @@ fun ViewerScreen(
     vm: ViewerViewModel,
     server: String,
     onBack: () -> Unit,
-    onSearch: (String) -> Unit
+    onSearch: (String) -> Unit,
 ) {
     val flow by vm.state.collectAsStateWithLifecycle()
     // What the stage shows, set at once when a swipe turns, so the next
@@ -176,7 +176,7 @@ fun ViewerScreen(
     BoxWithConstraints(
         Modifier
             .fillMaxSize()
-            .background(if (fullscreen) StarBooruTheme.roles.stage else MaterialTheme.colorScheme.background)
+            .background(if (fullscreen) StarBooruTheme.roles.stage else MaterialTheme.colorScheme.background),
     ) {
         val pad = if (fullscreen) androidx.compose.foundation.layout.PaddingValues(0.dp) else frame.padding
         val stage =
@@ -192,7 +192,7 @@ fun ViewerScreen(
                     onClose = onBack,
                     hand = frame.hand,
                     arrows = frame.width != WidthClass.Compact,
-                    modifier = modifier
+                    modifier = modifier,
                 )
             }
         val details =
@@ -210,7 +210,7 @@ fun ViewerScreen(
             val panelFirst = frame.hand == Hand.Left
             Row(
                 Modifier.fillMaxSize().padding(pad).padding(horizontal = 12.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(20.dp)
+                horizontalArrangement = Arrangement.spacedBy(20.dp),
             ) {
                 if (panelFirst) details(Modifier.width(PANEL).fillMaxHeight().verticalScroll(scroll))
                 stage(Modifier.weight(1f).fillMaxHeight())
@@ -224,7 +224,7 @@ fun ViewerScreen(
                     .verticalScroll(scroll)
                     .padding(pad)
                     .padding(horizontal = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 stage(Modifier.fillMaxWidth().height(stageHeight))
                 details(Modifier.fillMaxWidth().widthIn(max = 720.dp).padding(bottom = 16.dp))
@@ -245,7 +245,7 @@ private fun Stage(
     onClose: () -> Unit,
     hand: Hand,
     arrows: Boolean,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
     val density = LocalDensity.current
     val scope = rememberCoroutineScope()
@@ -259,7 +259,7 @@ private fun Stage(
     BoxWithConstraints(
         modifier
             .clip(RoundedCornerShape(if (fullscreen) 0.dp else 28.dp))
-            .clipToBounds()
+            .clipToBounds(),
     ) {
         val w = constraints.maxWidth.toFloat()
         val h = constraints.maxHeight.toFloat()
@@ -421,7 +421,7 @@ private fun Stage(
                             StageDrag.None -> {}
                         }
                     }
-                }
+                },
         ) {
             if (!fullscreen) post?.let { Glow(it) }
             // The previous, current and next pictures side by side, moved
@@ -439,14 +439,14 @@ private fun Stage(
                                 val x = slide + place * (w + gap) + if (current) drag.x else 0f
                                 IntOffset(x.roundToInt(), if (current) drag.y.roundToInt() else 0)
                             },
-                        contentAlignment = Alignment.Center
+                        contentAlignment = Alignment.Center,
                     ) {
                         Picture(
                             post = p,
                             fit = Size(slotFit.width * scale, slotFit.height * scale),
                             zoom = if (current) zoom else Zoom(),
                             playing = current && p.kind == MediaKind.VIDEO,
-                            corner = if (fullscreen) 0.dp else 28.dp
+                            corner = if (fullscreen) 0.dp else 28.dp,
                         )
                     }
                 }
@@ -468,7 +468,7 @@ private fun Stage(
                 onBack = onClose,
                 onZoom = { factor -> zoom = zoom.zoomAt(factor, Offset.Zero, fit) },
                 onFit = { zoom = Zoom() },
-                onFullscreen = { onFullscreen(true) }
+                onFullscreen = { onFullscreen(true) },
             )
             if (arrows && !fullscreen) {
                 if (shown.neighbors?.prev != null) {
@@ -513,9 +513,9 @@ private fun Glow(post: Post) {
                         drawContent()
                         drawRect(
                             Brush.verticalGradient(0.4f to Color.Black, 1f to Color.Transparent),
-                            blendMode = BlendMode.DstIn
+                            blendMode = BlendMode.DstIn,
                         )
-                    }
+                    },
         )
     }
 }
@@ -524,7 +524,7 @@ private fun Glow(post: Post) {
 private fun fitted(
     post: Post?,
     w: Float,
-    h: Float
+    h: Float,
 ): Size {
     val pw = post?.width?.toFloat()?.takeIf { it > 0f } ?: return Size(w, h)
     val ph = post.height?.toFloat()?.takeIf { it > 0f } ?: return Size(w, h)
@@ -538,7 +538,7 @@ private fun Picture(
     fit: Size,
     zoom: Zoom,
     playing: Boolean,
-    corner: Dp
+    corner: Dp,
 ) {
     val context = LocalContext.current
     val density = LocalDensity.current
@@ -555,7 +555,7 @@ private fun Picture(
                 translationX = zoom.offset.x
                 translationY = zoom.offset.y
             }.clip(RoundedCornerShape(if (zoom.isZoomed) 0.dp else corner))
-            .background(post.tintColor() ?: roles.surface2)
+            .background(post.tintColor() ?: roles.surface2),
     ) {
         if (post.kind == MediaKind.VIDEO && playing) {
             VideoPlayer(post, Modifier.fillMaxSize())
@@ -594,7 +594,7 @@ private fun Picture(
                                 sampleKey
                             } else {
                                 thumbKey
-                            }
+                            },
                         )
                         .build()
                 }
@@ -602,14 +602,14 @@ private fun Picture(
                 model = request,
                 contentDescription = stringResource(R.string.post_alt, post.id.toString()),
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             )
             if (post.kind == MediaKind.VIDEO) {
                 Icon(
                     painterResource(R.drawable.ic_play),
                     null,
                     tint = roles.onScrim,
-                    modifier = Modifier.align(Alignment.Center).size(48.dp)
+                    modifier = Modifier.align(Alignment.Center).size(48.dp),
                 )
             }
         }
@@ -625,7 +625,7 @@ private fun Controls(
     onBack: () -> Unit,
     onZoom: (Float) -> Unit,
     onFit: () -> Unit,
-    onFullscreen: () -> Unit
+    onFullscreen: () -> Unit,
 ) {
     val roles = StarBooruTheme.roles
     AnimatedVisibility(visible, enter = fadeIn(), exit = fadeOut(), modifier = Modifier.fillMaxSize()) {
@@ -636,7 +636,7 @@ private fun Controls(
                     .size(44.dp)
                     .glass(CircleShape, roles)
                     .clickable(onClick = onBack),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 Icon(painterResource(R.drawable.ic_arrow_back), stringResource(R.string.post_back))
             }
@@ -645,7 +645,7 @@ private fun Controls(
                     .align(if (toolsRight) AbsoluteAlignment.TopRight else AbsoluteAlignment.TopLeft)
                     .glass(CircleShape, roles)
                     .padding(2.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 IconButton(onClick = { onZoom(1f / Zoom.STEP) }, enabled = zoom.isZoomed, modifier = Modifier.size(40.dp)) {
                     Icon(painterResource(R.drawable.ic_zoom_out), stringResource(R.string.zoom_out), Modifier.size(20.dp))
@@ -656,12 +656,12 @@ private fun Controls(
                         .height(40.dp)
                         .clip(CircleShape)
                         .clickable(onClick = onFit),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     Text(
                         if (zoom.isZoomed) "${zoom.percent}%" else stringResource(R.string.zoom_fit),
                         fontSize = 13.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
                     )
                 }
                 IconButton(onClick = { onZoom(Zoom.STEP) }, enabled = zoom.scale < Zoom.MAX_SCALE, modifier = Modifier.size(40.dp)) {
@@ -680,7 +680,7 @@ private fun Arrow(
     icon: Int,
     label: String,
     modifier: Modifier,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Box(
         modifier
@@ -688,7 +688,7 @@ private fun Arrow(
             .size(52.dp)
             .glass(CircleShape, StarBooruTheme.roles)
             .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Icon(painterResource(icon), label, Modifier.size(32.dp))
     }
@@ -697,7 +697,7 @@ private fun Arrow(
 @Composable
 private fun Problem(
     text: String,
-    onRetry: () -> Unit
+    onRetry: () -> Unit,
 ) {
     Column(Modifier.fillMaxWidth().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)

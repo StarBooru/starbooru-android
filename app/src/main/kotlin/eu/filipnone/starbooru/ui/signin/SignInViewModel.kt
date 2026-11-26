@@ -37,7 +37,7 @@ data class SignInState(
     val busy: Boolean = false,
     /** Waiting for the browser tab of a provider sign-in to come back. */
     val viaProvider: Boolean = false,
-    val error: Throwable? = null
+    val error: Throwable? = null,
 ) {
     val known: ServerCheck.Known? get() = check as? ServerCheck.Known
 
@@ -57,8 +57,8 @@ class SignInViewModel(private val account: Account, private val apis: ApiFactory
             SignInState(
                 server = saved[SERVER] ?: "",
                 username = saved[USERNAME] ?: "",
-                registering = saved[REGISTERING] ?: false
-            )
+                registering = saved[REGISTERING] ?: false,
+            ),
         )
     val state: StateFlow<SignInState> = _state.asStateFlow()
 
@@ -79,14 +79,14 @@ class SignInViewModel(private val account: Account, private val apis: ApiFactory
      */
     fun arrive(
         lastServer: String,
-        expired: Boolean
+        expired: Boolean,
     ) {
         _state.update {
             it.copy(
                 busy = false,
                 viaProvider = false,
                 password = "",
-                error = if (expired) CoreException.Unauthorized("expired") else it.error
+                error = if (expired) CoreException.Unauthorized("expired") else it.error,
             )
         }
         if (_state.value.server.isBlank() && lastServer.isNotBlank()) {
@@ -98,7 +98,18 @@ class SignInViewModel(private val account: Account, private val apis: ApiFactory
 
     fun setServer(value: String) {
         saved[SERVER] = value
-        _state.update { it.copy(server = value, error = null) }
+        val typed = normalizeServer(value)
+        _state.update {
+            // What was said of another address no longer holds: nothing
+            // signs in there while this one is being checked.
+            val stale =
+                when (val c = it.check) {
+                    is ServerCheck.Known -> c.server != typed
+                    is ServerCheck.Failed -> c.server != typed
+                    else -> false
+                }
+            it.copy(server = value, error = null, check = if (stale) ServerCheck.Empty else it.check)
+        }
         check(immediately = false)
     }
 

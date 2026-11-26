@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="cache_title">Spazio su questo dispositivo</string>
+    <string name="cache_hint">Le miniature e le immagini che apri restano su questo dispositivo, così la volta dopo si vedono subito.</string>
+    <!-- size -->
+    <string name="cache_used">Immagini salvate: %1$s</string>
+    <string name="cache_limit">Tieni fino a</string>
+    <string name="cache_off">Niente (disattivato)</string>
+    <string name="cache_clear">Svuota</string>
+</resources>

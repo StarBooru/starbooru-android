@@ -45,7 +45,7 @@ enum class Tab(val root: Route, @param:StringRes val label: Int, @param:Drawable
     Tags(TagsRoute, R.string.nav_tags, R.drawable.ic_label),
     Forum(ForumRoute, R.string.nav_forum, R.drawable.ic_forum),
     Upload(UploadRoute, R.string.nav_upload, R.drawable.ic_upload),
-    Settings(SettingsRoute, R.string.nav_settings, R.drawable.ic_tune)
+    Settings(SettingsRoute, R.string.nav_settings, R.drawable.ic_tune),
     ;
 
     companion object {
@@ -56,7 +56,7 @@ enum class Tab(val root: Route, @param:StringRes val label: Int, @param:Drawable
         /** The items on a public or a private server, for a guest or an account. */
         fun shown(
             public: Boolean,
-            guest: Boolean
+            guest: Boolean,
         ): List<Tab> =
             when {
                 public -> PUBLIC

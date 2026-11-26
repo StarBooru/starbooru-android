@@ -22,6 +22,9 @@
     <string name="accent_teal">Teal</string>
     <string name="accent_blue">Blue</string>
     <string name="accent_red">Red</string>
+    <string name="accent_no_hue">Greys have no hue to build the colours from. Pick a stronger colour.</string>
+    <string name="accent_system">Wallpaper</string>
+    <string name="accent_system_hint">Follow the colours Android takes from your wallpaper</string>
     <string name="settings_hand">Hand</string>
     <string name="hand_either">Either</string>
     <string name="hand_left">Left</string>

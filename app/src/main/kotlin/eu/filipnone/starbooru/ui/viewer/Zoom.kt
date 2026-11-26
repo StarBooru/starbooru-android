@@ -26,7 +26,7 @@ data class Zoom(val scale: Float = MIN_SCALE, val offset: Offset = Offset.Zero) 
     fun zoomAt(
         factor: Float,
         at: Offset,
-        bounds: Size
+        bounds: Size,
     ): Zoom {
         if (!factor.isFinite() || factor <= 0f || !at.x.isFinite() || !at.y.isFinite()) return this
         val next = (scale * factor).coerceIn(MIN_SCALE, MAX_SCALE)
@@ -37,13 +37,13 @@ data class Zoom(val scale: Float = MIN_SCALE, val offset: Offset = Offset.Zero) 
     /** A double tap: back to fit when zoomed in, else in to [TAP_SCALE] on [at]. */
     fun toggleAt(
         at: Offset,
-        bounds: Size
+        bounds: Size,
     ): Zoom = if (isZoomed) Zoom() else zoomAt(TAP_SCALE / scale, at, bounds)
 
     /** Moves the picture by [delta] pixels, as far as its own place allows. */
     fun pan(
         delta: Offset,
-        bounds: Size
+        bounds: Size,
     ): Zoom {
         if (!delta.x.isFinite() || !delta.y.isFinite()) return this
         return copy(offset = offset + delta).clamped(bounds)

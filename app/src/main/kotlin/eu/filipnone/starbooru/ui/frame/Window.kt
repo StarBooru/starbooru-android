@@ -17,7 +17,8 @@ enum class WidthClass {
     Medium,
 
     /** 840 dp and up: the details beside the picture, lists beside their page. */
-    Expanded
+    Expanded,
+
     ;
 
     val hasRail: Boolean get() = this != Compact
@@ -39,7 +40,7 @@ data class FrameInfo(
     /** The space the floating bars and the system's bars take from each side. */
     val padding: PaddingValues = PaddingValues(0.dp),
     /** A short window, like a phone on its side: the rail shows icons only. */
-    val short: Boolean = false
+    val short: Boolean = false,
 ) {
     /** The rail, the viewer's panel and its zoom tools go on the right. */
     val rightHanded: Boolean get() = hand == Hand.Right

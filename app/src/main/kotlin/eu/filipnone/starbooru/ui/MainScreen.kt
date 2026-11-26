@@ -64,7 +64,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreen(
     graph: AppGraph,
-    settings: Settings
+    settings: Settings,
 ) {
     val account by graph.account.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -96,7 +96,7 @@ fun MainScreen(
 private fun Shell(
     graph: AppGraph,
     settings: Settings,
-    account: AccountState
+    account: AccountState,
 ) {
     val nav = rememberNavigationState()
     val info by graph.account.info.collectAsStateWithLifecycle()
@@ -132,7 +132,7 @@ private fun Shell(
         CompositionLocalProvider(
             LocalSharedTransition provides this,
             LocalViewerFocus provides focus,
-            LocalBars provides bars
+            LocalBars provides bars,
         ) {
             Frame(
                 tabs = tabs,
@@ -144,7 +144,7 @@ private fun Shell(
                 onSearch = { search = it },
                 onSubmit = searchFor,
                 onBrand = { nav.select(Tab.Gallery) },
-                onSignIn = if (guest) ({ scope.launch { graph.account.toSignIn() } }) else null
+                onSignIn = if (guest) ({ scope.launch { graph.account.toSignIn() } }) else null,
             ) {
                 val provider =
                     entryProvider<NavKey> {
@@ -156,7 +156,7 @@ private fun Shell(
                                 settings = settings,
                                 onSettings = update,
                                 onOpen = { post -> nav.open(PostRoute(post.id, vm.query, vm.seed)) },
-                                onSearch = { q -> nav.replace(GalleryRoute(q)) }
+                                onSearch = { q -> nav.replace(GalleryRoute(q)) },
                             )
                         }
                         entry<PostRoute> { route ->
@@ -168,7 +168,7 @@ private fun Shell(
                                 vm = vm,
                                 server = server,
                                 onBack = { nav.back() },
-                                onSearch = searchFor
+                                onSearch = searchFor,
                             )
                         }
                         entry<ExploreRoute> { Soon(Tab.Explore.icon, stringResource(Tab.Explore.label)) }
@@ -182,7 +182,7 @@ private fun Shell(
                                 serverVersion = info?.version,
                                 onChange = update,
                                 onSignOut = { scope.launch { graph.account.signOut() } },
-                                onSignIn = { scope.launch { graph.account.toSignIn() } }
+                                onSignIn = { scope.launch { graph.account.toSignIn() } },
                             )
                         }
                     }
@@ -192,7 +192,7 @@ private fun Shell(
                     transitionSpec = { fadeIn(tween(220)) togetherWith fadeOut(tween(90)) },
                     popTransitionSpec = { fadeIn(tween(220)) togetherWith fadeOut(tween(90)) },
                     predictivePopTransitionSpec = { fadeIn(tween(220)) togetherWith (fadeOut(tween(220)) + scaleOut(targetScale = 0.9f)) },
-                    onBack = { nav.back() }
+                    onBack = { nav.back() },
                 )
             }
         }
