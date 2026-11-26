@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="help_title">Guida alla ricerca</string>
+    <!-- term -->
+    <string name="help_search_for">Cerca %1$s</string>
+    <string name="help_tags">Tag</string>
+    <string name="help_filters">Filtri</string>
+    <string name="help_text">Testo nelle immagini</string>
+    <string name="help_sorting">Ordinamento</string>
+    <string name="help_combined">Combinazioni</string>
+    <string name="help_combined_cats">gatti adatti a tutti senza cani, prima i migliori</string>
+    <string name="help_combined_videos">i video più grandi</string>
+    <string name="help_tips">Buono a sapersi</string>
+    <string name="help_tip_normalise">I tag sono in minuscolo, e spazi o trattini bassi ripetuti diventano un solo _.</string>
+    <string name="help_tip_aliases">Un alias trova il suo tag, e i tag implicati vengono aggiunti quando tagghi un post.</string>
+    <string name="help_tip_terms">Una ricerca contiene al massimo 40 termini.</string>
+    <string name="help_tag">ha il tag</string>
+    <string name="help_tag_all">ha tutti i tag elencati</string>
+    <string name="help_tag_not">non ha il tag</string>
+    <string name="help_tag_tree">ha footwear o un tag sotto di esso, come boots o sneakers</string>
+    <string name="help_tag_category">il tag some_name; quando tagghi, il prefisso lo rende un tag artista (anche character:, copyright: e meta:)</string>
+    <string name="help_figure">una persona nell\'immagine ha tutti questi tag; girl, boy o other dice chi. Un meno davanti trova i post dove nessuno li ha</string>
+    <string name="help_tag_spaces">due tag: gli spazi separano i termini, quindi scrivi blue_sky</string>
+    <string name="help_tag_meta">post ad alta risoluzione senza audio. Il server aggiunge da solo tag meta come lowres, highres, absurdres, wide_image, tall_image, hd, full_hd, 4k, 8k, horizontal_image, vertical_image, square_image, animated, video, sound e long_video</string>
+    <string name="help_rating">classificato sicuro, delicato (s), discutibile (q) o esplicito (e)</string>
+    <string name="help_rating_any">una qualsiasi delle classificazioni elencate</string>
+    <string name="help_rating_not">qualsiasi classificazione tranne esplicito</string>
+    <string name="help_type">immagini statiche; anche type:animation e type:video</string>
+    <string name="help_deleted">post nel cestino</string>
+    <string name="help_date">la data nel file, o quella di caricamento se non ne ha; anche date:2024 e date:2024-03-15</string>
+    <string name="help_date_range">dall’inizio del primo periodo alla fine dell’ultimo; date:2023.. e date:..2024 lasciano aperto un estremo</string>
+    <string name="help_date_compare">dopo quel periodo; anche &gt;=, &lt; e &lt;=</string>
+    <string name="help_date_age">con più di 30 giorni; date:&lt;7d ha meno di 7 giorni. Anche h, w, mo e y</string>
+    <string name="help_size">più largo di 1920 pixel; anche height:, &gt;=, &lt;, &lt;=, un valore esatto width:1920 e un intervallo width:1000..2000</string>
+    <string name="help_mpixels">più di 8 megapixel; mpixels:8 da solo vuol dire circa 8</string>
+    <string name="help_ratio">larghezza su altezza, come 16:9 o 1.78, con margine di 0,01; ratio:1 è quadrato e ratio:&gt;1 è più largo che alto</string>
+    <string name="help_size_not">qualsiasi dimensione tranne queste; un post di dimensione ignota resta</string>
+    <string name="help_color">ha questo colore o, se nessun post ce l\'ha, il più vicino salvato; anche orange, yellow, green, teal, blue, purple, pink, brown, black, gray e white</string>
+    <string name="help_color_hex">qualsiasi colore, in esadecimale; anche #2060e0 e 26e</string>
+    <string name="help_color_not">non ha questo colore</string>
+    <string name="help_exact">di solito un tag sconosciuto viene corretto con il più vicino in uso; così i tag si cercano esattamente come scritti</string>
+    <string name="help_text_word">il testo letto nell’immagine contiene la parola (maiuscole o minuscole)</string>
+    <string name="help_text_phrase">contiene tutte queste parole; le virgolette le tengono insieme</string>
+    <string name="help_text_not">il testo letto nell’immagine non contiene la parola</string>
+    <string name="help_order_new">prima i più recenti (predefinito); order:old per i più vecchi</string>
+    <string name="help_order_score">prima il punteggio più alto</string>
+    <string name="help_order_rating">prima i più votati</string>
+    <string name="help_order_size">prima i file più grandi</string>
+    <string name="help_order_pixels">prima la risoluzione più alta; anche order:mpixels</string>
+    <string name="help_order_longside">prima il lato più lungo</string>
+    <string name="help_order_tags">prima quelli con più tag</string>
+    <string name="help_order_updated">prima quelli modificati più di recente</string>
+    <string name="help_order_direction">aggiungi _asc o _desc per scegliere la direzione</string>
+    <string name="help_order_random">un ordine casuale nuovo ogni volta</string>
+</resources>

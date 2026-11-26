@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="help_title">Search cheat sheet</string>
+    <!-- term -->
+    <string name="help_search_for">Search for %1$s</string>
+    <string name="help_tags">Tags</string>
+    <string name="help_filters">Filters</string>
+    <string name="help_text">Text in images</string>
+    <string name="help_sorting">Sorting</string>
+    <string name="help_combined">Combined</string>
+    <string name="help_combined_cats">safe cats without dogs, best first</string>
+    <string name="help_combined_videos">the biggest videos</string>
+    <string name="help_tips">Good to know</string>
+    <string name="help_tip_normalise">Tags are lower-cased, and spaces or repeated underscores become one _.</string>
+    <string name="help_tip_aliases">An alias finds its tag, and implied tags are added when you tag a post.</string>
+    <string name="help_tip_terms">A query holds at most 40 terms.</string>
+    <string name="help_tag">has the tag</string>
+    <string name="help_tag_all">has every tag listed</string>
+    <string name="help_tag_not">doesn\'t have the tag</string>
+    <string name="help_tag_tree">has footwear or any tag under it, like boots or sneakers</string>
+    <string name="help_tag_category">the tag some_name; when tagging, the prefix makes it an artist tag (also character:, copyright: and meta:)</string>
+    <string name="help_figure">one person in the picture has all of these tags; girl, boy or other says who. A minus in front finds posts where no one does</string>
+    <string name="help_tag_spaces">two tags: spaces separate terms, so write blue_sky</string>
+    <string name="help_tag_meta">high-resolution posts without sound. The server adds meta tags like lowres, highres, absurdres, wide_image, tall_image, hd, full_hd, 4k, 8k, horizontal_image, vertical_image, square_image, animated, video, sound and long_video by itself</string>
+    <string name="help_rating">rated safe, sensitive (s), questionable (q) or explicit (e)</string>
+    <string name="help_rating_any">any of the listed ratings</string>
+    <string name="help_rating_not">any rating but explicit</string>
+    <string name="help_type">still images; also type:animation and type:video</string>
+    <string name="help_deleted">posts in the recycle bin</string>
+    <string name="help_date">the date in the file, or the upload date if it has none; also date:2024 and date:2024-03-15</string>
+    <string name="help_date_range">from the start of the first period to the end of the last; date:2023.. and date:..2024 leave one end open</string>
+    <string name="help_date_compare">after that period; also &gt;=, &lt; and &lt;=</string>
+    <string name="help_date_age">more than 30 days old; date:&lt;7d is less than 7 days old. Also h, w, mo and y</string>
+    <string name="help_size">wider than 1920 pixels; also height:, &gt;=, &lt;, &lt;=, an exact width:1920 and a range width:1000..2000</string>
+    <string name="help_mpixels">more than 8 megapixels; a bare mpixels:8 is about 8</string>
+    <string name="help_ratio">width over height, as 16:9 or 1.78, within 0.01; ratio:1 is square and ratio:&gt;1 is wider than tall</string>
+    <string name="help_size_not">any size but these; a post of unknown size stays in</string>
+    <string name="help_color">has this colour or, when no post does, the nearest one stored; also orange, yellow, green, teal, blue, purple, pink, brown, black, gray and white</string>
+    <string name="help_color_hex">any colour, in hex; also #2060e0 and 26e</string>
+    <string name="help_color_not">doesn\'t have this colour</string>
+    <string name="help_exact">an unknown tag is normally corrected to the closest one in use; this searches tags exactly as typed</string>
+    <string name="help_text_word">the text read in the image has the word (any case)</string>
+    <string name="help_text_phrase">has all these words; quotes keep them together</string>
+    <string name="help_text_not">the text read in the image doesn\'t have the word</string>
+    <string name="help_order_new">newest first (the default); order:old for oldest</string>
+    <string name="help_order_score">highest score first</string>
+    <string name="help_order_rating">highest rated first</string>
+    <string name="help_order_size">largest file first</string>
+    <string name="help_order_pixels">highest resolution first; order:mpixels too</string>
+    <string name="help_order_longside">longest side first</string>
+    <string name="help_order_tags">most tags first</string>
+    <string name="help_order_updated">most recently edited first</string>
+    <string name="help_order_direction">add _asc or _desc to set the direction</string>
+    <string name="help_order_random">a new shuffle every time</string>
+</resources>

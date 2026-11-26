@@ -1,0 +1,10 @@
+# The search cheat sheet.
+
+[help]
+help-title help-search-for help-tags help-filters help-text help-sorting help-combined help-combined-cats
+help-combined-videos help-tips help-tip-normalise help-tip-aliases help-tip-terms
+help-tag help-tag-all help-tag-not help-tag-tree help-tag-category help-figure help-tag-spaces help-tag-meta
+help-rating help-rating-any help-rating-not help-type help-deleted help-date help-date-range help-date-compare
+help-date-age help-size help-mpixels help-ratio help-size-not help-color help-color-hex help-color-not help-exact
+help-text-word help-text-phrase help-text-not help-order-new help-order-score help-order-rating help-order-size
+help-order-pixels help-order-longside help-order-tags help-order-updated help-order-direction help-order-random

@@ -127,6 +127,8 @@ fun Frame(
     /** What the search box suggests, if anything; the frame draws it under the box. */
     hints: SearchHints?,
     savedSearches: List<SavedSearch>?,
+    /** Opens the search cheat sheet. */
+    onHelp: (() -> Unit)? = null,
     onBrand: () -> Unit,
     onSignIn: (() -> Unit)?,
     content: @Composable () -> Unit,
@@ -209,6 +211,7 @@ fun Frame(
                     onSubmit = onSubmit,
                     hints = hints,
                     savedSearches = savedSearches,
+                    onHelp = onHelp,
                     onBrand = onBrand,
                     modifier = Modifier.padding(top = sysTop + gap, start = sysLeft + gap, end = sysRight + gap),
                     roles = roles,
@@ -276,6 +279,7 @@ private fun TopBar(
     onSubmit: (String) -> Unit,
     hints: SearchHints?,
     savedSearches: List<SavedSearch>?,
+    onHelp: (() -> Unit)?,
     onBrand: () -> Unit,
     roles: StarRoles,
     modifier: Modifier = Modifier,
@@ -324,6 +328,7 @@ private fun TopBar(
             onSubmit = onSubmit,
             hints = hints,
             savedSearches = savedSearches,
+            onHelp = onHelp,
             leadingBrand = width == WidthClass.Compact,
             onBrand = onBrand,
             roles = roles,
@@ -339,6 +344,7 @@ private fun SearchCapsule(
     onSubmit: (String) -> Unit,
     hints: SearchHints?,
     savedSearches: List<SavedSearch>?,
+    onHelp: (() -> Unit)?,
     leadingBrand: Boolean,
     onBrand: () -> Unit,
     roles: StarRoles,
@@ -425,6 +431,17 @@ private fun SearchCapsule(
                         contentDescription = stringResource(R.string.search_clear),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(20.dp),
+                    )
+                }
+            }
+            // The cheat sheet, where there's nothing to clear.
+            if (value.text.isEmpty() && onHelp != null) {
+                IconButton(onClick = onHelp, modifier = Modifier.size(44.dp)) {
+                    Icon(
+                        painterResource(R.drawable.ic_help),
+                        contentDescription = stringResource(R.string.help_title),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(22.dp),
                     )
                 }
             }

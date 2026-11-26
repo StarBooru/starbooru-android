@@ -37,6 +37,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import eu.filipnone.starbooru.AppGraph
 import eu.filipnone.starbooru.core.Mode
+import eu.filipnone.starbooru.core.ScoreKind
 import eu.filipnone.starbooru.core.trashQuery
 import eu.filipnone.starbooru.data.AccountState
 import eu.filipnone.starbooru.data.Settings
@@ -48,6 +49,7 @@ import eu.filipnone.starbooru.ui.common.Notices
 import eu.filipnone.starbooru.ui.common.Soon
 import eu.filipnone.starbooru.ui.explore.ExploreScreen
 import eu.filipnone.starbooru.ui.explore.ExploreViewModel
+import eu.filipnone.starbooru.ui.frame.CheatSheet
 import eu.filipnone.starbooru.ui.frame.Frame
 import eu.filipnone.starbooru.ui.frame.LocalBars
 import eu.filipnone.starbooru.ui.frame.LocalFrame
@@ -127,6 +129,7 @@ private fun Shell(
     val focus = remember { mutableStateOf<Long?>(null) }
     val bars = remember { mutableStateOf(true) }
     val hints = remember(graph) { SearchHints(graph.account) }
+    var cheatSheet by rememberSaveable { mutableStateOf(false) }
     val savedList by graph.savedSearches.list.collectAsStateWithLifecycle()
     val snack = remember { SnackbarHostState() }
     val notices = remember { Notices(snack, scope) }
@@ -183,6 +186,7 @@ private fun Shell(
                 onSubmit = searchFor,
                 hints = hints,
                 savedSearches = savedList,
+                onHelp = { cheatSheet = true },
                 onBrand = { nav.select(Tab.Gallery) },
                 onSignIn = if (guest) ({ scope.launch { graph.account.toSignIn() } }) else null,
             ) {
@@ -282,6 +286,17 @@ private fun Shell(
                     predictivePopTransitionSpec = { fadeIn(tween(220)) togetherWith (fadeOut(tween(220)) + scaleOut(targetScale = 0.9f)) },
                     onBack = { nav.back() },
                 )
+                if (cheatSheet) {
+                    CheatSheet(
+                        stars = info?.scoreKind == ScoreKind.STARS,
+                        onSearch = {
+                            cheatSheet = false
+                            search = it
+                            searchFor(it)
+                        },
+                        onDismiss = { cheatSheet = false },
+                    )
+                }
                 Box(
                     Modifier.fillMaxSize().padding(bottom = LocalFrame.current.padding.calculateBottomPadding()),
                     contentAlignment = Alignment.BottomCenter,
