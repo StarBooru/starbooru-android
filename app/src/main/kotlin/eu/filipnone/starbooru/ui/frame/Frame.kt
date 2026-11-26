@@ -503,6 +503,3 @@ private fun NavCell(
 /** The space a screen keeps clear for the frame, from [LocalFrame]. */
 @Composable
 fun framePadding(): PaddingValues = LocalFrame.current.padding
-
-/** Unused helper kept small: the gap the frame leaves between bars and content. */
-internal val FrameGap: Dp = 8.dp

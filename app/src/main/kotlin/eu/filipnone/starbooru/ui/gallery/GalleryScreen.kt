@@ -174,12 +174,13 @@ fun GalleryScreen(
                 .collect { near -> if (near) vm.loadMore() }
         }
 
-        // The post at the top of the screen, to come back to after a resize
-        // or the system closing the app.
+        // The post at the top of the screen, under the bar, to come back to
+        // after a resize or the system closing the app. None while the page
+        // is at its top, which is where it comes back to then.
         LaunchedEffect(layout) {
             snapshotFlow { scroll.value }.collect { y ->
-                val line = (y - gridTop) / pxPerDp
-                val i = layout.tiles.indexOfFirst { it.y + it.height > line }
+                val line = (y + topPadPx - gridTop) / pxPerDp
+                val i = if (line <= 0f) -1 else layout.tiles.indexOfFirst { it.y + it.height > line }
                 vm.anchor = state.posts.getOrNull(i)?.id
             }
         }
@@ -188,13 +189,12 @@ fun GalleryScreen(
         LaunchedEffect(shape, state.loaded) {
             val key = shape.toString()
             if (!state.loaded || state.posts.isEmpty()) return@LaunchedEffect
-            if (placedShape != null && placedShape != key) {
-                val id = vm.anchor
-                val i = state.posts.indexOfFirst { it.id == id }
-                layout.tiles.getOrNull(i)?.let { scroll.scrollTo((gridTop + it.y.toFloat() * pxPerDp).toInt()) }
-            } else if (placedShape == null && scroll.value == 0) {
+            val moved = placedShape != null && placedShape != key
+            val restored = placedShape == null && scroll.value == 0
+            if (moved || restored) {
                 val i = state.posts.indexOfFirst { it.id == vm.anchor }
-                if (i > 0) layout.tiles.getOrNull(i)?.let { scroll.scrollTo((gridTop + it.y.toFloat() * pxPerDp).toInt()) }
+                val tile = layout.tiles.getOrNull(i)
+                scroll.scrollTo(if (tile == null) 0 else (gridTop + tile.y.toFloat() * pxPerDp - topPadPx).toInt())
             }
             placedShape = key
         }

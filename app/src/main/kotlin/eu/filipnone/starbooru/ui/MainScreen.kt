@@ -12,6 +12,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -72,7 +73,8 @@ fun MainScreen(
         remember {
             Global.getFloat(context.contentResolver, Global.ANIMATOR_DURATION_SCALE, 1f) == 0f
         }
-    Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+    // The surface gives everything under it the right ink, in light and dark.
+    Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         CompositionLocalProvider(LocalReducedMotion provides reduced) {
             when (val a = account) {
                 AccountState.Starting -> {}
@@ -129,7 +131,8 @@ private fun Shell(
     SharedTransitionLayout {
         CompositionLocalProvider(
             LocalSharedTransition provides this,
-            LocalViewerFocus provides focus
+            LocalViewerFocus provides focus,
+            LocalBars provides bars
         ) {
             Frame(
                 tabs = tabs,

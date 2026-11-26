@@ -96,7 +96,12 @@ android {
 
     testOptions {
         unitTests.isIncludeAndroidResources = true
-        unitTests.all { it.systemProperty("robolectric.pixelCopyRenderMode", "hardware") }
+        unitTests.all {
+            it.systemProperty("robolectric.pixelCopyRenderMode", "hardware")
+            // The core's host build, so JVM tests can call it through JNA.
+            it.dependsOn("uniffiBindings")
+            it.systemProperty("jna.library.path", rootProject.file("target/bindgen/debug").absolutePath)
+        }
     }
 
     lint {
@@ -254,6 +259,8 @@ dependencies {
     debugImplementation(libs.compose.ui.test.manifest)
 
     testImplementation(libs.junit)
+    // The jar has JNA's own native part for the host, which the AAR lacks.
+    testImplementation(libs.jna)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)
     testImplementation(libs.robolectric)

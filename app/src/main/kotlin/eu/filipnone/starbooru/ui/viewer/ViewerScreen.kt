@@ -3,8 +3,10 @@ package eu.filipnone.starbooru.ui.viewer
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -56,11 +58,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.BlurredEdgeTreatment
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.layout.ContentScale
@@ -88,12 +98,14 @@ import eu.filipnone.starbooru.core.Post
 import eu.filipnone.starbooru.data.Hand
 import eu.filipnone.starbooru.ui.common.LocalReducedMotion
 import eu.filipnone.starbooru.ui.common.LocalViewerFocus
+import eu.filipnone.starbooru.ui.common.Media
 import eu.filipnone.starbooru.ui.common.describe
 import eu.filipnone.starbooru.ui.common.sharedPost
 import eu.filipnone.starbooru.ui.common.tintColor
 import eu.filipnone.starbooru.ui.frame.LocalBars
 import eu.filipnone.starbooru.ui.frame.LocalFrame
 import eu.filipnone.starbooru.ui.frame.LocalGlassSource
+import eu.filipnone.starbooru.ui.frame.LocalPlainGlass
 import eu.filipnone.starbooru.ui.frame.WidthClass
 import eu.filipnone.starbooru.ui.frame.glass
 import eu.filipnone.starbooru.ui.gestures.PullToClose
@@ -411,6 +423,7 @@ private fun Stage(
                     }
                 }
         ) {
+            if (!fullscreen) post?.let { Glow(it) }
             // The previous, current and next pictures side by side, moved
             // together by the slide.
             listOf(-1 to shown.prev, 0 to post, 1 to shown.next).forEach { (place, p) ->
@@ -470,6 +483,40 @@ private fun Stage(
                 }
             }
         }
+    }
+}
+
+/**
+ * The picture's colours spread behind it, as the web's glow: its thumbnail
+ * blurred to nothing but colour, fading out towards the bottom. Blur needs
+ * Android 12, so older versions go without.
+ */
+@Composable
+private fun Glow(post: Post) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || LocalPlainGlass.current) return
+    val context = LocalContext.current
+    val request = remember(post.id) { Media.thumb(context, post) } ?: return
+    val alpha = if (StarBooruTheme.roles.canvas.luminance() > 0.5f) 0.42f else 0.34f
+    Crossfade(request, animationSpec = tween(640), label = "glow") { r ->
+        AsyncImage(
+            model = r,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        this.alpha = alpha
+                        compositingStrategy = CompositingStrategy.Offscreen
+                    }.blur(64.dp, BlurredEdgeTreatment.Unbounded)
+                    .drawWithContent {
+                        drawContent()
+                        drawRect(
+                            Brush.verticalGradient(0.4f to Color.Black, 1f to Color.Transparent),
+                            blendMode = BlendMode.DstIn
+                        )
+                    }
+        )
     }
 }
 
