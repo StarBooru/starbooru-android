@@ -31,6 +31,22 @@ data class GalleryState(
     val loaded: Boolean = false,
 )
 
+/** What the foot of the gallery shows. */
+enum class Foot { Problem, Loading, Empty, More, End }
+
+/**
+ * Until the first page has answered, the gallery is loading, even in the
+ * moment before it asks.
+ */
+fun GalleryState.foot(): Foot =
+    when {
+        error != null -> Foot.Problem
+        loading || !loaded -> Foot.Loading
+        posts.isEmpty() -> Foot.Empty
+        hasMore -> Foot.More
+        else -> Foot.End
+    }
+
 /**
  * The results of one search, a page at a time. What was loaded, and the
  * post at the top of the screen, survive the system closing the app: coming

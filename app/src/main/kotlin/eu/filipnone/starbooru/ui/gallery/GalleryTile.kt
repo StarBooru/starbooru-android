@@ -76,6 +76,7 @@ fun Tile(
     post: Post,
     index: Int,
     flush: Boolean,
+    /** Whether it makes an entrance as it first shows (see [Entrance]); read only then. */
     animate: Boolean,
     pressed: Boolean,
     /** How far a swipe has moved it, in px; 0 at rest. */
@@ -97,7 +98,7 @@ fun Tile(
     val roles = StarBooruTheme.roles
     val corner = if (flush) 0.dp else 16.dp
     val shape = RoundedCornerShape(corner)
-    // New tiles pop in one after another, a beat apart.
+    // A new page's tiles pop in one after another, a beat apart.
     val entrance = remember { Animatable(if (animate) 0f else 1f) }
     LaunchedEffect(Unit) {
         if (entrance.value < 1f) entrance.animateTo(1f, tween(420, delayMillis = (index % 60) * 16, easing = StarSpringEasing))

@@ -35,16 +35,15 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -52,6 +51,8 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.snapshots.Snapshot
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -75,7 +76,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import dev.chrisbanes.haze.hazeSource
@@ -120,6 +120,7 @@ import eu.filipnone.starbooru.ui.gestures.TileSwipe
 import eu.filipnone.starbooru.ui.theme.StarBooruTheme
 import eu.filipnone.starbooru.ui.theme.StarSpringEasing
 import kotlin.math.floor
+import kotlin.math.roundToInt
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
@@ -234,6 +235,9 @@ fun GalleryScreen(
         val topPadPx = frame.padding.calculateTopPadding().value * pxPerDp
         // Where the grid starts within the scrolling page, in pixels.
         var gridTop by remember { mutableFloatStateOf(0f) }
+        // The posts there before the last page landed, or when the gallery
+        // came back into sight: their tiles make no entrance.
+        val settled = remember { Settled(state.posts.size) }
 
         // The tiles within a screen and a half above and two and a half below.
         val window by remember(layout, viewportPx) {
@@ -274,6 +278,8 @@ fun GalleryScreen(
                     }
 
                     override val selecting: Boolean get() = selectingNow
+
+                    override val moving: Boolean get() = scroll.isScrollInProgress
 
                     override fun canSwipe(side: Side): Boolean =
                         TileSwipe.action(side, settingsNow.swipeLeft, settingsNow.swipeRight) != SwipeAction.Off
@@ -339,31 +345,51 @@ fun GalleryScreen(
                 .collect { near -> if (near) vm.loadMore() }
         }
 
+        // The layout the page was last put in place for. A new one, after a
+        // turn or another tile shape, puts the anchor back at the top.
+        val shape = listOf(columns, widthDp, settings.galleryView, gap).toString()
         var placedShape by rememberSaveable { mutableStateOf<String?>(null) }
+        var placedHere by remember { mutableStateOf(false) }
+        // Where that left the page; the anchor stands while it's still there.
+        var placedAt by remember { mutableIntStateOf(-1) }
+        val topPadNow by rememberUpdatedState(topPadPx)
         // The post at the top of the screen, under the bar, to come back to
         // after a resize or the system closing the app. None while the page
         // is at its top, which is where it comes back to then.
-        LaunchedEffect(layout) {
+        LaunchedEffect(layout, shape) {
             snapshotFlow { scroll.value }.collect { y ->
-                // Not before the page has gone back to where it was.
-                if (placedShape == null) return@collect
-                val line = (y + topPadPx - gridTop) / pxPerDp
-                val i = if (line <= 0f) -1 else layout.tiles.indexOfFirst { it.y + it.height > line }
-                vm.anchor = state.posts.getOrNull(i)?.id
+                // Not until the page is back around the anchor in this layout:
+                // the old scroll against the new tiles points at another post.
+                if (placedShape != shape || y == placedAt) return@collect
+                placedAt = -1
+                val line = (y + topPadNow - gridTop) / pxPerDp
+                val anchor = vm.anchor
+                val current = state.posts.indexOfFirst { it.id == anchor }
+                vm.anchor = state.posts.getOrNull(Anchor.at(layout.tiles, line.toDouble(), current))?.id
             }
         }
-        val shape = Triple(columns, widthDp, settings.galleryView)
         LaunchedEffect(shape, state.loaded) {
-            val key = shape.toString()
             if (!state.loaded || state.posts.isEmpty()) return@LaunchedEffect
-            val moved = placedShape != null && placedShape != key
-            val restored = placedShape == null && scroll.value == 0
+            val moved = placedShape != null && placedShape != shape
+            // Opened again, or back after the system closed the app, which
+            // put the scroll back to the top as the list was still empty.
+            val restored = !placedHere && scroll.value == 0
             if (moved || restored) {
-                val i = state.posts.indexOfFirst { it.id == vm.anchor }
-                val tile = layout.tiles.getOrNull(i)
-                scroll.scrollTo(if (tile == null) 0 else (gridTop + tile.y.toFloat() * pxPerDp - topPadPx).toInt())
+                val anchor = vm.anchor
+                val tile = layout.tiles.getOrNull(state.posts.indexOfFirst { it.id == anchor })
+                if (tile != null) {
+                    val target = (gridTop + tile.y.toFloat() * pxPerDp - topPadNow).roundToInt()
+                    // The new tiles can reach the page a frame after this.
+                    var tries = 3
+                    while (scroll.maxValue < target && tries-- > 0) withFrameNanos { }
+                    scroll.scrollTo(target)
+                } else {
+                    scroll.scrollTo(0)
+                }
+                placedAt = scroll.value
             }
-            placedShape = key
+            placedShape = shape
+            placedHere = true
         }
         // Back from the viewer on another post: its tile comes into sight.
         LaunchedEffect(focus.value, layout) {
@@ -415,6 +441,13 @@ fun GalleryScreen(
                     .onPlaced { gridTop = it.positionInParent().y + topPadPx }
                     .gridGestures(host, touch, scope, pxPerDp),
             ) {
+                // The screen, in dp down the grid. Read unobserved, so scrolling
+                // doesn't recompose the grid for it.
+                val (seenFrom, seenTo) =
+                    Snapshot.withoutReadObservation {
+                        val top = (scroll.value - gridTop) / pxPerDp
+                        top.toDouble() to (top + viewportPx / pxPerDp).toDouble()
+                    }
                 for (i in visible) {
                     val post = state.posts.getOrNull(i) ?: continue
                     val rect = layout.tiles.getOrNull(i) ?: continue
@@ -425,7 +458,10 @@ fun GalleryScreen(
                             post = post,
                             index = i,
                             flush = settings.flush,
-                            animate = !reduced,
+                            // Only read as the tile first shows.
+                            animate =
+                                !reduced &&
+                                    Entrance.plays(i, settled.count, rect.y, rect.y + rect.height, seenFrom, seenTo),
                             pressed = touch.pressed == post.id,
                             slide = slide,
                             swipe = if (slide > 0f) settings.swipeRight else settings.swipeLeft,
@@ -448,6 +484,8 @@ fun GalleryScreen(
                         )
                     }
                 }
+                // Tiles placed from here on aren't new to the user.
+                SideEffect { settled.count = state.posts.size }
             }
             Footer(state, server, onRetry = vm::loadMore, onReload = vm::reload, query = vm.query)
         }
@@ -576,6 +614,9 @@ fun GalleryScreen(
     }
 }
 
+/** A count kept between compositions without causing one. */
+private class Settled(var count: Int)
+
 /** The picked posts, in the gallery's order. */
 private fun picked(
     posts: List<Post>,
@@ -699,34 +740,37 @@ private fun ViewMenu(
             Icon(painterResource(R.drawable.ic_layout), stringResource(R.string.view_title))
         }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }, shape = RoundedCornerShape(28.dp)) {
-            Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp).width(300.dp)) {
+            val menuWidth = ChoiceRows.menuWidth(widthDp).dp
+            Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp).width(menuWidth)) {
                 Text(stringResource(R.string.view_shape), style = MaterialTheme.typography.labelLarge)
                 Spacer(Modifier.height(8.dp))
                 val staggered =
                     settings.galleryView in
                         setOf(GalleryView.STAGGERED_PORTRAIT, GalleryView.STAGGERED_LANDSCAPE, GalleryView.STAGGERED_ALL)
-                Segmented(
-                    options =
+                ShapeChoices(
+                    choices =
                         listOf(
-                            GalleryView.SQUARE to R.string.view_square,
-                            GalleryView.LANDSCAPE to R.string.view_landscape,
-                            GalleryView.PORTRAIT to R.string.view_portrait,
-                            GalleryView.STAGGERED_PORTRAIT to R.string.view_staggered,
+                            ShapeChoice(GalleryView.SQUARE, R.string.view_square, Glyph.Square),
+                            ShapeChoice(GalleryView.LANDSCAPE, R.string.view_landscape, Glyph.Wide),
+                            ShapeChoice(GalleryView.PORTRAIT, R.string.view_portrait, Glyph.Tall),
+                            ShapeChoice(GalleryView.STAGGERED_PORTRAIT, R.string.view_staggered, Glyph.Columns),
                         ),
                     selected = if (staggered) GalleryView.STAGGERED_PORTRAIT else settings.galleryView,
+                    width = menuWidth,
                 ) { v -> onSettings { it.copy(galleryView = if (v == GalleryView.STAGGERED_PORTRAIT && staggered) it.galleryView else v) } }
                 if (staggered) {
                     Spacer(Modifier.height(12.dp))
                     Text(stringResource(R.string.view_staggered_by), style = MaterialTheme.typography.labelLarge)
                     Spacer(Modifier.height(8.dp))
-                    Segmented(
-                        options =
+                    ShapeChoices(
+                        choices =
                             listOf(
-                                GalleryView.STAGGERED_PORTRAIT to R.string.view_portrait,
-                                GalleryView.STAGGERED_LANDSCAPE to R.string.view_landscape,
-                                GalleryView.STAGGERED_ALL to R.string.view_everything,
+                                ShapeChoice(GalleryView.STAGGERED_PORTRAIT, R.string.view_portrait, Glyph.Columns),
+                                ShapeChoice(GalleryView.STAGGERED_LANDSCAPE, R.string.view_landscape, Glyph.Rows),
+                                ShapeChoice(GalleryView.STAGGERED_ALL, R.string.view_everything, Glyph.Mosaic),
                             ),
                         selected = settings.galleryView,
+                        width = menuWidth,
                     ) { v -> onSettings { it.copy(galleryView = v) } }
                 }
                 Spacer(Modifier.height(12.dp))
@@ -778,24 +822,6 @@ private fun ViewMenu(
 }
 
 @Composable
-private fun <T> Segmented(
-    options: List<Pair<T, Int>>,
-    selected: T,
-    onPick: (T) -> Unit,
-) {
-    SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
-        options.forEachIndexed { i, (value, label) ->
-            SegmentedButton(
-                selected = value == selected,
-                onClick = { onPick(value) },
-                shape = SegmentedButtonDefaults.itemShape(i, options.size),
-                icon = {},
-            ) { Text(stringResource(label), maxLines = 1, fontSize = 13.sp) }
-        }
-    }
-}
-
-@Composable
 private fun Footer(
     state: GalleryState,
     server: String,
@@ -804,12 +830,11 @@ private fun Footer(
     onReload: () -> Unit,
 ) {
     Box(Modifier.fillMaxWidth().heightIn(min = 104.dp).padding(vertical = 16.dp), contentAlignment = Alignment.Center) {
-        val error = state.error
-        when {
-            error != null ->
+        when (state.foot()) {
+            Foot.Problem ->
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        describe(error, server),
+                        state.error?.let { describe(it, server) }.orEmpty(),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(horizontal = 16.dp),
@@ -818,9 +843,9 @@ private fun Footer(
                     FilledTonalButton(onClick = if (state.posts.isEmpty()) onReload else onRetry) { Text(stringResource(R.string.retry)) }
                 }
 
-            state.loading -> CircularProgressIndicator()
+            Foot.Loading -> CircularProgressIndicator()
 
-            state.loaded && state.posts.isEmpty() ->
+            Foot.Empty ->
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(stringResource(R.string.gallery_empty), style = MaterialTheme.typography.titleMedium)
                     Spacer(Modifier.height(4.dp))
@@ -831,7 +856,9 @@ private fun Footer(
                     )
                 }
 
-            state.hasMore -> FilledTonalButton(onClick = onRetry) { Text(stringResource(R.string.load_more)) }
+            Foot.More -> FilledTonalButton(onClick = onRetry) { Text(stringResource(R.string.load_more)) }
+
+            Foot.End -> {}
         }
     }
 }

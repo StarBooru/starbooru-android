@@ -354,6 +354,40 @@ class GalleryViewModelTest {
             assertTrue(backend.postsCalls.all { it.seed == 42L })
         }
 
+    // ---------- the foot of the gallery ----------
+
+    @Test
+    fun beforeTheFirstPageTheFootIsLoading() {
+        // The moment before the first request, where it offered Load more.
+        assertEquals(Foot.Loading, GalleryState().foot())
+        assertEquals(Foot.Loading, GalleryState(loading = true).foot())
+        assertEquals(Foot.Loading, GalleryState(posts = posts(1L..60L), loading = true, loaded = true).foot())
+    }
+
+    @Test
+    fun theFootAfterAnAnswer() {
+        val some = posts(1L..60L)
+        assertEquals(Foot.More, GalleryState(posts = some, loaded = true).foot())
+        assertEquals(Foot.End, GalleryState(posts = some, hasMore = false, loaded = true).foot())
+        assertEquals(Foot.Empty, GalleryState(hasMore = false, loaded = true).foot())
+        assertEquals(Foot.Empty, GalleryState(loaded = true).foot())
+        assertEquals(Foot.Problem, GalleryState(error = CoreException.Unreachable("down"), loaded = true).foot())
+        assertEquals(Foot.Problem, GalleryState(posts = some, error = CoreException.Unreachable("down"), loaded = true).foot())
+    }
+
+    @Test
+    fun theFootIsLoadingBeforeTheRequestGoesOut() =
+        runTest {
+            // The request hasn't started yet, as when a spot is read first.
+            val vm = gallery()
+            assertFalse(vm.state.value.loading)
+            assertEquals(Foot.Loading, vm.state.value.foot())
+            advanceUntilIdle()
+            assertEquals(Foot.More, vm.state.value.foot())
+            vm.reload()
+            assertEquals(Foot.Loading, vm.state.value.foot())
+        }
+
     @Test
     fun theAnchorIsKept() =
         runTest {

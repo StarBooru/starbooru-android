@@ -47,6 +47,9 @@ interface GridHost {
 
     val selecting: Boolean
 
+    /** Whether the page is moving: a fling, a scroll to a spot, or another finger dragging it. */
+    val moving: Boolean
+
     /** Whether swiping to [side] does something. */
     fun canSwipe(side: Side): Boolean
 
@@ -78,7 +81,8 @@ interface GridHost {
  * The grid's touch: a tap opens a post (or picks it while selecting), a
  * finger resting on a tile opens its menu (or, while selecting, drags across
  * tiles to pick them, scrolling the page at its edges), and a sideways swipe
- * runs the action chosen for that side. Up and down is the page's.
+ * runs the action chosen for that side. Up and down is the page's. A finger
+ * that lands on a moving page only stops it.
  */
 fun Modifier.gridGestures(
     host: GridHost,
@@ -89,7 +93,8 @@ fun Modifier.gridGestures(
     pointerInput(host) {
         awaitEachGesture {
             val down = awaitFirstDown(requireUnconsumed = false)
-            val (id, tileWidth) = host.tileAt(down.position) ?: return@awaitEachGesture
+            // Read before the page's own scrolling sees this finger and stops.
+            val (id, tileWidth) = GridLanding.tile(host.moving) { host.tileAt(down.position) } ?: return@awaitEachGesture
             touch.pressed = id
             var trail = listOf(TrailPoint(down.uptimeMillis, down.position.x / density, down.position.y / density))
             var last: PointerInputChange = down
@@ -214,3 +219,16 @@ fun Modifier.gridGestures(
     }
 
 private enum class Early { Tap, Swipe, Gone }
+
+/** Where a finger lands on the grid. */
+object GridLanding {
+    /**
+     * The tile under a finger as it lands, from [under]. None while the page
+     * is [moving]: that finger only stops the page, so it doesn't open, hold
+     * or swipe a tile the user wasn't aiming at.
+     */
+    inline fun <T> tile(
+        moving: Boolean,
+        under: () -> T?,
+    ): T? = if (moving) null else under()
+}
