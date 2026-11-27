@@ -41,14 +41,14 @@ An item below is done when it works at all three widths, with either hand, in li
 
 ## 3. Everything else the web app has
 
-- [ ] Settings in the web's seven groups, and the top bar's search finding settings
+- [x] Settings in the web's seven groups, and the top bar's search finding settings
 - [ ] Share links, with a custom expiry and link previews, through Android's share sheet, which also takes the file itself; a public server shares a post's own address
-- [ ] A StarBooru address shared to the app opens there: a post, a search or a share page
+- [x] A StarBooru address shared to the app opens there: a post, a search or a share page
 - [ ] People: the card, faces outlined on the picture, the editor with face boxes drawn by finger, Find people, the people page
 - [ ] Image and video editor: crop handles sized for a finger, straightening, turns, flips, trims
 - [ ] Other boorus and library imports
 - [ ] Duplicate finder
-- [ ] Reverse search on Google Lens, iqdb, SauceNAO and trace.moe
+- [x] Reverse search on Google Lens, iqdb, SauceNAO and trace.moe
 - [ ] Public servers: the account button, profiles and their picture's crop, the forum, votes on tags
 - [ ] Tag blacklist, with covered posts in the viewer
 - [ ] The home page and its drifting background
