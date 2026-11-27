@@ -77,6 +77,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -579,7 +580,10 @@ private fun NavCell(
                 fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
+                // A word too long for its cell ends in "…" rather than losing both ends.
+                overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.labelMedium,
+                modifier = Modifier.padding(horizontal = 2.dp),
             )
         }
     }

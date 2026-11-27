@@ -12,7 +12,7 @@ login-.* guest-sign-in guest-sign-up guest-keep-browsing guest-back
 oidc-finishing oidc-denied oidc-failed oidc-expired
 
 [nav]
-nav-gallery nav-explore nav-tags nav-upload nav-settings nav-forum
+nav-gallery nav-explore nav-tags nav-upload nav-settings nav-settings-tab nav-forum
 
 [common]
 app-name page-back notice-close retry load-more notfound-title add cancel save
