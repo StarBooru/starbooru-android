@@ -37,16 +37,19 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import eu.filipnone.starbooru.AppGraph
 import eu.filipnone.starbooru.core.Mode
+import eu.filipnone.starbooru.core.Post
 import eu.filipnone.starbooru.core.ScoreKind
 import eu.filipnone.starbooru.core.trashQuery
 import eu.filipnone.starbooru.data.AccountState
 import eu.filipnone.starbooru.data.Settings
 import eu.filipnone.starbooru.ui.common.LocalGuest
 import eu.filipnone.starbooru.ui.common.LocalNotices
+import eu.filipnone.starbooru.ui.common.LocalOnStage
 import eu.filipnone.starbooru.ui.common.LocalReducedMotion
 import eu.filipnone.starbooru.ui.common.LocalSharedTransition
 import eu.filipnone.starbooru.ui.common.LocalViewerFocus
 import eu.filipnone.starbooru.ui.common.Notices
+import eu.filipnone.starbooru.ui.common.OnStage
 import eu.filipnone.starbooru.ui.common.Soon
 import eu.filipnone.starbooru.ui.explore.ExploreScreen
 import eu.filipnone.starbooru.ui.explore.ExploreViewModel
@@ -84,6 +87,8 @@ import eu.filipnone.starbooru.ui.tags.TagsViewModel
 import eu.filipnone.starbooru.ui.trash.TrashScreen
 import eu.filipnone.starbooru.ui.trash.TrashViewModel
 import eu.filipnone.starbooru.ui.upload.UploadScreen
+import eu.filipnone.starbooru.ui.viewer.LocalSound
+import eu.filipnone.starbooru.ui.viewer.Sound
 import eu.filipnone.starbooru.ui.viewer.ViewerScreen
 import eu.filipnone.starbooru.ui.viewer.ViewerViewModel
 import kotlinx.coroutines.launch
@@ -168,6 +173,15 @@ private fun Shell(
     // falls back to the gallery.
     LaunchedEffect(tabs) { if (nav.tab !in tabs) nav.select(Tab.Gallery) }
     val update: ((Settings) -> Settings) -> Unit = { change -> scope.launch { graph.settings.update(change) } }
+    // The viewer opens with the post the page had, so its picture is there
+    // on the first frame to grow out of the tile.
+    val openPost: (Post, PostRoute) -> Unit = { post, route ->
+        graph.opening.put(post)
+        nav.open(route)
+    }
+    val onStage = remember { OnStage { nav.current is PostRoute } }
+    val sound = remember { Sound(settings.videoMuted) { muted -> update { it.copy(videoMuted = muted) } } }
+    LaunchedEffect(settings.videoMuted) { sound.heard(settings.videoMuted) }
     val searchFor: (String) -> Unit = searchFor@{ q ->
         val query = q.trim()
         // On Explore, the search narrows Explore.
@@ -189,10 +203,12 @@ private fun Shell(
     SharedTransitionLayout {
         CompositionLocalProvider(
             LocalSharedTransition provides this,
+            LocalOnStage provides onStage,
             LocalViewerFocus provides focus,
             LocalBars provides bars,
             LocalNotices provides notices,
             LocalGuest provides guest,
+            LocalSound provides sound,
         ) {
             Frame(
                 tabs = tabs,
@@ -229,14 +245,21 @@ private fun Shell(
                                 server = server,
                                 settings = settings,
                                 onSettings = update,
-                                onOpen = { post -> nav.open(PostRoute(post.id, vm.query, vm.seed)) },
+                                onOpen = { post -> openPost(post, PostRoute(post.id, vm.query, vm.seed)) },
                                 onSearch = { q -> nav.replace(GalleryRoute(q)) },
                             )
                         }
                         entry<PostRoute> { route ->
                             val vm =
                                 viewModel {
-                                    ViewerViewModel(graph.account, route.id, route.query, route.seed, createSavedStateHandle()) { id ->
+                                    ViewerViewModel(
+                                        graph.account,
+                                        route.id,
+                                        route.query,
+                                        route.seed,
+                                        createSavedStateHandle(),
+                                        first = graph.opening.take(route.id),
+                                    ) { id ->
                                         graph.scope.launch { graph.history.open(owner, id) }
                                     }
                                 }
@@ -244,7 +267,7 @@ private fun Shell(
                                 vm = vm,
                                 account = graph.account,
                                 server = server,
-                                onOpen = { post -> nav.open(PostRoute(post.id)) },
+                                onOpen = { post -> openPost(post, PostRoute(post.id)) },
                                 onTag = { nav.open(TagRoute(it)) },
                                 onBack = { nav.back() },
                                 onSearch = searchFor,
@@ -257,7 +280,7 @@ private fun Shell(
                                 server = server,
                                 mode = info?.mode,
                                 query = exploreQuery,
-                                onOpen = { post -> nav.open(PostRoute(post.id)) },
+                                onOpen = { post -> openPost(post, PostRoute(post.id)) },
                                 onSearch = { q ->
                                     nav.select(Tab.Gallery)
                                     nav.open(GalleryRoute(q))
@@ -313,7 +336,7 @@ private fun Shell(
                                 vm = vm,
                                 server = server,
                                 admin = (account as? AccountState.SignedIn)?.user?.admin == true,
-                                onOpen = { post -> nav.open(PostRoute(post.id, trashQuery())) },
+                                onOpen = { post -> openPost(post, PostRoute(post.id, trashQuery())) },
                             )
                         }
                     }

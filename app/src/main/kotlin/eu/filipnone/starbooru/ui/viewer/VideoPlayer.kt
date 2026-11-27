@@ -6,6 +6,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
@@ -34,6 +36,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -51,11 +55,15 @@ import androidx.media3.ui.compose.PlayerSurface
 import androidx.media3.ui.compose.SURFACE_TYPE_TEXTURE_VIEW
 import androidx.media3.ui.compose.state.rememberMuteButtonState
 import androidx.media3.ui.compose.state.rememberPlayPauseButtonState
+import androidx.media3.ui.compose.state.rememberPresentationState
 import androidx.media3.ui.compose.state.rememberProgressStateWithTickInterval
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 import eu.filipnone.starbooru.R
 import eu.filipnone.starbooru.core.Post
+import eu.filipnone.starbooru.ui.common.Media
 import eu.filipnone.starbooru.ui.common.clock
 import eu.filipnone.starbooru.ui.frame.LocalGlassSource
 import eu.filipnone.starbooru.ui.frame.glass
@@ -78,9 +86,17 @@ fun VideoPlayer(
     post: Post,
     modifier: Modifier = Modifier,
     onTap: () -> Unit = {},
-) = VideoPlayer("post:${post.id}", post.fileUrl, post.durationMs, modifier, onTap)
+) {
+    val context = LocalContext.current
+    val poster = remember(post.id, post.sha256) { Media.thumb(context, post) }
+    VideoPlayer("post:${post.id}", post.fileUrl, post.durationMs, modifier, onTap, poster)
+}
 
-/** The same player for any video at [url]; [key] tells one video from another. */
+/**
+ * The same player for any video at [url]; [key] tells one video from
+ * another. [poster] stands in until the first frame is drawn, so a tile
+ * grows into its own picture.
+ */
 @OptIn(UnstableApi::class)
 @Composable
 fun VideoPlayer(
@@ -89,13 +105,16 @@ fun VideoPlayer(
     durationMs: Long?,
     modifier: Modifier = Modifier,
     onTap: () -> Unit = {},
+    poster: ImageRequest? = null,
 ) {
     val context = LocalContext.current
+    val sound = LocalSound.current
     val player =
         remember(key) {
             ExoPlayer.Builder(context).build().apply {
                 setMediaItem(MediaItem.fromUri(url))
                 repeatMode = if ((durationMs ?: 0L) in 1..LOOP_UNDER_MS) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_OFF
+                if (sound.muted) mute()
                 prepare()
             }
         }
@@ -136,7 +155,18 @@ fun VideoPlayer(
         },
     ) {
         val glass = rememberHazeState()
-        PlayerSurface(player = player, surfaceType = SURFACE_TYPE_TEXTURE_VIEW, modifier = Modifier.fillMaxSize().hazeSource(glass))
+        val presentation = rememberPresentationState(player)
+        Box(Modifier.fillMaxSize().hazeSource(glass)) {
+            PlayerSurface(player = player, surfaceType = SURFACE_TYPE_TEXTURE_VIEW, modifier = Modifier.fillMaxSize())
+            if (poster != null && presentation.coverSurface) {
+                AsyncImage(
+                    model = poster,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+        }
         CompositionLocalProvider(LocalGlassSource provides glass) {
             val started = player.currentPosition > 0 || !playPause.showPlay
             AnimatedVisibility(
@@ -148,6 +178,7 @@ fun VideoPlayer(
                 Box(
                     Modifier
                         .size(64.dp)
+                        .ownsDrags()
                         .glass(CircleShape, StarBooruTheme.roles)
                         .clickable { playPause.onClick() },
                     contentAlignment = Alignment.Center,
@@ -169,6 +200,7 @@ private fun BoxScope.Bar(
     onTouch: () -> Unit,
 ) {
     val roles = StarBooruTheme.roles
+    val sound = LocalSound.current
     val playPause = rememberPlayPauseButtonState(player)
     val mute = rememberMuteButtonState(player)
     val progress = rememberProgressStateWithTickInterval(player, 250L)
@@ -182,6 +214,7 @@ private fun BoxScope.Bar(
             .padding(8.dp)
             .fillMaxWidth()
             .height(48.dp)
+            .ownsDrags()
             .glass(CircleShape, roles)
             .padding(horizontal = 2.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -213,6 +246,7 @@ private fun BoxScope.Bar(
         Text(clock(duration), fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurfaceVariant)
         IconButton(onClick = {
             mute.onClick()
+            sound.press(player.volume == 0f)
             onTouch()
         }, enabled = mute.isEnabled) {
             Icon(
@@ -237,3 +271,24 @@ private fun BoxScope.Bar(
         }
     }
 }
+
+/**
+ * Keeps a finger that lands on the player's controls from the stage around
+ * them, as the web's stage leaves its `.player-bar` alone. Once the finger
+ * has gone past the touch slop its moves are taken here, after the
+ * controls under it had them, so the stage neither turns nor pulls. A tap
+ * still reaches its button.
+ */
+internal fun Modifier.ownsDrags(): Modifier =
+    pointerInput(Unit) {
+        awaitEachGesture {
+            val down = awaitFirstDown(requireUnconsumed = false)
+            var away = false
+            while (true) {
+                val change = awaitPointerEvent().changes.firstOrNull { it.id == down.id } ?: break
+                if (!change.pressed) break
+                away = away || (change.position - down.position).getDistance() > viewConfiguration.touchSlop
+                if (away) change.consume()
+            }
+        }
+    }

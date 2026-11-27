@@ -7,6 +7,7 @@ import eu.filipnone.starbooru.MainDispatcherRule
 import eu.filipnone.starbooru.SERVER
 import eu.filipnone.starbooru.core.CoreException
 import eu.filipnone.starbooru.core.Neighbors
+import eu.filipnone.starbooru.core.Post
 import eu.filipnone.starbooru.data.Account
 import eu.filipnone.starbooru.data.MemorySecretStore
 import eu.filipnone.starbooru.post
@@ -40,11 +41,12 @@ class ViewerViewModelTest {
         query: String = "",
         seed: Long? = null,
         saved: SavedStateHandle = SavedStateHandle(),
+        first: Post? = null,
     ): ViewerViewModel {
         account = Account(preferencesIn(tmp.root, main.scope), MemorySecretStore(), apis)
         account.load()
         account.signedIn(SERVER, signedIn())
-        return ViewerViewModel(account, id, query, seed, saved)
+        return ViewerViewModel(account, id, query, seed, saved, first)
     }
 
     @Test
@@ -251,8 +253,10 @@ class ViewerViewModelTest {
             assertFalse(vm.go(Side.Next))
             advanceUntilIdle()
 
-            assertEquals(listOf("post 5", "neighbors 5", "neighbors 5", "post 4", "post 6"), backend.log)
-            assertEquals(Neighbors(prev = 4, next = 6), vm.state.value.neighbors)
+            assertEquals(listOf("post 5", "neighbors 5", "neighbors 5", "post 6"), backend.log.take(4))
+            // The swipe that asked counts once they come, as on the web.
+            assertEquals(6L, vm.state.value.id)
+            assertEquals(Neighbors(prev = 5, next = 7), vm.state.value.neighbors)
             assertTrue(vm.go(Side.Next))
         }
 
@@ -287,6 +291,168 @@ class ViewerViewModelTest {
             advanceUntilIdle()
             assertEquals(post(5), vm.state.value.post)
             assertNull(vm.state.value.error)
+        }
+
+    // ---------- the post a tile hands over ----------
+
+    @Test
+    fun aPostHandedOverShowsBeforeAnyAnswer() =
+        runTest {
+            val handed = post(5).copy(score = 3)
+            val vm = viewer(first = handed)
+            // Before anything ran: the first frame already has it.
+            assertEquals(handed, vm.state.value.post)
+            assertNull(vm.state.value.error)
+
+            advanceUntilIdle()
+            // Then asked for again: the server's copy wins.
+            assertEquals(post(5), vm.state.value.post)
+            assertEquals("post 5", backend.log.first())
+        }
+
+    @Test
+    fun aPostHandedOverStaysWhenTheServerCantBeReached() =
+        runTest {
+            backend.post = { id -> if (id == 5L) throw CoreException.Unreachable("timeout") else post(id) }
+            val handed = post(5).copy(score = 3)
+            val vm = viewer(first = handed)
+            advanceUntilIdle()
+
+            assertEquals(handed, vm.state.value.post)
+            assertNull(vm.state.value.error)
+            // The rest still comes.
+            assertEquals(post(6), vm.state.value.next)
+        }
+
+    @Test
+    fun aPostHandedOverForAnotherIsIgnored() =
+        runTest {
+            val vm = viewer(id = 5, first = post(6))
+            assertNull(vm.state.value.post)
+            advanceUntilIdle()
+            assertEquals(post(5), vm.state.value.post)
+        }
+
+    @Test
+    fun aPostHandedOverDoesntOverrideTheOneKept() =
+        runTest {
+            // Back after the system closed the app, on post 7 by then.
+            val vm = viewer(id = 5, saved = SavedStateHandle(mapOf("id" to 7L)), first = post(5))
+            assertEquals(7L, vm.state.value.id)
+            assertNull(vm.state.value.post)
+        }
+
+    // ---------- swipes made before the sides are known ----------
+
+    @Test
+    fun aSwipeBeforeTheNeighboursAnswerMovesOnceTheyDo() =
+        runTest {
+            val near = CompletableDeferred<Neighbors>()
+            backend.neighbors = { _, _, _ -> near.await() }
+            val vm = viewer()
+            runCurrent()
+
+            assertFalse(vm.go(Side.Next))
+            assertEquals(5L, vm.state.value.id)
+
+            backend.neighbors = { id, _, _ -> Neighbors(prev = id - 1, next = id + 1) }
+            near.complete(Neighbors(prev = 4, next = 6))
+            advanceUntilIdle()
+            assertEquals(6L, vm.state.value.id)
+            assertEquals(post(6), vm.state.value.post)
+        }
+
+    @Test
+    fun swipesBeforeTheNeighboursAnswerAllCount() =
+        runTest {
+            val near = CompletableDeferred<Neighbors>()
+            backend.neighbors = { id, _, _ -> if (id == 5L) near.await() else Neighbors(prev = id - 1, next = id + 1) }
+            val vm = viewer()
+            runCurrent()
+
+            vm.go(Side.Next)
+            vm.go(Side.Next)
+            vm.go(Side.Next)
+            vm.go(Side.Prev)
+            near.complete(Neighbors(prev = 4, next = 6))
+            advanceUntilIdle()
+            // Three on, one back.
+            assertEquals(7L, vm.state.value.id)
+        }
+
+    @Test
+    fun swipesWhileThePostIsStillComingCount() =
+        runTest {
+            // Swiped past the posts fetched ahead: the one on show is still on its way.
+            val coming = CompletableDeferred<Unit>()
+            backend.post = { id ->
+                if (id == 5L) coming.await()
+                post(id)
+            }
+            val vm = viewer()
+            runCurrent()
+            assertNull(vm.state.value.post)
+
+            assertFalse(vm.go(Side.Next))
+            assertFalse(vm.go(Side.Next))
+            coming.complete(Unit)
+            advanceUntilIdle()
+            assertEquals(7L, vm.state.value.id)
+        }
+
+    @Test
+    fun waitingSwipesStopAtTheEnd() =
+        runTest {
+            val near = CompletableDeferred<Neighbors>()
+            backend.neighbors =
+                { id, _, _ -> if (id == 9L) near.await() else Neighbors(prev = id - 1, next = (id + 1).takeIf { it <= 10 }) }
+            val vm = viewer(id = 9)
+            runCurrent()
+
+            repeat(4) { vm.go(Side.Next) }
+            near.complete(Neighbors(prev = 8, next = 10))
+            advanceUntilIdle()
+            assertEquals(10L, vm.state.value.id)
+
+            // Nothing left over: going back now goes back one.
+            assertTrue(vm.go(Side.Prev))
+            advanceUntilIdle()
+            assertEquals(9L, vm.state.value.id)
+        }
+
+    @Test
+    fun waitingSwipesAreDroppedWhenTheNeighboursFail() =
+        runTest {
+            val near = CompletableDeferred<Neighbors>()
+            backend.neighbors = { _, _, _ -> near.await() }
+            val vm = viewer()
+            runCurrent()
+
+            vm.go(Side.Next)
+            near.completeExceptionally(CoreException.Unreachable("timeout"))
+            advanceUntilIdle()
+            assertEquals(5L, vm.state.value.id)
+
+            // A later answer doesn't replay the swipe.
+            backend.neighbors = { id, _, _ -> Neighbors(prev = id - 1, next = id + 1) }
+            vm.retry()
+            advanceUntilIdle()
+            assertEquals(5L, vm.state.value.id)
+        }
+
+    @Test
+    fun aBurstOfSwipesIsCapped() =
+        runTest {
+            backend.total = 40
+            val near = CompletableDeferred<Neighbors>()
+            backend.neighbors = { id, _, _ -> if (id == 5L) near.await() else Neighbors(prev = id - 1, next = id + 1) }
+            val vm = viewer()
+            runCurrent()
+
+            repeat(20) { vm.go(Side.Next) }
+            near.complete(Neighbors(prev = 4, next = 6))
+            advanceUntilIdle()
+            assertEquals(5L + MOST_QUEUED, vm.state.value.id)
         }
 
     // ---------- what shows beside the post at once ----------

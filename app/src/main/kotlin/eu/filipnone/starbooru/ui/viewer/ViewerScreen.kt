@@ -47,8 +47,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -61,7 +65,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -84,6 +87,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -184,6 +188,31 @@ fun ViewerScreen(
     val edited = rememberEditUndo(account) { vm.replace(it) }
     val scroll = rememberScrollState()
     var pull by remember { mutableFloatStateOf(0f) }
+    // A picture pulled down is drawn over the cards under it.
+    val lifted by remember { derivedStateOf { pull > 0f } }
+    val lift = Modifier.zIndex(if (lifted) 1f else 0f)
+    val back by rememberUpdatedState(onBack)
+    // One stage for every layout, moved and not made anew, so turning the
+    // phone or going fullscreen keeps a video playing where it was.
+    val stage =
+        remember(vm) {
+            movableContentOf { modifier: Modifier ->
+                val look = LocalFrame.current
+                Stage(
+                    vm = vm,
+                    shown = shown,
+                    onShown = { shown = it },
+                    fullscreen = fullscreen,
+                    onFullscreen = { fullscreen = it },
+                    pullable = { fullscreen || look.width == WidthClass.Expanded || scroll.value == 0 },
+                    onPull = { pull = it },
+                    onClose = { back() },
+                    hand = look.hand,
+                    arrows = look.width != WidthClass.Compact,
+                    modifier = modifier,
+                )
+            }
+        }
 
     BoxWithConstraints(
         Modifier
@@ -191,22 +220,6 @@ fun ViewerScreen(
             .background(if (fullscreen) StarBooruTheme.roles.stage else MaterialTheme.colorScheme.background),
     ) {
         val pad = if (fullscreen) androidx.compose.foundation.layout.PaddingValues(0.dp) else frame.padding
-        val stage =
-            @Composable { modifier: Modifier ->
-                Stage(
-                    vm = vm,
-                    shown = shown,
-                    onShown = { shown = it },
-                    fullscreen = fullscreen,
-                    onFullscreen = { fullscreen = it },
-                    pullable = fullscreen || wide || scroll.value == 0,
-                    onPull = { pull = it },
-                    onClose = onBack,
-                    hand = frame.hand,
-                    arrows = frame.width != WidthClass.Compact,
-                    modifier = modifier,
-                )
-            }
         val details =
             @Composable { modifier: Modifier ->
                 Column(modifier.graphicsLayer { alpha = 1f - pull }) {
@@ -267,8 +280,8 @@ fun ViewerScreen(
                 horizontalArrangement = Arrangement.spacedBy(20.dp),
             ) {
                 if (panelFirst) panel()
-                Column(Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    stage(Modifier.weight(1f).fillMaxWidth())
+                Column(lift.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    stage(lift.weight(1f).fillMaxWidth())
                     bar(Modifier.fillMaxWidth())
                 }
                 if (!panelFirst) panel()
@@ -283,7 +296,7 @@ fun ViewerScreen(
                     .padding(horizontal = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                stage(Modifier.fillMaxWidth().height(stageHeight))
+                stage(lift.fillMaxWidth().height(stageHeight))
                 bar(Modifier.fillMaxWidth())
                 related(Modifier.fillMaxWidth())
                 details(Modifier.fillMaxWidth().widthIn(max = 720.dp).padding(bottom = 16.dp))
@@ -311,7 +324,7 @@ private fun Stage(
     onShown: (ViewerState) -> Unit,
     fullscreen: Boolean,
     onFullscreen: (Boolean) -> Unit,
-    pullable: Boolean,
+    pullable: () -> Boolean,
     onPull: (Float) -> Unit,
     onClose: () -> Unit,
     hand: Hand,
@@ -326,12 +339,13 @@ private fun Stage(
     var drag by remember { mutableStateOf(Offset.Zero) }
     var settling by remember { mutableStateOf<Job?>(null) }
     var single by remember { mutableStateOf<Job?>(null) }
+    // The post the slide was last set for.
+    var placed by remember { mutableLongStateOf(shown.id) }
+    val shape = RoundedCornerShape(if (fullscreen) 0.dp else 28.dp)
+    // A picture pulled down follows the finger whole, out of the stage.
+    val pulling by remember { derivedStateOf { drag != Offset.Zero } }
 
-    BoxWithConstraints(
-        modifier
-            .clip(RoundedCornerShape(if (fullscreen) 0.dp else 28.dp))
-            .clipToBounds(),
-    ) {
+    BoxWithConstraints(if (pulling) modifier else modifier.clip(shape)) {
         val w = constraints.maxWidth.toFloat()
         val h = constraints.maxHeight.toFloat()
         val d = density.density
@@ -345,19 +359,57 @@ private fun Stage(
         val canPull by rememberUpdatedState(pullable)
         val zoomNow by rememberUpdatedState(zoom)
         val fitNow by rememberUpdatedState(fit)
+        val full by rememberUpdatedState(fullscreen)
 
-        fun turn(to: Turn) {
-            val target = if (to == Turn.Next) -(w + gap) else (w + gap)
+        // Back to the middle, and a pulled picture back up.
+        fun settle() {
             settling?.cancel()
+            val fromSlide = slide
+            val fromDrag = drag
+            if (fromSlide == 0f && fromDrag == Offset.Zero) return
+            if (reduced) {
+                slide = 0f
+                drag = Offset.Zero
+                return
+            }
             settling =
                 scope.launch {
-                    animate(slide, target, animationSpec = tween(if (reduced) 1 else 250, easing = StarEasing)) { v, _ -> slide = v }
-                    if (vm.go(if (to == Turn.Next) Side.Next else Side.Prev)) onShown(vm.state.value)
-                    slide = 0f
+                    animate(0f, 1f, animationSpec = tween(250, easing = StarEasing)) { t, _ ->
+                        slide = fromSlide * (1f - t)
+                        drag = fromDrag * (1f - t)
+                    }
                 }
         }
 
-        fun neighbour(to: Turn): Post? = if (to == Turn.Next) now.next else now.prev
+        // The turn is made at once, as on the web, so a swipe right after
+        // starts from the new post. The slide then carries both pictures
+        // the rest of the way from where the finger left them.
+        fun turn(to: Turn) {
+            settling?.cancel()
+            if (vm.go(to.side)) {
+                val next = vm.state.value
+                onShown(next)
+                placed = next.id
+                slide = slideAfter(slide, to, w + gap)
+            }
+            settle()
+        }
+
+        // A swipe that waited for the server moves the post later, on its
+        // own: it slides in from its side all the same.
+        SideEffect {
+            if (shown.id == placed) return@SideEffect
+            val from = placed
+            placed = shown.id
+            val to =
+                when (from) {
+                    shown.prev?.id -> Turn.Next
+                    shown.next?.id -> Turn.Previous
+                    else -> return@SideEffect
+                }
+            slide = slideAfter(slide, to, w + gap)
+            settle()
+        }
 
         val stageGlass = rememberHazeState()
         Box(
@@ -378,6 +430,8 @@ private fun Stage(
                         var pinched = false
                         var last = down
                         var consumedUp = false
+                        // Left to the page's scroll, or to a control under the finger.
+                        var given = false
                         while (true) {
                             val event = awaitPointerEvent()
                             val pressed = event.changes.filter { it.pressed }
@@ -395,6 +449,12 @@ private fun Stage(
                             }
                             val change = pressed.first()
                             last = change
+                            // The player's controls hear a move first. One they
+                            // took, like a seek bar drag, is theirs.
+                            if (change.isConsumed) {
+                                given = true
+                                break
+                            }
                             if (pinched) {
                                 if (zoomNow.isZoomed) {
                                     zoom = zoomNow.pan(change.positionChange(), fitNow)
@@ -406,14 +466,17 @@ private fun Stage(
                             val dx = (change.position.x - down.position.x) / d
                             val dy = (change.position.y - down.position.y) / d
                             if (mode == StageDrag.Undecided) {
-                                mode = ViewerSwipe.drag(dx, dy, zoomNow.isZoomed, canPull)
+                                mode = ViewerSwipe.drag(dx, dy, zoomNow.isZoomed, canPull())
                                 // Up, or down where the page can scroll: the page's.
-                                if (mode == StageDrag.None && !zoomNow.isZoomed) return@awaitEachGesture
+                                if (mode == StageDrag.None && !zoomNow.isZoomed) {
+                                    given = true
+                                    break
+                                }
                             }
                             when (mode) {
                                 StageDrag.Sideways -> {
                                     val toward = if (dx < 0f) Turn.Next else Turn.Previous
-                                    slide = slideBase + ViewerSwipe.resist(dx * d, neighbour(toward) == null)
+                                    slide = slideBase + ViewerSwipe.resist(dx * d, now.endAt(toward.side))
                                     change.consume()
                                 }
 
@@ -432,40 +495,36 @@ private fun Stage(
                         }
                         val dx = (last.position.x - down.position.x) / d
                         val dy = (last.position.y - down.position.y) / d
+                        if (given) {
+                            settle()
+                            return@awaitEachGesture
+                        }
+                        // A flick so quick its moves came with the lift still counts.
+                        if (mode == StageDrag.Undecided && !pinched && !consumedUp) {
+                            trail = trailWith(trail, TrailPoint(last.uptimeMillis, last.position.x / d, last.position.y / d))
+                            mode = ViewerSwipe.drag(dx, dy, zoomNow.isZoomed, canPull())
+                        }
                         when (mode) {
                             StageDrag.Sideways -> {
-                                val to = ViewerSwipe.turn(slide / d, speedX(trail), w / d)
-                                if (to != null && neighbour(to) != null) {
-                                    turn(to)
-                                } else {
-                                    settling =
-                                        scope.launch {
-                                            animate(slide, 0f, animationSpec = tween(250, easing = StarEasing)) { v, _ -> slide = v }
-                                        }
-                                }
+                                // This finger's own way, not where a picture
+                                // still settling from the last turn stands.
+                                val to = ViewerSwipe.turn(dx, speedX(trail), w / d)
+                                if (to != null && !now.endAt(to.side)) turn(to) else settle()
                             }
 
                             StageDrag.Down -> {
-                                if (PullToClose.closes(dy, speedY(trail), h / d)) {
-                                    if (fullscreen) {
-                                        onFullscreen(false)
-                                        drag = Offset.Zero
-                                    } else {
-                                        onClose()
-                                    }
+                                if (!PullToClose.closes(dy, speedY(trail), h / d)) {
+                                    settle()
+                                } else if (full) {
+                                    onFullscreen(false)
+                                    drag = Offset.Zero
                                 } else {
-                                    val from = drag
-                                    settling =
-                                        scope.launch {
-                                            animate(0f, 1f, animationSpec = tween(250, easing = StarEasing)) { t, _ ->
-                                                drag =
-                                                    from * (1f - t)
-                                            }
-                                        }
+                                    onClose()
                                 }
                             }
 
                             StageDrag.Undecided -> {
+                                settle()
                                 val quick = last.uptimeMillis - down.uptimeMillis < DOUBLE_TAP_MS
                                 if (!pinched && quick && !consumedUp && hypot(dx, dy) < ViewerSwipe.SLOP) {
                                     val at = down.position
@@ -482,19 +541,19 @@ private fun Stage(
                                             single =
                                                 scope.launch {
                                                     delay(SINGLE_TAP_WAIT_MS)
-                                                    onFullscreen(!fullscreen)
+                                                    onFullscreen(!full)
                                                 }
                                         }
                                     }
                                 }
                             }
 
-                            StageDrag.None -> {}
+                            StageDrag.None -> settle()
                         }
                     }
                 },
         ) {
-            if (!fullscreen) post?.let { Glow(it) }
+            if (!fullscreen) post?.let { Glow(it, Modifier.clip(shape)) }
             // The previous, current and next pictures side by side, moved
             // together by the slide.
             listOf(-1 to shown.prev, 0 to post, 1 to shown.next).forEach { (place, p) ->
@@ -509,14 +568,20 @@ private fun Stage(
                             .offset {
                                 val x = slide + place * (w + gap) + if (current) drag.x else 0f
                                 IntOffset(x.roundToInt(), if (current) drag.y.roundToInt() else 0)
-                            },
+                            }
+                            // The stage lets a pulled picture out, but not
+                            // the ones waiting beside it.
+                            .graphicsLayer { alpha = if (current || !pulling) 1f else 0f },
                         contentAlignment = Alignment.Center,
                     ) {
+                        // Only the post on show grows from its tile and
+                        // goes back into it.
                         Picture(
                             post = p,
                             fit = Size(slotFit.width * scale, slotFit.height * scale),
                             zoom = if (current) zoom else Zoom(),
                             playing = current && p.kind == MediaKind.VIDEO,
+                            shared = current,
                             corner = if (fullscreen) 0.dp else 28.dp,
                         )
                     }
@@ -544,12 +609,12 @@ private fun Stage(
             if (arrows && !fullscreen) {
                 if (shown.neighbors?.prev != null) {
                     Arrow(R.drawable.ic_chevron_left, stringResource(R.string.post_prev), Modifier.align(Alignment.CenterStart)) {
-                        if (shown.prev != null) turn(Turn.Previous)
+                        turn(Turn.Previous)
                     }
                 }
                 if (shown.neighbors?.next != null) {
                     Arrow(R.drawable.ic_chevron_right, stringResource(R.string.post_next), Modifier.align(Alignment.CenterEnd)) {
-                        if (shown.next != null) turn(Turn.Next)
+                        turn(Turn.Next)
                     }
                 }
             }
@@ -563,12 +628,15 @@ private fun Stage(
  * Android 12, so older versions go without.
  */
 @Composable
-private fun Glow(post: Post) {
+private fun Glow(
+    post: Post,
+    modifier: Modifier,
+) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || LocalPlainGlass.current) return
     val context = LocalContext.current
     val request = remember(post.id) { Media.thumb(context, post) } ?: return
     val alpha = if (StarBooruTheme.roles.canvas.luminance() > 0.5f) 0.42f else 0.34f
-    Crossfade(request, animationSpec = tween(640), label = "glow") { r ->
+    Crossfade(request, modifier.fillMaxSize(), animationSpec = tween(640), label = "glow") { r ->
         AsyncImage(
             model = r,
             contentDescription = null,
@@ -609,6 +677,7 @@ private fun Picture(
     fit: Size,
     zoom: Zoom,
     playing: Boolean,
+    shared: Boolean,
     corner: Dp,
 ) {
     val context = LocalContext.current
@@ -619,7 +688,7 @@ private fun Picture(
     Box(
         Modifier
             .size(width, height)
-            .sharedPost(post.id, corner)
+            .sharedPost(post.id, corner, enabled = shared, onStage = true)
             .graphicsLayer {
                 scaleX = zoom.scale
                 scaleY = zoom.scale

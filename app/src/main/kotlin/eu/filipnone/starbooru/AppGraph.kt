@@ -19,6 +19,7 @@ import eu.filipnone.starbooru.data.SettingsStore
 import eu.filipnone.starbooru.data.Spots
 import eu.filipnone.starbooru.data.upload.UploadQueue
 import eu.filipnone.starbooru.ui.nav.Route
+import eu.filipnone.starbooru.ui.viewer.Opening
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -53,6 +54,9 @@ class AppGraph(private val context: Context) {
             apis = apis,
         )
     val savedSearches = SavedSearches(account, scope)
+
+    /** The post a tile hands the viewer it opens. */
+    val opening = Opening()
 
     /** Whose history and places these are: one list per account on each server. */
     fun owner(state: AccountState): String =

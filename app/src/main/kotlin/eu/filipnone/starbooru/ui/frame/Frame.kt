@@ -86,6 +86,7 @@ import dev.chrisbanes.haze.rememberHazeState
 import eu.filipnone.starbooru.R
 import eu.filipnone.starbooru.core.SavedSearch
 import eu.filipnone.starbooru.data.Hand
+import eu.filipnone.starbooru.ui.common.LocalSharedTransition
 import eu.filipnone.starbooru.ui.nav.Tab
 import eu.filipnone.starbooru.ui.theme.StarBooruTheme
 import eu.filipnone.starbooru.ui.theme.StarEasing
@@ -179,11 +180,15 @@ fun Frame(
         CompositionLocalProvider(LocalFrame provides FrameInfo(width, hand, padding, short)) {
             Box(Modifier.fillMaxSize().hazeSource(glassSource)) { content() }
         }
+        // A post's picture on its way between a tile and the viewer is drawn
+        // above the pages: the bars go above it there too.
+        val shared = LocalSharedTransition.current
+        val onTop = shared?.run { Modifier.renderInSharedTransitionScopeOverlay(zIndexInOverlay = 1f) } ?: Modifier
         // Keeps the status bar's icons readable over the pictures passing under it.
         if (bars && sysTop > 0.dp) {
             val canvas = MaterialTheme.colorScheme.background
             Box(
-                Modifier
+                onTop
                     .fillMaxWidth()
                     .height(sysTop + gap)
                     .background(Brush.verticalGradient(listOf(canvas.copy(alpha = 0.85f), canvas.copy(alpha = 0f)))),
@@ -202,7 +207,7 @@ fun Frame(
                 visible = bars,
                 enter = fadeIn(tween(250)) + slideInVertically(tween(250, easing = StarEasing)) { -it / 2 },
                 exit = fadeOut(tween(150)) + slideOutVertically(tween(150)) { -it / 2 },
-                modifier = Modifier.align(Alignment.TopCenter),
+                modifier = onTop.align(Alignment.TopCenter),
             ) {
                 TopBar(
                     width = width,
@@ -223,7 +228,7 @@ fun Frame(
                     visible = bars,
                     enter = fadeIn(tween(250)) + slideInVertically(tween(250, easing = StarEasing)) { it },
                     exit = fadeOut(tween(150)) + slideOutVertically(tween(150)) { it },
-                    modifier = Modifier.align(Alignment.BottomCenter),
+                    modifier = onTop.align(Alignment.BottomCenter),
                 ) {
                     NavSlider(
                         items = items,
@@ -245,7 +250,7 @@ fun Frame(
                     visible = bars,
                     enter = fadeIn(tween(250)),
                     exit = fadeOut(tween(150)),
-                    modifier = Modifier.align(railAlign),
+                    modifier = onTop.align(railAlign),
                 ) {
                     val itemHeight = if (short) BarItem else RailWidth
                     NavSlider(

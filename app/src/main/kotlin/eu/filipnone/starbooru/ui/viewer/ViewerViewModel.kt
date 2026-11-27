@@ -40,23 +40,36 @@ class ViewerViewModel(
     val query: String,
     val seed: Long?,
     private val saved: SavedStateHandle,
+    /** The post as the page that opened it had it: shown at once, then asked for again. */
+    first: Post? = null,
     /** Told of each post shown, for Explore's Recently viewed. */
     private val onSeen: (Long) -> Unit = {},
 ) : ViewModel() {
     private val posts = LinkedHashMap<Long, Post>(16, 0.75f, true)
     private val sides = HashMap<Long, Neighbors>()
     private val related = HashMap<Long, List<Post>>()
-    private val _state = MutableStateFlow(ViewerState(saved[ID] ?: startId))
-    val state: StateFlow<ViewerState> = _state.asStateFlow()
+    private val _state: MutableStateFlow<ViewerState>
+    val state: StateFlow<ViewerState>
     private var loading: Job? = null
 
+    /** Swipes made before the server said what's beside the post, next counting up. */
+    private var steps = 0
+
     init {
-        load(_state.value.id)
+        val id = saved[ID] ?: startId
+        val handed = first?.takeIf { it.id == id }
+        handed?.let(::keep)
+        _state = MutableStateFlow(ViewerState(id, post = handed))
+        state = _state.asStateFlow()
+        load(id, fresh = handed != null)
     }
 
     fun retry() = load(_state.value.id)
 
-    /** Moves to the post on [side], if there is one. */
+    /**
+     * Moves to the post on [side], if there is one. Before the server has
+     * said what's there, the swipe waits for its answer and moves then.
+     */
     fun go(side: Side): Boolean {
         val s = _state.value
         val near = s.neighbors
@@ -68,6 +81,8 @@ class ViewerViewModel(
                 Side.Next -> s.next
             }
         if (near == null && standIn == null) {
+            // Over a post that failed to load, a swipe only asks again.
+            if (s.error == null) steps = queued(steps, side)
             // The neighbours never came: ask again rather than stay stuck.
             if (loading?.isActive != true) load(s.id)
             return false
@@ -76,7 +91,10 @@ class ViewerViewModel(
             when (side) {
                 Side.Prev -> near?.prev
                 Side.Next -> near?.next
-            } ?: standIn?.id ?: return false
+            } ?: standIn?.id ?: run {
+                steps = 0
+                return false
+            }
         saved[ID] = id
         val known = sides[id]
         // What's already here stands in until the server answers: the post
@@ -111,16 +129,28 @@ class ViewerViewModel(
         }
     }
 
-    private fun load(id: Long) {
+    /** Loads post [id] and what's beside it. [fresh] asks the server even for a post already here. */
+    private fun load(
+        id: Long,
+        fresh: Boolean = false,
+    ) {
         loading?.cancel()
         loading =
             viewModelScope.launch {
+                val known = posts[id]
                 val post =
-                    try {
-                        posts[id] ?: account.call { it.post(id) }.also { keep(it) }
-                    } catch (e: CoreException) {
-                        _state.update { if (it.id == id && it.post == null) it.copy(error = e) else it }
-                        return@launch
+                    if (known != null && !fresh) {
+                        known
+                    } else {
+                        try {
+                            account.call { it.post(id) }.also { keep(it) }
+                        } catch (e: CoreException) {
+                            // The copy the page had stays, if there is one.
+                            known ?: run {
+                                _state.update { if (it.id == id && it.post == null) it.copy(error = e) else it }
+                                return@launch
+                            }
+                        }
                     }
                 _state.update { if (it.id == id) it.copy(post = post, error = null) else it }
                 if (!post.deleted) onSeen(id)
@@ -141,10 +171,13 @@ class ViewerViewModel(
                     try {
                         sides[id] ?: account.call { it.neighbors(id, query, seed) }.also { sides[id] = it }
                     } catch (_: CoreException) {
-                        // The arrows wait; the next swipe asks again.
+                        // The arrows wait; the next swipe asks again. The
+                        // swipes waiting for this answer are dropped.
+                        steps = 0
                         return@launch
                     }
                 _state.update { if (it.id == id) it.copy(neighbors = near) else it }
+                if (drain(id, near)) return@launch
                 // Both sides at once, each on its own: a slow or failing one
                 // doesn't hold the other back.
                 launch {
@@ -156,6 +189,37 @@ class ViewerViewModel(
                     _state.update { if (it.id == id) it.copy(next = next) else it }
                 }
             }
+    }
+
+    /**
+     * Takes one waiting swipe from post [id], now that its neighbours [near]
+     * are known: the post on that side is fetched first, so it shows at
+     * once. True once it has moved on, which loads the next post.
+     */
+    private suspend fun drain(
+        id: Long,
+        near: Neighbors,
+    ): Boolean {
+        if (steps == 0) return false
+        val side = if (steps > 0) Side.Next else Side.Prev
+        val to = if (side == Side.Next) near.next else near.prev
+        if (to == null) {
+            steps = 0
+            return false
+        }
+        val post = fetch(to)
+        _state.update {
+            when {
+                it.id != id -> it
+                side == Side.Next -> it.copy(next = post)
+                else -> it.copy(prev = post)
+            }
+        }
+        // A swipe the other way while it came, or a move, has the last word.
+        val still = if (side == Side.Next) steps > 0 else steps < 0
+        if (_state.value.id != id || !still) return false
+        steps -= if (side == Side.Next) 1 else -1
+        return go(side)
     }
 
     private suspend fun fetch(id: Long): Post? =

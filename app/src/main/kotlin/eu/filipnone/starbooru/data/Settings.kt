@@ -37,6 +37,8 @@ data class Settings(
     val saver: Saver = Saver.Auto,
     /** The viewer always opens originals, never the lighter copies. */
     val originals: Boolean = false,
+    /** Videos play muted: the last mute pressed in a player, as on the web. */
+    val videoMuted: Boolean = false,
 ) {
     /** Whether the rail and the viewer's panel sit on the right. */
     val rightHanded: Boolean get() = hand == Hand.Right

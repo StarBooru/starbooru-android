@@ -43,6 +43,7 @@ class SettingsStore(private val store: DataStore<Preferences>) {
         val EFFECTS = stringPreferencesKey("effects")
         val SAVER = stringPreferencesKey("battery_saver")
         val ORIGINALS = booleanPreferencesKey("originals")
+        val VIDEO_MUTED = booleanPreferencesKey("video_muted")
 
         inline fun <reified E : Enum<E>> enumOf(name: String?, default: E): E = enumValues<E>().firstOrNull { it.name == name } ?: default
 
@@ -68,6 +69,7 @@ class SettingsStore(private val store: DataStore<Preferences>) {
                 effects = enumOf(prefs[EFFECTS], d.effects),
                 saver = enumOf(prefs[SAVER], d.saver),
                 originals = prefs[ORIGINALS] ?: d.originals,
+                videoMuted = prefs[VIDEO_MUTED] ?: d.videoMuted,
             )
         }
 
@@ -92,6 +94,7 @@ class SettingsStore(private val store: DataStore<Preferences>) {
             prefs[EFFECTS] = s.effects.name
             prefs[SAVER] = s.saver.name
             prefs[ORIGINALS] = s.originals
+            prefs[VIDEO_MUTED] = s.videoMuted
         }
     }
 }
