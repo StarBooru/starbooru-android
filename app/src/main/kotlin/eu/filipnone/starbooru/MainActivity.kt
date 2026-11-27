@@ -54,7 +54,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val graph = (application as StarBooruApp).graph
         if (savedInstanceState == null) arrive(intent)
+        val starting = StartingWindow()
+        starting.hold(window.decorView)
         setContent {
+            starting.Watch()
             val settings by graph.settings.settings.collectAsStateWithLifecycle(Settings())
             // The theme follows the system as it changes, with no restart:
             // the manifest keeps uiMode changes in the activity.
