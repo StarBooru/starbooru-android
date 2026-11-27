@@ -72,10 +72,15 @@ class PostActions internal constructor(
         return false
     }
 
-    /** Up (1), down (-1), or the same again to take it back. */
+    /**
+     * Up (1), down (-1), or the same again to take it back. With [tell], a
+     * notice says what happened once the server has it; the viewer's own
+     * buttons show it themselves.
+     */
     fun vote(
         post: Post,
         pressed: Int,
+        tell: Boolean = false,
     ) {
         if (!signedIn()) return
         val before = Tally.of(post)
@@ -84,6 +89,7 @@ class PostActions internal constructor(
         scope.launch {
             try {
                 onChanged(account.call { it.vote(post.id, like.toShort()) })
+                if (tell) notices?.say(res.getString(likedNotice(stars = false, given = like)))
             } catch (e: CoreException) {
                 onChanged(before.into(post))
                 failed(e, R.string.vote_failed)
@@ -91,10 +97,11 @@ class PostActions internal constructor(
         }
     }
 
-    /** Star [pressed] of five, or the same again to take it back. */
+    /** Star [pressed] of five, or the same again to take it back; [tell] as for [vote]. */
     fun star(
         post: Post,
         pressed: Int,
+        tell: Boolean = false,
     ) {
         if (!signedIn()) return
         val before = Tally.of(post)
@@ -103,6 +110,7 @@ class PostActions internal constructor(
         scope.launch {
             try {
                 onChanged(account.call { it.voteStars(post.id, stars.toUByte()) })
+                if (tell) notices?.say(res.getString(likedNotice(stars = true, given = stars)))
             } catch (e: CoreException) {
                 onChanged(before.into(post))
                 failed(e, R.string.vote_failed)
@@ -110,9 +118,12 @@ class PostActions internal constructor(
         }
     }
 
-    /** The menu's like: a like, or five stars where the server counts stars. */
+    /**
+     * The like of a tile's menu or a swipe: a like, or five stars where the
+     * server counts stars, with a notice, as nothing else on the tile shows it.
+     */
     fun like(post: Post) {
-        if (stars) star(post, Votes.MAX_STARS) else vote(post, 1)
+        if (stars) star(post, Votes.MAX_STARS, tell = true) else vote(post, 1, tell = true)
     }
 
     fun liked(post: Post): Boolean = if (stars) post.myStars.toInt() == Votes.MAX_STARS else post.myVote > 0
@@ -238,6 +249,20 @@ class PostActions internal constructor(
         }
     }
 }
+
+/**
+ * The notice for a like from a menu once the server has it, as on the web.
+ * [given] is the vote or the stars now; 0 is a like taken back.
+ */
+fun likedNotice(
+    stars: Boolean,
+    given: Int,
+): Int =
+    when {
+        given <= 0 -> R.string.press_unliked
+        stars -> R.string.press_starred
+        else -> R.string.press_liked
+    }
 
 /** [PostActions] for a screen; [onChanged] takes in a post as it changes. */
 @Composable
