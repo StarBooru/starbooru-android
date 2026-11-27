@@ -6,24 +6,46 @@ use chrono::{DateTime, Utc};
 use starbooru_client::Client;
 
 mod account;
+mod admin;
 mod ai;
+mod ai_admin;
+mod boorus;
 mod browse;
 mod duplicates;
 mod editor;
 mod edits;
 mod figures;
 mod forum;
+mod imports;
+mod library;
 mod people;
 mod profile;
 mod sharing;
 mod tags;
+mod text;
 mod transfer;
+mod updates;
 
 pub use account::{
     ApiKey, CreatedApiKey, NewApiKey, ProviderIdentity, SessionInfo, SignInMethods,
     max_api_key_days,
 };
+pub use admin::{
+    AdminLimits, AdminUser, Backup, BackupSchedule, Backups, DayCount, HomeSettings, ModePreview,
+    ModeSwitched, QuotaChange, ScorePreview, ServerChange, ServerSettings, ServerStats, TagRemoval,
+    TagRemovalPage, UserUpdate, admin_limits,
+};
 pub use ai::{AiStatus, TagSuggestion, TagSuggestions};
+pub use ai_admin::{
+    AiAdminStatus, AiInstallProgress, AiMode, AiModelOption, AiPreset, AiPresetOption,
+    AiRuntimeStatus, AiTool, AiToolSettings, AiToolState, AiToolStatus, AiToolUpdate, Gpu, GpuKind,
+    Hardware, ai_tool_update_of,
+};
+pub use boorus::{
+    BooruAccount, BooruApi, BooruFields, BooruSite, NewBooruAccount, NewRemoteSearch, RemotePage,
+    RemotePost, RemoteSearch, RemoteSite, RemoteTag, RemoteTagGroups, SavedRemoteSearch,
+    booru_api_name, booru_fields, booru_sites,
+};
 pub use browse::{Explore, Home, HomePost, Person, SavedSearch, TagTrend, Usage};
 pub use duplicates::{
     DuplicateGroup, Duplicates, MAX_DUPLICATE_GROUPS, ResolveDuplicates,
@@ -42,6 +64,11 @@ pub use forum::{
     CategoryUpdate, ForumCategory, ForumPost, ForumThread, MAX_FORUM_LIMIT, NewCategory, NewThread,
     PostMention, ThreadPage, ThreadUpdate, ThreadView, post_mentions,
 };
+pub use imports::{ImportItem, ImportJob, ImportProgress, JobState};
+pub use library::{
+    LibraryCheck, LibraryFailure, LibraryImport, LibraryPhase, LibrarySite, LibrarySource,
+    LibrarySourceForm, LibraryState, library_source_form, max_active_library_imports,
+};
 pub use people::{
     Franchise, FranchisePage, MAX_FRANCHISE_LIMIT, MAX_PEOPLE_LIMIT, PeopleOrder, PeoplePage,
     PeopleQuery,
@@ -52,7 +79,12 @@ pub use sharing::{
     max_share_days, share_link,
 };
 pub use tags::{MAX_TAG_LIMIT, Tag, TagDetail, TagOrder, TagPage, TagUpdate};
+pub use text::{PanelTranslation, TextBlock};
 pub use transfer::{DuplicatePost, duplicate_of};
+pub use updates::{
+    Release, UpdateBlock, UpdateKind, UpdateMethod, UpdateRun, UpdateSettings, UpdateState,
+    UpdateStatus,
+};
 
 pub(crate) fn millis(t: DateTime<Utc>) -> i64 {
     t.timestamp_millis()
@@ -69,6 +101,15 @@ impl From<starbooru_core::Role> for Role {
         match r {
             starbooru_core::Role::Admin => Role::Admin,
             starbooru_core::Role::User => Role::User,
+        }
+    }
+}
+
+impl From<Role> for starbooru_core::Role {
+    fn from(r: Role) -> Self {
+        match r {
+            Role::Admin => starbooru_core::Role::Admin,
+            Role::User => starbooru_core::Role::User,
         }
     }
 }
@@ -178,6 +219,15 @@ impl From<starbooru_core::Mode> for Mode {
     }
 }
 
+impl From<Mode> for starbooru_core::Mode {
+    fn from(m: Mode) -> Self {
+        match m {
+            Mode::Private => starbooru_core::Mode::Private,
+            Mode::Public => starbooru_core::Mode::Public,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, uniffi::Enum)]
 pub enum ScoreKind {
     Likes,
@@ -189,6 +239,15 @@ impl From<starbooru_core::ScoreKind> for ScoreKind {
         match k {
             starbooru_core::ScoreKind::Likes => ScoreKind::Likes,
             starbooru_core::ScoreKind::Stars => ScoreKind::Stars,
+        }
+    }
+}
+
+impl From<ScoreKind> for starbooru_core::ScoreKind {
+    fn from(k: ScoreKind) -> Self {
+        match k {
+            ScoreKind::Likes => starbooru_core::ScoreKind::Likes,
+            ScoreKind::Stars => starbooru_core::ScoreKind::Stars,
         }
     }
 }

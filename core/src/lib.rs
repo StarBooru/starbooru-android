@@ -10,8 +10,10 @@ uniffi::setup_scaffolding!();
 
 pub mod address;
 pub mod api;
+pub mod blacklist;
 pub mod error;
 pub mod gallery;
+pub mod jobs;
 pub mod layout;
 pub mod model;
 pub mod oidc;

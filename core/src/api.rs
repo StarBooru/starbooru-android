@@ -2,7 +2,8 @@
 //! the server or the session changes; each async method is a `suspend`
 //! function there. The methods are split by screen: tags, editing posts,
 //! browsing, files in and out, the account's security, sharing, people,
-//! duplicates, profiles and the forum.
+//! duplicates, profiles, the forum, the text in pictures, other boorus and
+//! background imports, library imports and the administration.
 
 use std::sync::Arc;
 
@@ -14,18 +15,24 @@ use crate::model::{Neighbors, Post, PostPage, ServerInfo, SignedIn, Usage, User}
 use crate::oidc::ProviderSignIn;
 
 mod account;
+mod admin;
+mod boorus;
 mod browse;
 mod duplicates;
 mod edits;
 mod forum;
+mod library;
 #[cfg(test)]
 mod live;
+#[cfg(test)]
+mod live_admin;
 #[cfg(test)]
 mod live_screens;
 mod people;
 mod profile;
 mod sharing;
 mod tags;
+mod text;
 mod transfer;
 
 pub use transfer::UploadProgress;
@@ -42,6 +49,18 @@ impl Api {
     #[uniffi::constructor]
     pub fn new(server: String, token: Option<String>) -> Result<Arc<Self>> {
         let client = Client::new(&server)?.with_token(token);
+        Ok(Arc::new(Self { client }))
+    }
+
+    /// A guest of a public server with a list of their own, kept on the
+    /// device (see `guest_blacklist`). It goes with every read of posts:
+    /// searches, a post, its neighbours and related posts, Explore, people,
+    /// franchises and the home page. `None` leaves the server's default; an
+    /// empty list hides nothing. At most `max_guest_blacklist_entries()`, or
+    /// those reads are `bad_request`.
+    #[uniffi::constructor]
+    pub fn guest(server: String, exclude: Option<Vec<String>>) -> Result<Arc<Self>> {
+        let client = Client::new(&server)?.with_guest_blacklist(exclude.as_deref());
         Ok(Arc::new(Self { client }))
     }
 
@@ -131,6 +150,63 @@ mod tests {
         assert!(api.signed_in());
         let guest = Api::new("https://booru.example".into(), None).unwrap();
         assert!(!guest.signed_in());
+        let own = Api::guest("https://booru.example/".into(), Some(vec!["cat".into()])).unwrap();
+        assert_eq!(own.server(), "https://booru.example");
+        assert!(!own.signed_in());
+        assert!(matches!(
+            Api::guest("ftp://x".into(), None),
+            Err(CoreError::InvalidAddress { .. })
+        ));
+    }
+
+    /// Answers one request with an empty page of posts, and hands back the
+    /// request line.
+    async fn one_page() -> (String, tokio::task::JoinHandle<String>) {
+        use tokio::io::{AsyncReadExt, AsyncWriteExt};
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let base = format!("http://{}", listener.local_addr().unwrap());
+        let asked = tokio::spawn(async move {
+            let (mut sock, _) = listener.accept().await.unwrap();
+            let mut buf = vec![0u8; 8192];
+            let n = sock.read(&mut buf).await.unwrap();
+            let body = br#"{"posts":[],"page":1,"limit":10,"has_more":false}"#;
+            let head = format!(
+                "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
+                body.len()
+            );
+            sock.write_all(head.as_bytes()).await.unwrap();
+            sock.write_all(body).await.unwrap();
+            let request = String::from_utf8_lossy(&buf[..n]).into_owned();
+            request.lines().next().unwrap_or_default().to_owned()
+        });
+        (base, asked)
+    }
+
+    #[tokio::test]
+    async fn a_guests_own_list_goes_with_a_search() {
+        let (base, asked) = one_page().await;
+        let entries = vec!["cat".to_owned(), "rating:explicit".to_owned()];
+        let api = Api::guest(base, Some(entries)).unwrap();
+        api.posts(String::new(), None, 1, 10).await.unwrap();
+        let line = asked.await.unwrap();
+        assert!(line.contains("exclude=cat+rating%3Aexplicit"), "{line}");
+
+        // An empty list goes too: it hides nothing.
+        let (base, asked) = one_page().await;
+        let api = Api::guest(base, Some(Vec::new())).unwrap();
+        api.posts(String::new(), None, 1, 10).await.unwrap();
+        let line = asked.await.unwrap();
+        assert!(
+            line.contains("exclude=&") || line.ends_with("exclude= HTTP/1.1"),
+            "{line}"
+        );
+
+        // Without one, the server's default.
+        let (base, asked) = one_page().await;
+        let api = Api::guest(base, None).unwrap();
+        api.posts(String::new(), None, 1, 10).await.unwrap();
+        let line = asked.await.unwrap();
+        assert!(!line.contains("exclude"), "{line}");
     }
 
     #[tokio::test]
