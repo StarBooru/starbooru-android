@@ -16,13 +16,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import eu.filipnone.starbooru.R
 import eu.filipnone.starbooru.core.CoreException
+import eu.filipnone.starbooru.core.Mode
 import eu.filipnone.starbooru.core.Post
 import eu.filipnone.starbooru.core.ScoreKind
 import eu.filipnone.starbooru.data.Account
 import eu.filipnone.starbooru.data.AccountState
 import eu.filipnone.starbooru.data.Files
+import eu.filipnone.starbooru.ui.share.ShareSheet
 import eu.filipnone.starbooru.ui.viewer.Reverse
 import eu.filipnone.starbooru.ui.viewer.ReverseSite
 import eu.filipnone.starbooru.ui.viewer.Tally
@@ -43,6 +46,7 @@ class PostActions internal constructor(
     private val scope: CoroutineScope,
     private val onChanged: (Post) -> Unit,
     private val askPermission: (() -> Unit) -> Unit,
+    private val onShare: (List<Post>) -> Unit,
 ) {
     val guest: Boolean get() = account.state.value is AccountState.Guest
 
@@ -211,7 +215,17 @@ class PostActions internal constructor(
         }
     }
 
+    /**
+     * Share: a guest sends the files; with an account, a sheet offers the
+     * files or a link (or, on a public server, the posts' addresses).
+     */
     fun share(posts: List<Post>) {
+        if (posts.isEmpty()) return
+        if (guest) sendFiles(posts) else onShare(posts)
+    }
+
+    /** Hands the files themselves to an app on this device. */
+    fun sendFiles(posts: List<Post>) {
         scope.launch {
             try {
                 val api = account.api.value ?: return@launch
@@ -242,26 +256,42 @@ fun rememberPostActions(
             if (granted) waiting?.invoke()
             waiting = null
         }
-    return remember(account, notices) {
-        PostActions(
+    var sharing by remember { mutableStateOf<List<Post>?>(null) }
+    val actions =
+        remember(account, notices) {
+            PostActions(
+                account = account,
+                context = context.applicationContext,
+                res = res,
+                notices = notices,
+                scope = scope,
+                onChanged = { changed(it) },
+                askPermission = { then ->
+                    val granted =
+                        !Files.needsPermission ||
+                            ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+                            PackageManager.PERMISSION_GRANTED
+                    if (granted) {
+                        then()
+                    } else {
+                        waiting = then
+                        permission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    }
+                },
+                onShare = { sharing = it },
+            )
+        }
+    sharing?.let { posts ->
+        val info by account.info.collectAsStateWithLifecycle()
+        val api by account.api.collectAsStateWithLifecycle()
+        ShareSheet(
+            posts = posts,
             account = account,
-            context = context.applicationContext,
-            res = res,
-            notices = notices,
-            scope = scope,
-            onChanged = { changed(it) },
-            askPermission = { then ->
-                val granted =
-                    !Files.needsPermission ||
-                        ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
-                        PackageManager.PERMISSION_GRANTED
-                if (granted) {
-                    then()
-                } else {
-                    waiting = then
-                    permission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                }
-            },
+            server = api?.server().orEmpty(),
+            public = info?.mode == Mode.PUBLIC,
+            onFiles = { actions.sendFiles(posts) },
+            onDismiss = { sharing = null },
         )
     }
+    return actions
 }

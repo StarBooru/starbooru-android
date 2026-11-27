@@ -1,0 +1,5 @@
+# Account and security, API keys, share links and link previews.
+
+[account]
+password-.* signin-.* sessions-.* settings-role settings-storage
+keys-.* share-.* shares-.* previews-.* shared-.*

@@ -17,7 +17,6 @@
     <string name="swipe_select">Seleziona</string>
     <!-- reason -->
     <string name="delete_failed">Impossibile spostarlo nel cestino: %1$s</string>
-    <string name="share_button">Condividi</string>
     <string name="reverse_button">Trova la fonte</string>
     <string name="post_download">Scarica</string>
     <string name="post_delete_title">Sposta nel cestino</string>

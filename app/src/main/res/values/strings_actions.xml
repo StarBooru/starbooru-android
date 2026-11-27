@@ -17,7 +17,6 @@
     <string name="swipe_select">Select</string>
     <!-- reason -->
     <string name="delete_failed">Couldn\'t move it to the recycle bin: %1$s</string>
-    <string name="share_button">Share</string>
     <string name="reverse_button">Find source</string>
     <string name="post_download">Download</string>
     <string name="post_delete_title">Move to recycle bin</string>

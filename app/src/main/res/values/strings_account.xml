@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="password_strength_weak">Easy to guess</string>
+    <string name="password_strength_fair">Could be stronger</string>
+    <string name="password_strength_strong">Strong password</string>
+    <string name="password_current">Current password</string>
+    <string name="password_new">New password</string>
+    <!-- count -->
+    <string name="password_too_short">At least %1$s characters.</string>
+    <string name="password_repeat">Repeat the new password</string>
+    <string name="password_mismatch">The passwords don\'t match.</string>
+    <string name="password_wrong_current">The current password is wrong.</string>
+    <string name="password_changed">Password changed. Your other devices were signed out.</string>
+    <string name="password_changing">Changing…</string>
+    <string name="password_change">Change password</string>
+    <string name="password_none">This account has no password yet. Set one to sign in without the provider too.</string>
+    <string name="password_set">Set password</string>
+    <string name="signin_title">Ways to sign in</string>
+    <string name="signin_password_set">Set</string>
+    <string name="signin_password_none">Not set</string>
+    <string name="signin_provider">Single sign-on</string>
+    <!-- linked, used -->
+    <string name="signin_times">Linked %1$s · last used %2$s</string>
+    <!-- linked -->
+    <string name="signin_linked">Linked %1$s</string>
+    <string name="signin_last">This is your only way to sign in. Set a password before unlinking it.</string>
+    <!-- provider -->
+    <string name="signin_link">Link a %1$s account</string>
+    <string name="signin_unlink">Unlink</string>
+    <!-- name -->
+    <string name="signin_unlink_named">Unlink %1$s</string>
+    <string name="sessions_title">Signed-in devices</string>
+    <string name="sessions_unknown">Unknown client</string>
+    <string name="sessions_this_device">This device</string>
+    <!-- active, created -->
+    <string name="sessions_times">Active %1$s · signed in %2$s</string>
+    <string name="sessions_revoke_others">Sign out everywhere else</string>
+    <string name="sessions_revoke">Sign out this device</string>
+    <string name="settings_storage">Uploads</string>
+    <string name="keys_title">API keys</string>
+    <string name="keys_lead">Let scripts and other tools use StarBooru as you. A key can\'t change your password, sign-ins or keys.</string>
+    <!-- name -->
+    <string name="keys_copy_now">Copy the key “%1$s” now. It won\'t be shown again.</string>
+    <string name="keys_token">New API key</string>
+    <string name="keys_copy">Copy</string>
+    <string name="keys_copied">Copied</string>
+    <string name="keys_copy_failed">Couldn\'t copy the key. It\'s selected, so copy it from your keyboard or menu.</string>
+    <string name="keys_none">No API keys yet.</string>
+    <string name="keys_read_only">Read-only</string>
+    <string name="keys_full">Full access</string>
+    <string name="keys_expired">Expired</string>
+    <!-- when -->
+    <string name="keys_used">Used %1$s</string>
+    <string name="keys_never_used">Never used</string>
+    <string name="keys_no_expiry">Never expires</string>
+    <!-- date -->
+    <string name="keys_expired_on">Expired %1$s</string>
+    <!-- date -->
+    <string name="keys_expires_on">Expires %1$s</string>
+    <string name="keys_name">Name</string>
+    <string name="keys_name_placeholder">What will use it, e.g. backup script</string>
+    <string name="keys_access">Access</string>
+    <string name="keys_lifetime">Expires</string>
+    <string name="keys_never_expires">Never</string>
+    <!-- count -->
+    <plurals name="keys_days">
+        <item quantity="one">1 day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
+    <string name="keys_create">Create key</string>
+    <string name="keys_delete">Remove key</string>
+    <!-- name -->
+    <string name="keys_delete_named">Remove the key %1$s</string>
+    <string name="keys_error_name">Give the key a name.</string>
+    <!-- max -->
+    <string name="keys_error_long">The name is longer than %1$s characters.</string>
+    <string name="keys_error_control">The name can\'t hold control characters.</string>
+    <!-- max -->
+    <string name="keys_error_days">A key can last 1 to %1$s days.</string>
+    <string name="keys_done">Done</string>
+    <string name="share_button">Share</string>
+    <!-- count -->
+    <plurals name="share_title">
+        <item quantity="one">Share this post</item>
+        <item quantity="other">Share %1$d posts</item>
+    </plurals>
+    <!-- count -->
+    <plurals name="share_lead">
+        <item quantity="one">Anyone with the link can see this post without an account. Its tags, votes and details about you stay hidden.</item>
+        <item quantity="other">Anyone with the link can see these posts without an account. Their tags, votes and details about you stay hidden.</item>
+    </plurals>
+    <string name="share_name">Title (optional)</string>
+    <string name="share_name_placeholder">e.g. Holiday photos</string>
+    <string name="share_lifetime">Link works for</string>
+    <string name="share_until_removed">Until removed</string>
+    <!-- count -->
+    <plurals name="share_days">
+        <item quantity="one">1 day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
+    <string name="share_pick_day">Until a date</string>
+    <string name="share_day">Last day the link works</string>
+    <string name="share_day_missing">Pick the last day the link works.</string>
+    <string name="share_day_soon">Pick tomorrow or a later day.</string>
+    <!-- last, max -->
+    <string name="share_day_late">Pick %1$s or earlier: %2$s days at most.</string>
+    <string name="share_create">Create link</string>
+    <string name="share_ready">Link ready. Anyone who has it can open it.</string>
+    <string name="share_link">Share link</string>
+    <string name="share_copy">Copy link</string>
+    <string name="share_copied">Copied</string>
+    <string name="share_copy_failed">Couldn\'t copy the link. It\'s selected, so copy it from your keyboard or menu.</string>
+    <!-- count -->
+    <plurals name="share_address_title">
+        <item quantity="one">Share this post</item>
+        <item quantity="other">Share %1$d posts</item>
+    </plurals>
+    <!-- count -->
+    <plurals name="share_address_lead">
+        <item quantity="one">This server is public: anyone with this address can see the post, without an account.</item>
+        <item quantity="other">This server is public: anyone with these addresses can see the posts, without an account.</item>
+    </plurals>
+    <string name="share_addresses">Addresses</string>
+    <string name="share_copy_all">Copy all</string>
+    <string name="share_copied_all">Copied</string>
+    <string name="share_native">Share via…</string>
+    <string name="share_done">Done</string>
+    <string name="share_close">Close</string>
+    <!-- count -->
+    <plurals name="share_posts">
+        <item quantity="one">1 post</item>
+        <item quantity="other">%1$d posts</item>
+    </plurals>
+    <string name="share_error_none">Pick at least one post to share.</string>
+    <!-- max -->
+    <string name="share_error_many">A link can hold at most %1$s posts.</string>
+    <!-- max -->
+    <string name="share_error_title_long">The title can be at most %1$s characters.</string>
+    <string name="share_error_title_control">The title can\'t contain tabs or line breaks.</string>
+    <!-- max -->
+    <string name="share_error_days">A link works for 1 to %1$s days, or until removed.</string>
+    <string name="share_preview">Link preview</string>
+    <string name="shares_title">Shared links</string>
+    <string name="shares_lead">Links you made with Share. Removing one stops it working; a file someone already opened can keep loading for a few hours.</string>
+    <string name="shares_none">No links yet. Use Share on a post, or select posts in the gallery.</string>
+    <string name="shares_untitled">Untitled link</string>
+    <!-- when -->
+    <string name="shares_made">Made %1$s</string>
+    <!-- count -->
+    <plurals name="shares_views">
+        <item quantity="zero">Never opened</item>
+        <item quantity="one">Opened once</item>
+        <item quantity="other">Opened %1$d times</item>
+    </plurals>
+    <string name="shares_expired">Expired</string>
+    <string name="shares_no_expiry">Never expires</string>
+    <!-- date -->
+    <string name="shares_expired_on">Expired %1$s</string>
+    <!-- date -->
+    <string name="shares_expires_on">Expires %1$s</string>
+    <!-- count -->
+    <plurals name="shares_expires_minutes">
+        <item quantity="one">Expires in 1 minute</item>
+        <item quantity="other">Expires in %1$d minutes</item>
+    </plurals>
+    <!-- count -->
+    <plurals name="shares_expires_hours">
+        <item quantity="one">Expires in 1 hour</item>
+        <item quantity="other">Expires in %1$d hours</item>
+    </plurals>
+    <!-- count -->
+    <plurals name="shares_expires_days">
+        <item quantity="one">Expires in 1 day</item>
+        <item quantity="other">Expires in %1$d days</item>
+    </plurals>
+    <string name="shares_delete">Remove link</string>
+    <!-- name -->
+    <string name="shares_delete_named">Remove the link %1$s</string>
+    <string name="previews_title">Link previews</string>
+    <string name="previews_mine">Show a picture with my links</string>
+    <string name="previews_mine_hint">WhatsApp, Discord, Telegram and other apps show a link\'s first picture. Each link can choose otherwise.</string>
+    <string name="previews_copies">Apps keep their own copy of a preview, even after the link is removed.</string>
+    <string name="previews_server_off">Link previews are off on this server.</string>
+    <string name="previews_server_off_admin">Turn on in Administration</string>
+    <string name="shared_missing_title">This link doesn\'t work</string>
+    <string name="shared_missing_body">It may have expired, or the person who shared it removed it.</string>
+    <!-- server -->
+    <string name="shared_from">Shared from %1$s</string>
+    <!-- date -->
+    <string name="shared_until">available until %1$s</string>
+    <string name="shared_empty">Nothing here any more.</string>
+    <!-- n -->
+    <string name="shared_open">Item %1$s</string>
+    <string name="shared_previous">Previous</string>
+    <string name="shared_next">Next</string>
+</resources>

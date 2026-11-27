@@ -41,6 +41,10 @@ data class TagRoute(val name: String) : Route
 @Serializable
 data class LegalRoute(val privacy: Boolean) : Route
 
+/** A share link's page, from any server. */
+@Serializable
+data class SharedRoute(val server: String, val token: String) : Route
+
 /** The recycle bin, opened from Settings. */
 @Serializable
 data object TrashRoute : Route

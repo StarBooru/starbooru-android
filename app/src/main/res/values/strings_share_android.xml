@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The share sheet's choices the web doesn't have: Android can send the files themselves. -->
+<resources>
+    <plurals name="share_files_android">
+        <item quantity="one">Send the file</item>
+        <item quantity="other">Send the %1$d files</item>
+    </plurals>
+    <string name="share_files_hint_android">To an app on this device, as the picture or video itself</string>
+    <string name="share_link_hint_android">A page anyone can open, for as long as you choose</string>
+</resources>

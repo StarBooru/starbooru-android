@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Le scelte del foglio di condivisione che il web non ha: Android può inviare i file stessi. -->
+<resources>
+    <plurals name="share_files_android">
+        <item quantity="one">Invia il file</item>
+        <item quantity="other">Invia i %1$d file</item>
+    </plurals>
+    <string name="share_files_hint_android">A un\'app su questo dispositivo, come immagine o video</string>
+    <string name="share_link_hint_android">Una pagina che chiunque può aprire, per il tempo che scegli</string>
+</resources>

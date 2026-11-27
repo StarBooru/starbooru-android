@@ -21,7 +21,7 @@ app-name page-back notice-close retry load-more notfound-title add cancel save
 search-placeholder search-label search-clear search-corrected account-button account-title
 
 [gallery]
-gallery-.* sort sort-by sort-.* view-.* posts-count post-alt
+gallery-.* sort sort-by sort-.* view-.* posts-count post-alt badge-gif
 
 [viewer]
 post-number post-missing-title post-missing-body post-back post-prev-title post-prev

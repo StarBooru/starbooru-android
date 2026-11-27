@@ -13,9 +13,13 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import eu.filipnone.starbooru.data.Settings
 import eu.filipnone.starbooru.data.ThemeMode
+import eu.filipnone.starbooru.data.server
 import eu.filipnone.starbooru.data.upload.UploadNotifications
 import eu.filipnone.starbooru.data.upload.UploadQueue
 import eu.filipnone.starbooru.ui.MainScreen
+import eu.filipnone.starbooru.ui.nav.Links
+import eu.filipnone.starbooru.ui.nav.Opened
+import eu.filipnone.starbooru.ui.nav.SharedRoute
 import eu.filipnone.starbooru.ui.nav.UploadRoute
 import eu.filipnone.starbooru.ui.theme.StarBooruTheme
 
@@ -30,6 +34,17 @@ class MainActivity : ComponentActivity() {
     private fun arrive(intent: Intent?) {
         if (intent == null) return
         val graph = (application as StarBooruApp).graph
+        // A StarBooru address opened with the app: a post, a search or a share page.
+        if (intent.action == Intent.ACTION_VIEW) {
+            val url = intent.dataString ?: return
+            val server = graph.account.state.value.server.orEmpty()
+            when (val opened = Links.open(url, server)) {
+                is Opened.Page -> graph.arriving.value = opened.route
+                is Opened.SharePage -> graph.arriving.value = SharedRoute(opened.server, opened.token)
+                null -> {}
+            }
+            return
+        }
         val shared = UploadQueue.get(this).receive(intent)
         if (shared || UploadNotifications.opensUploads(intent)) graph.arriving.value = UploadRoute
     }

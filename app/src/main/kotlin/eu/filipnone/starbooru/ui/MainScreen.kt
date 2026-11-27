@@ -63,6 +63,7 @@ import eu.filipnone.starbooru.ui.nav.GalleryRoute
 import eu.filipnone.starbooru.ui.nav.LegalRoute
 import eu.filipnone.starbooru.ui.nav.PostRoute
 import eu.filipnone.starbooru.ui.nav.SettingsRoute
+import eu.filipnone.starbooru.ui.nav.SharedRoute
 import eu.filipnone.starbooru.ui.nav.Tab
 import eu.filipnone.starbooru.ui.nav.TagRoute
 import eu.filipnone.starbooru.ui.nav.TagsRoute
@@ -73,6 +74,7 @@ import eu.filipnone.starbooru.ui.nav.rememberNavigationState
 import eu.filipnone.starbooru.ui.settings.LegalScreen
 import eu.filipnone.starbooru.ui.settings.SettingsActions
 import eu.filipnone.starbooru.ui.settings.SettingsScreen
+import eu.filipnone.starbooru.ui.share.SharedScreen
 import eu.filipnone.starbooru.ui.signin.SignInScreen
 import eu.filipnone.starbooru.ui.signin.SignInViewModel
 import eu.filipnone.starbooru.ui.tags.TagScreen
@@ -296,6 +298,7 @@ private fun Shell(
                                     ),
                             )
                         }
+                        entry<SharedRoute> { route -> SharedScreen(route.server, route.token, onBack = { nav.back() }) }
                         entry<LegalRoute> { route ->
                             LegalScreen(
                                 privacy = route.privacy,

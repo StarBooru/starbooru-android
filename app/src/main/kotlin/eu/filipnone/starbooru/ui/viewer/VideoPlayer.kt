@@ -73,24 +73,34 @@ private const val REST_AFTER_MS = 2_800L
  * with play, the time, the seek bar, the length, mute and repeat, and a big
  * play button before it starts. It pauses whenever the app is hidden.
  */
-@OptIn(UnstableApi::class)
 @Composable
 fun VideoPlayer(
     post: Post,
     modifier: Modifier = Modifier,
     onTap: () -> Unit = {},
+) = VideoPlayer("post:${post.id}", post.fileUrl, post.durationMs, modifier, onTap)
+
+/** The same player for any video at [url]; [key] tells one video from another. */
+@OptIn(UnstableApi::class)
+@Composable
+fun VideoPlayer(
+    key: String,
+    url: String,
+    durationMs: Long?,
+    modifier: Modifier = Modifier,
+    onTap: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val player =
-        remember(post.id) {
+        remember(key) {
             ExoPlayer.Builder(context).build().apply {
-                setMediaItem(MediaItem.fromUri(post.fileUrl))
-                repeatMode = if ((post.durationMs ?: 0L) in 1..LOOP_UNDER_MS) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_OFF
+                setMediaItem(MediaItem.fromUri(url))
+                repeatMode = if ((durationMs ?: 0L) in 1..LOOP_UNDER_MS) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_OFF
                 prepare()
             }
         }
-    var position by rememberSaveable(post.id) { mutableStateOf(0L) }
-    var playing by rememberSaveable(post.id) { mutableStateOf(false) }
+    var position by rememberSaveable(key) { mutableStateOf(0L) }
+    var playing by rememberSaveable(key) { mutableStateOf(false) }
     LaunchedEffect(player) {
         if (position > 0) player.seekTo(position)
         player.playWhenReady = playing

@@ -47,4 +47,5 @@
     </plurals>
     <!-- id -->
     <string name="post_alt">Post %1$s</string>
+    <string name="badge_gif">GIF</string>
 </resources>

@@ -193,7 +193,7 @@ private fun Badge(
     val text =
         when (post.kind) {
             MediaKind.VIDEO -> post.durationMs?.let { clock(it) } ?: ""
-            MediaKind.ANIMATION -> "GIF"
+            MediaKind.ANIMATION -> stringResource(R.string.badge_gif)
             MediaKind.IMAGE -> return
         }
     Row(

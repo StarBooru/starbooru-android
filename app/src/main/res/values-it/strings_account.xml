@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by tools/strings.py from starbooru-web's locales; edit tools/strings.txt. -->
+<resources>
+    <string name="password_strength_weak">Facile da indovinare</string>
+    <string name="password_strength_fair">Potrebbe essere più sicura</string>
+    <string name="password_strength_strong">Password sicura</string>
+    <string name="password_current">Password attuale</string>
+    <string name="password_new">Nuova password</string>
+    <!-- count -->
+    <string name="password_too_short">Almeno %1$s caratteri.</string>
+    <string name="password_repeat">Ripeti la nuova password</string>
+    <string name="password_mismatch">Le password non coincidono.</string>
+    <string name="password_wrong_current">La password attuale è sbagliata.</string>
+    <string name="password_changed">Password cambiata. Gli altri tuoi dispositivi sono stati disconnessi.</string>
+    <string name="password_changing">Modifica in corso…</string>
+    <string name="password_change">Cambia password</string>
+    <string name="password_none">Questo account non ha ancora una password. Impostane una per accedere anche senza il provider.</string>
+    <string name="password_set">Imposta password</string>
+    <string name="signin_title">Modi di accesso</string>
+    <string name="signin_password_set">Impostata</string>
+    <string name="signin_password_none">Non impostata</string>
+    <string name="signin_provider">Accesso unico</string>
+    <!-- linked, used -->
+    <string name="signin_times">Collegato %1$s · ultimo uso %2$s</string>
+    <!-- linked -->
+    <string name="signin_linked">Collegato %1$s</string>
+    <string name="signin_last">È il tuo unico modo di accedere. Imposta una password prima di scollegarlo.</string>
+    <!-- provider -->
+    <string name="signin_link">Collega un account %1$s</string>
+    <string name="signin_unlink">Scollega</string>
+    <!-- name -->
+    <string name="signin_unlink_named">Scollega %1$s</string>
+    <string name="sessions_title">Dispositivi connessi</string>
+    <string name="sessions_unknown">Client sconosciuto</string>
+    <string name="sessions_this_device">Questo dispositivo</string>
+    <!-- active, created -->
+    <string name="sessions_times">Attivo %1$s · accesso %2$s</string>
+    <string name="sessions_revoke_others">Esci da tutti gli altri dispositivi</string>
+    <string name="sessions_revoke">Disconnetti questo dispositivo</string>
+    <string name="settings_storage">Caricamenti</string>
+    <string name="keys_title">Chiavi API</string>
+    <string name="keys_lead">Permetti a script e altri strumenti di usare StarBooru a tuo nome. Una chiave non può cambiare la password, gli accessi o le chiavi.</string>
+    <!-- name -->
+    <string name="keys_copy_now">Copia ora la chiave “%1$s”. Non verrà più mostrata.</string>
+    <string name="keys_token">Nuova chiave API</string>
+    <string name="keys_copy">Copia</string>
+    <string name="keys_copied">Copiata</string>
+    <string name="keys_copy_failed">Impossibile copiare la chiave. È selezionata, quindi copiala dalla tastiera o dal menu.</string>
+    <string name="keys_none">Ancora nessuna chiave API.</string>
+    <string name="keys_read_only">Sola lettura</string>
+    <string name="keys_full">Accesso completo</string>
+    <string name="keys_expired">Scaduta</string>
+    <!-- when -->
+    <string name="keys_used">Usata %1$s</string>
+    <string name="keys_never_used">Mai usata</string>
+    <string name="keys_no_expiry">Non scade</string>
+    <!-- date -->
+    <string name="keys_expired_on">Scaduta il %1$s</string>
+    <!-- date -->
+    <string name="keys_expires_on">Scade il %1$s</string>
+    <string name="keys_name">Nome</string>
+    <string name="keys_name_placeholder">Chi la userà, ad es. script di backup</string>
+    <string name="keys_access">Accesso</string>
+    <string name="keys_lifetime">Scadenza</string>
+    <string name="keys_never_expires">Mai</string>
+    <!-- count -->
+    <plurals name="keys_days">
+        <item quantity="one">1 giorno</item>
+        <item quantity="other">%1$d giorni</item>
+    </plurals>
+    <string name="keys_create">Crea chiave</string>
+    <string name="keys_delete">Rimuovi la chiave</string>
+    <!-- name -->
+    <string name="keys_delete_named">Rimuovi la chiave %1$s</string>
+    <string name="keys_error_name">Dai un nome alla chiave.</string>
+    <!-- max -->
+    <string name="keys_error_long">Il nome supera i %1$s caratteri.</string>
+    <string name="keys_error_control">Il nome non può contenere caratteri di controllo.</string>
+    <!-- max -->
+    <string name="keys_error_days">Una chiave può durare da 1 a %1$s giorni.</string>
+    <string name="keys_done">Fatto</string>
+    <string name="share_button">Condividi</string>
+    <!-- count -->
+    <plurals name="share_title">
+        <item quantity="one">Condividi questo post</item>
+        <item quantity="other">Condividi %1$d post</item>
+    </plurals>
+    <!-- count -->
+    <plurals name="share_lead">
+        <item quantity="one">Chi ha il link può vedere questo post senza un account. Tag, voti e i tuoi dati restano nascosti.</item>
+        <item quantity="other">Chi ha il link può vedere questi post senza un account. Tag, voti e i tuoi dati restano nascosti.</item>
+    </plurals>
+    <string name="share_name">Titolo (facoltativo)</string>
+    <string name="share_name_placeholder">es. Foto delle vacanze</string>
+    <string name="share_lifetime">Il link funziona per</string>
+    <string name="share_until_removed">Finché non lo rimuovi</string>
+    <!-- count -->
+    <plurals name="share_days">
+        <item quantity="one">1 giorno</item>
+        <item quantity="other">%1$d giorni</item>
+    </plurals>
+    <string name="share_pick_day">Fino a una data</string>
+    <string name="share_day">Ultimo giorno in cui il link funziona</string>
+    <string name="share_day_missing">Scegli fino a quale giorno funziona il link.</string>
+    <string name="share_day_soon">Scegli domani o un giorno successivo.</string>
+    <!-- last, max -->
+    <string name="share_day_late">Scegli il %1$s o prima: al massimo %2$s giorni.</string>
+    <string name="share_create">Crea link</string>
+    <string name="share_ready">Link pronto. Chiunque lo abbia può aprirlo.</string>
+    <string name="share_link">Link di condivisione</string>
+    <string name="share_copy">Copia link</string>
+    <string name="share_copied">Copiato</string>
+    <string name="share_copy_failed">Non è stato possibile copiare il link. È selezionato: copialo dalla tastiera o dal menu.</string>
+    <!-- count -->
+    <plurals name="share_address_title">
+        <item quantity="one">Condividi questo post</item>
+        <item quantity="other">Condividi %1$d post</item>
+    </plurals>
+    <!-- count -->
+    <plurals name="share_address_lead">
+        <item quantity="one">Questo server è pubblico: chiunque abbia questo indirizzo può vedere il post, senza un account.</item>
+        <item quantity="other">Questo server è pubblico: chiunque abbia questi indirizzi può vedere i post, senza un account.</item>
+    </plurals>
+    <string name="share_addresses">Indirizzi</string>
+    <string name="share_copy_all">Copia tutti</string>
+    <string name="share_copied_all">Copiati</string>
+    <string name="share_native">Condividi con…</string>
+    <string name="share_done">Fatto</string>
+    <string name="share_close">Chiudi</string>
+    <!-- count -->
+    <plurals name="share_posts">
+        <item quantity="one">1 post</item>
+        <item quantity="other">%1$d post</item>
+    </plurals>
+    <string name="share_error_none">Scegli almeno un post da condividere.</string>
+    <!-- max -->
+    <string name="share_error_many">Un link può contenere al massimo %1$s post.</string>
+    <!-- max -->
+    <string name="share_error_title_long">Il titolo può avere al massimo %1$s caratteri.</string>
+    <string name="share_error_title_control">Il titolo non può contenere tabulazioni o a capo.</string>
+    <!-- max -->
+    <string name="share_error_days">Un link funziona da 1 a %1$s giorni, o finché non lo rimuovi.</string>
+    <string name="share_preview">Anteprima del link</string>
+    <string name="shares_title">Link condivisi</string>
+    <string name="shares_lead">I link creati con Condividi. Rimuoverne uno lo disattiva; un file già aperto da qualcuno può continuare a caricarsi per qualche ora.</string>
+    <string name="shares_none">Ancora nessun link. Usa Condividi su un post, o seleziona dei post nella galleria.</string>
+    <string name="shares_untitled">Link senza titolo</string>
+    <!-- when -->
+    <string name="shares_made">Creato %1$s</string>
+    <!-- count -->
+    <plurals name="shares_views">
+        <item quantity="zero">Mai aperto</item>
+        <item quantity="one">Aperto una volta</item>
+        <item quantity="other">Aperto %1$d volte</item>
+    </plurals>
+    <string name="shares_expired">Scaduto</string>
+    <string name="shares_no_expiry">Non scade</string>
+    <!-- date -->
+    <string name="shares_expired_on">Scaduto il %1$s</string>
+    <!-- date -->
+    <string name="shares_expires_on">Scade il %1$s</string>
+    <!-- count -->
+    <plurals name="shares_expires_minutes">
+        <item quantity="one">Scade tra 1 minuto</item>
+        <item quantity="other">Scade tra %1$d minuti</item>
+    </plurals>
+    <!-- count -->
+    <plurals name="shares_expires_hours">
+        <item quantity="one">Scade tra 1 ora</item>
+        <item quantity="other">Scade tra %1$d ore</item>
+    </plurals>
+    <!-- count -->
+    <plurals name="shares_expires_days">
+        <item quantity="one">Scade tra 1 giorno</item>
+        <item quantity="other">Scade tra %1$d giorni</item>
+    </plurals>
+    <string name="shares_delete">Rimuovi link</string>
+    <!-- name -->
+    <string name="shares_delete_named">Rimuovi il link %1$s</string>
+    <string name="previews_title">Anteprime dei link</string>
+    <string name="previews_mine">Mostra un\'immagine con i miei link</string>
+    <string name="previews_mine_hint">WhatsApp, Discord, Telegram e altre app mostrano la prima immagine di un link. Ogni link può scegliere diversamente.</string>
+    <string name="previews_copies">Le app tengono una propria copia dell\'anteprima, anche dopo che il link è stato rimosso.</string>
+    <string name="previews_server_off">Le anteprime dei link sono disattivate su questo server.</string>
+    <string name="previews_server_off_admin">Attiva in Amministrazione</string>
+    <string name="shared_missing_title">Questo link non funziona</string>
+    <string name="shared_missing_body">Potrebbe essere scaduto, o chi l\'ha condiviso l\'ha rimosso.</string>
+    <!-- server -->
+    <string name="shared_from">Condiviso da %1$s</string>
+    <!-- date -->
+    <string name="shared_until">disponibile fino al %1$s</string>
+    <string name="shared_empty">Qui non c\'è più niente.</string>
+    <!-- n -->
+    <string name="shared_open">Elemento %1$s</string>
+    <string name="shared_previous">Precedente</string>
+    <string name="shared_next">Successivo</string>
+</resources>
