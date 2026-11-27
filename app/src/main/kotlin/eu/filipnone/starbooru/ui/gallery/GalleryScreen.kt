@@ -437,7 +437,7 @@ fun GalleryScreen(
                             canDelete = !actions.guest,
                             onMenu = { choice ->
                                 menuFor = null
-                                if (choice != null) run(choice, post) else menuFor = post.id
+                                if (choice != null) run(choice, post)
                             },
                             onOpen = { onOpen(post) },
                             onToggle = { vm.setSelection(selection.toggle(post.id)) },
